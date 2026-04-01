@@ -2,14 +2,18 @@ import { Link, useLocation } from "react-router";
 import { motion } from "motion/react";
 import { Github, MessageSquare, Target, LayoutGrid } from "lucide-react";
 
+const integrationNav = [
+  { path: "/github", label: "GitHub", icon: Github },
+  { path: "/slack", label: "Slack", icon: MessageSquare },
+  { path: "/linear", label: "Linear", icon: Target },
+];
+
 export function Navigation() {
   const location = useLocation();
 
   const links = [
     { path: "/", label: "Garden", icon: LayoutGrid },
-    { path: "/github", label: "GitHub", icon: Github },
-    { path: "/slack", label: "Slack", icon: MessageSquare },
-    { path: "/linear", label: "Linear", icon: Target },
+    ...integrationNav,
   ];
 
   return (
@@ -58,10 +62,9 @@ export function Navigation() {
           {/* User Avatar - Link to Profile */}
           <Link 
             to="/profile"
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:ring-2 hover:ring-offset-2"
+            className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:ring-2 hover:ring-offset-2 hover:ring-[var(--zen-sage)]"
             style={{ 
               backgroundColor: 'var(--zen-sage)',
-              ringColor: 'var(--zen-sage)'
             }}
           >
             <span className="text-white text-sm">JD</span>

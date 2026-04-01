@@ -1,13 +1,29 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { RouterProvider } from "react-router";
 import { LoginPage } from "./components/LoginPage";
 import { router } from "./routes";
+import {
+  ConnectedIntegrationsProvider,
+  type IntegrationId,
+} from "./integrationsContext";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [connectedIntegrations, setConnectedIntegrations] = useState<string[]>([]);
+  const [connectedIntegrations, setConnectedIntegrations] = useState<
+    IntegrationId[]
+  >([]);
 
-  const handleLogin = (integrations: string[]) => {
+  const connectIntegration = useCallback((id: IntegrationId) => {
+    setConnectedIntegrations((prev) =>
+      prev.includes(id) ? prev : [...prev, id],
+    );
+  }, []);
+
+  const disconnectIntegration = useCallback((id: IntegrationId) => {
+    setConnectedIntegrations((prev) => prev.filter((x) => x !== id));
+  }, []);
+
+  const handleLogin = (integrations: IntegrationId[]) => {
     setConnectedIntegrations(integrations);
     setIsLoggedIn(true);
   };
@@ -20,5 +36,13 @@ export default function App() {
     );
   }
 
-  return <RouterProvider router={router} />;
+  return (
+    <ConnectedIntegrationsProvider
+      connectedIds={connectedIntegrations}
+      connectIntegration={connectIntegration}
+      disconnectIntegration={disconnectIntegration}
+    >
+      <RouterProvider router={router} />
+    </ConnectedIntegrationsProvider>
+  );
 }

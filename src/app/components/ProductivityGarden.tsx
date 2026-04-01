@@ -9,10 +9,18 @@ interface ActivityData {
 
 interface ProductivityGardenProps {
   activityData: ActivityData;
+  /** When set, only those tools appear in the garden and legend. */
+  enabledIntegrationIds?: string[];
 }
 
-export function ProductivityGarden({ activityData }: ProductivityGardenProps) {
+export function ProductivityGarden({
+  activityData,
+  enabledIntegrationIds,
+}: ProductivityGardenProps) {
   const [mounted, setMounted] = useState(false);
+
+  const show = (id: keyof ActivityData) =>
+    enabledIntegrationIds === undefined || enabledIntegrationIds.includes(id);
 
   useEffect(() => {
     setMounted(true);
@@ -27,15 +35,15 @@ export function ProductivityGarden({ activityData }: ProductivityGardenProps) {
     <div className="w-full h-96 relative rounded-3xl overflow-hidden bg-zen-off-white">
       {/* Ambient background gradients */}
       <div className="absolute inset-0 opacity-30">
-        <div 
-          className="absolute bottom-0 left-0 w-1/3 h-1/2 rounded-full blur-3xl bg-zen-sage-light"
-        />
-        <div 
-          className="absolute bottom-0 right-0 w-1/3 h-1/2 rounded-full blur-3xl bg-zen-blue"
-        />
-        <div 
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 w-1/3 h-1/3 rounded-full blur-3xl bg-zen-purple"
-        />
+        {show("github") && (
+          <div className="absolute bottom-0 left-0 w-1/3 h-1/2 rounded-full blur-3xl bg-zen-sage-light" />
+        )}
+        {show("slack") && (
+          <div className="absolute bottom-0 right-0 w-1/3 h-1/2 rounded-full blur-3xl bg-zen-blue" />
+        )}
+        {show("linear") && (
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-1/3 h-1/3 rounded-full blur-3xl bg-zen-purple" />
+        )}
       </div>
 
       {/* SVG Garden Elements */}
@@ -52,6 +60,7 @@ export function ProductivityGarden({ activityData }: ProductivityGardenProps) {
         />
 
         {/* GitHub - Organic tree-like structure (left) */}
+        {show("github") && (
         <motion.g
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: mounted ? 1 : 0, scale: mounted ? 1 : 0.8 }}
@@ -121,8 +130,10 @@ export function ProductivityGarden({ activityData }: ProductivityGardenProps) {
             );
           })}
         </motion.g>
+        )}
 
         {/* Slack - Flowing water-like structure (center) */}
+        {show("slack") && (
         <motion.g
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 20 }}
@@ -177,8 +188,10 @@ export function ProductivityGarden({ activityData }: ProductivityGardenProps) {
             );
           })}
         </motion.g>
+        )}
 
         {/* Linear - Geometric crystal structure (right) */}
+        {show("linear") && (
         <motion.g
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: mounted ? 1 : 0, scale: mounted ? 1 : 0.9 }}
@@ -234,22 +247,29 @@ export function ProductivityGarden({ activityData }: ProductivityGardenProps) {
             );
           })}
         </motion.g>
+        )}
       </svg>
 
       {/* Legend */}
-      <div className="absolute bottom-6 left-6 flex gap-6 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-zen-sage" />
-          <span className="text-zen-charcoal-light">GitHub</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-zen-blue" />
-          <span className="text-zen-charcoal-light">Slack</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-zen-purple" />
-          <span className="text-zen-charcoal-light">Linear</span>
-        </div>
+      <div className="absolute bottom-6 left-6 flex flex-wrap gap-6 text-sm">
+        {show("github") && (
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-zen-sage" />
+            <span className="text-zen-charcoal-light">GitHub</span>
+          </div>
+        )}
+        {show("slack") && (
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-zen-blue" />
+            <span className="text-zen-charcoal-light">Slack</span>
+          </div>
+        )}
+        {show("linear") && (
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-zen-purple" />
+            <span className="text-zen-charcoal-light">Linear</span>
+          </div>
+        )}
       </div>
     </div>
   );

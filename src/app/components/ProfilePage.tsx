@@ -10,7 +10,29 @@ import {
   LogOut,
   Check,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useIntegrations } from "../integrationsContext";
+
+const integrationCatalog = [
+  {
+    id: "github" as const,
+    name: "GitHub",
+    icon: Github,
+    color: "var(--zen-sage)",
+  },
+  {
+    id: "slack" as const,
+    name: "Slack",
+    icon: MessageSquare,
+    color: "var(--zen-blue)",
+  },
+  {
+    id: "linear" as const,
+    name: "Linear",
+    icon: Target,
+    color: "var(--zen-purple)",
+  },
+];
 
 export function ProfilePage() {
   const [notifications, setNotifications] = useState({
@@ -19,26 +41,16 @@ export function ProfilePage() {
     achievements: false,
   });
 
-  const connectedIntegrations = [
-    {
-      name: "GitHub",
-      icon: Github,
-      connected: true,
-      color: "var(--zen-sage)",
-    },
-    {
-      name: "Slack",
-      icon: MessageSquare,
-      connected: true,
-      color: "var(--zen-blue)",
-    },
-    {
-      name: "Linear",
-      icon: Target,
-      connected: true,
-      color: "var(--zen-purple)",
-    },
-  ];
+  const { connectedIds, connectIntegration, disconnectIntegration } =
+    useIntegrations();
+  const connectedIntegrations = useMemo(
+    () =>
+      integrationCatalog.map((i) => ({
+        ...i,
+        connected: connectedIds.includes(i.id),
+      })),
+    [connectedIds],
+  );
 
   return (
     <div className="min-h-screen px-8 py-8">
@@ -199,6 +211,12 @@ export function ProfilePage() {
                       </div>
                     )}
                     <button
+                      type="button"
+                      onClick={() =>
+                        integration.connected
+                          ? disconnectIntegration(integration.id)
+                          : connectIntegration(integration.id)
+                      }
                       className="px-4 py-2 rounded-full text-sm transition-all"
                       style={{
                         backgroundColor: integration.connected
