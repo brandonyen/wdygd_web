@@ -14,7 +14,6 @@ interface TodoItem {
 
 export function Dashboard() {
   const connectedIds = useConnectedIntegrations();
-  const hasLinear = connectedIds.includes("linear");
 
   // Mock activity data
   const activityData = {
@@ -79,42 +78,41 @@ export function Dashboard() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Productivity Garden */}
+        {/* Garden overview: garden + tasks */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start"
         >
-          <ProductivityGarden
-            activityData={activityData}
-            enabledIntegrationIds={connectedIds}
-          />
+          <div className="lg:col-span-2 min-w-0">
+            <ProductivityGarden
+              activityData={activityData}
+              enabledIntegrationIds={connectedIds}
+            />
+          </div>
+          <motion.div
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.28 }}
+            className="lg:col-span-1 p-8 rounded-3xl bg-white lg:sticky lg:top-24"
+          >
+            <LinearTodoList
+              todos={todos}
+              onToggle={handleToggleTodo}
+              connectedIntegrationIds={connectedIds}
+            />
+          </motion.div>
         </motion.section>
 
-        {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Linear To-Do List */}
-          {hasLinear && (
-            <motion.section
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="lg:col-span-1 p-8 rounded-3xl bg-white"
-            >
-              <LinearTodoList todos={todos} onToggle={handleToggleTodo} />
-            </motion.section>
-          )}
-
-          {/* AI Summary */}
-          <motion.section
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className={hasLinear ? "lg:col-span-2" : "lg:col-span-3"}
-          >
-            <AISummary summary={summary} />
-          </motion.section>
-        </div>
+        {/* AI Summary */}
+        <motion.section
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.35 }}
+        >
+          <AISummary summary={summary} />
+        </motion.section>
       </div>
     </div>
   );
