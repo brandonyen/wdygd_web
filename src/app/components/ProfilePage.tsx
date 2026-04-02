@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import {
   User,
   Github,
@@ -34,7 +34,27 @@ const integrationCatalog = [
   },
 ];
 
+type Profile = {
+  fullName: string;
+  email: string;
+  title: string;
+  bio: string;
+};
+
 export function ProfilePage() {
+  const interactiveButtonClass =
+    "transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
+  const interactiveToggleClass =
+    "transition-all duration-200 ease-out hover:scale-[1.04] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
+
+  const [profile, setProfile] = useState<Profile>({
+    fullName: "Beabadoobee",
+    email: "bea.badoobee@example.com",
+    title: "Creative Focus Builder",
+    bio: "Singer-songwriter focused on deep work and consistent creative output.",
+  });
+  const [draftProfile, setDraftProfile] = useState<Profile>(profile);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [notifications, setNotifications] = useState({
     daily: true,
     weekly: true,
@@ -51,6 +71,37 @@ export function ProfilePage() {
       })),
     [connectedIds],
   );
+  const profileInitials = useMemo(() => {
+    const names = profile.fullName
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2);
+    if (names.length === 0) {
+      return "??";
+    }
+    return names.map((name) => name[0]?.toUpperCase() ?? "").join("");
+  }, [profile.fullName]);
+
+  const handleStartEditProfile = () => {
+    setDraftProfile(profile);
+    setIsEditingProfile(true);
+  };
+
+  const handleCancelEditProfile = () => {
+    setDraftProfile(profile);
+    setIsEditingProfile(false);
+  };
+
+  const handleSaveProfile = () => {
+    setProfile({
+      fullName: draftProfile.fullName.trim() || profile.fullName,
+      email: draftProfile.email.trim() || profile.email,
+      title: draftProfile.title.trim(),
+      bio: draftProfile.bio.trim(),
+    });
+    setIsEditingProfile(false);
+  };
 
   return (
     <div className="min-h-screen px-8 py-8">
@@ -99,36 +150,167 @@ export function ProfilePage() {
               className="w-24 h-24 rounded-3xl flex items-center justify-center text-3xl"
               style={{ backgroundColor: "var(--zen-sage)" }}
             >
-              <span className="text-white">JD</span>
+              <span className="text-white">{profileInitials}</span>
             </div>
             <div className="flex-1">
-              <h2
-                className="text-2xl mb-1"
-                style={{
-                  color: "var(--zen-charcoal)",
-                  fontWeight: 300,
-                }}
-              >
-                Beabadoobee
-              </h2>
-              <p
-                className="mb-4"
-                style={{ color: "var(--zen-charcoal-light)" }}
-              >
-                bea.badoobee@example.com
-              </p>
+              <AnimatePresence mode="wait" initial={false}>
+                {isEditingProfile ? (
+                  <motion.div
+                    key="profile-edit-mode"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.25, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="space-y-3 mb-4">
+                      <input
+                        type="text"
+                        value={draftProfile.fullName}
+                        onChange={(event) =>
+                          setDraftProfile({
+                            ...draftProfile,
+                            fullName: event.target.value,
+                          })
+                        }
+                        placeholder="Full name"
+                        className="w-full px-3 py-2 rounded-xl border"
+                        style={{
+                          borderColor: "var(--zen-sand)",
+                          color: "var(--zen-charcoal)",
+                        }}
+                      />
+                      <input
+                        type="email"
+                        value={draftProfile.email}
+                        onChange={(event) =>
+                          setDraftProfile({
+                            ...draftProfile,
+                            email: event.target.value,
+                          })
+                        }
+                        placeholder="Email address"
+                        className="w-full px-3 py-2 rounded-xl border"
+                        style={{
+                          borderColor: "var(--zen-sand)",
+                          color: "var(--zen-charcoal)",
+                        }}
+                      />
+                      <input
+                        type="text"
+                        value={draftProfile.title}
+                        onChange={(event) =>
+                          setDraftProfile({
+                            ...draftProfile,
+                            title: event.target.value,
+                          })
+                        }
+                        placeholder="Title"
+                        className="w-full px-3 py-2 rounded-xl border"
+                        style={{
+                          borderColor: "var(--zen-sand)",
+                          color: "var(--zen-charcoal)",
+                        }}
+                      />
+                      <textarea
+                        value={draftProfile.bio}
+                        onChange={(event) =>
+                          setDraftProfile({
+                            ...draftProfile,
+                            bio: event.target.value,
+                          })
+                        }
+                        placeholder="Short bio"
+                        className="w-full px-3 py-2 rounded-xl border min-h-24"
+                        style={{
+                          borderColor: "var(--zen-sand)",
+                          color: "var(--zen-charcoal)",
+                        }}
+                      />
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="profile-view-mode"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.25, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <h2
+                      className="text-2xl mb-1"
+                      style={{
+                        color: "var(--zen-charcoal)",
+                        fontWeight: 300,
+                      }}
+                    >
+                      {profile.fullName}
+                    </h2>
+                    <p
+                      className="mb-1"
+                      style={{ color: "var(--zen-charcoal-light)" }}
+                    >
+                      {profile.email}
+                    </p>
+                    <p
+                      className="mb-1 text-sm"
+                      style={{ color: "var(--zen-charcoal)" }}
+                    >
+                      {profile.title}
+                    </p>
+                    <p
+                      className="mb-4 text-sm"
+                      style={{ color: "var(--zen-charcoal-light)" }}
+                    >
+                      {profile.bio}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               <div className="flex gap-3">
+                {isEditingProfile ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleSaveProfile}
+                      className={`px-4 py-2 rounded-full text-sm ${interactiveButtonClass}`}
+                      style={{
+                        backgroundColor: "var(--zen-sage)",
+                        color: "white",
+                        boxShadow: "0 0 0 0 rgba(0,0,0,0)",
+                      }}
+                    >
+                      Save Profile
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCancelEditProfile}
+                      className={`px-4 py-2 rounded-full text-sm ${interactiveButtonClass}`}
+                      style={{
+                        backgroundColor: "var(--zen-off-white)",
+                        color: "var(--zen-charcoal)",
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleStartEditProfile}
+                    className={`px-4 py-2 rounded-full text-sm ${interactiveButtonClass}`}
+                    style={{
+                      backgroundColor: "var(--zen-sage)",
+                      color: "white",
+                    }}
+                  >
+                    Edit Profile
+                  </button>
+                )}
                 <button
-                  className="px-4 py-2 rounded-full text-sm transition-all"
-                  style={{
-                    backgroundColor: "var(--zen-sage)",
-                    color: "white",
-                  }}
-                >
-                  Edit Profile
-                </button>
-                <button
-                  className="px-4 py-2 rounded-full text-sm transition-all"
+                  type="button"
+                  className={`px-4 py-2 rounded-full text-sm ${interactiveButtonClass}`}
                   style={{
                     backgroundColor: "var(--zen-off-white)",
                     color: "var(--zen-charcoal)",
@@ -217,7 +399,7 @@ export function ProfilePage() {
                           ? disconnectIntegration(integration.id)
                           : connectIntegration(integration.id)
                       }
-                      className="px-4 py-2 rounded-full text-sm transition-all"
+                      className={`px-4 py-2 rounded-full text-sm ${interactiveButtonClass}`}
                       style={{
                         backgroundColor: integration.connected
                           ? "var(--zen-sand)"
@@ -280,7 +462,7 @@ export function ProfilePage() {
                     daily: !notifications.daily,
                   })
                 }
-                className="w-12 h-7 rounded-full transition-all relative"
+                className={`w-12 h-7 rounded-full relative ${interactiveToggleClass}`}
                 style={{
                   backgroundColor: notifications.daily
                     ? "var(--zen-sage)"
@@ -321,7 +503,7 @@ export function ProfilePage() {
                     weekly: !notifications.weekly,
                   })
                 }
-                className="w-12 h-7 rounded-full transition-all relative"
+                className={`w-12 h-7 rounded-full relative ${interactiveToggleClass}`}
                 style={{
                   backgroundColor: notifications.weekly
                     ? "var(--zen-sage)"
@@ -362,7 +544,7 @@ export function ProfilePage() {
                     achievements: !notifications.achievements,
                   })
                 }
-                className="w-12 h-7 rounded-full transition-all relative"
+                className={`w-12 h-7 rounded-full relative ${interactiveToggleClass}`}
                 style={{
                   backgroundColor: notifications.achievements
                     ? "var(--zen-sage)"
@@ -402,7 +584,7 @@ export function ProfilePage() {
           </div>
           <div className="grid grid-cols-3 gap-4">
             <button
-              className="p-4 rounded-xl border-2 transition-all"
+              className={`p-4 rounded-xl border-2 ${interactiveButtonClass}`}
               style={{
                 borderColor: "var(--zen-sage)",
                 backgroundColor: "var(--zen-sage-light)",
@@ -422,7 +604,7 @@ export function ProfilePage() {
               </p>
             </button>
             <button
-              className="p-4 rounded-xl border transition-all opacity-60"
+              className={`p-4 rounded-xl border opacity-60 ${interactiveButtonClass}`}
               style={{
                 borderColor: "var(--zen-sand)",
                 backgroundColor: "var(--zen-off-white)",
@@ -444,7 +626,7 @@ export function ProfilePage() {
               </p>
             </button>
             <button
-              className="p-4 rounded-xl border transition-all opacity-60"
+              className={`p-4 rounded-xl border opacity-60 ${interactiveButtonClass}`}
               style={{
                 borderColor: "var(--zen-sand)",
                 backgroundColor: "var(--zen-off-white)",
@@ -479,7 +661,7 @@ export function ProfilePage() {
           </h3>
           <div className="space-y-3">
             <button
-              className="w-full flex items-center justify-between p-4 rounded-xl transition-all hover:shadow-sm"
+              className={`w-full flex items-center justify-between p-4 rounded-xl ${interactiveButtonClass}`}
               style={{
                 backgroundColor: "var(--zen-off-white)",
               }}
@@ -512,7 +694,7 @@ export function ProfilePage() {
             </button>
 
             <button
-              className="w-full flex items-center justify-between p-4 rounded-xl transition-all hover:shadow-sm"
+              className={`w-full flex items-center justify-between p-4 rounded-xl ${interactiveButtonClass}`}
               style={{
                 backgroundColor: "var(--zen-off-white)",
               }}
