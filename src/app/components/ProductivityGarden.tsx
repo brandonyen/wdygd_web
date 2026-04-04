@@ -49,7 +49,11 @@ export function ProductivityGarden({
       </div>
 
       {/* SVG Garden Elements */}
-      <svg className="w-full h-full" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet">
+      <svg
+        className="w-full h-full"
+        viewBox="0 0 800 400"
+        preserveAspectRatio="xMidYMid meet"
+      >
         {/* Ground line */}
         <line
           x1="0"
@@ -63,192 +67,193 @@ export function ProductivityGarden({
 
         {/* GitHub - Organic tree-like structure (left) */}
         {show("github") && (
-        <motion.g
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: mounted ? 1 : 0, scale: mounted ? 1 : 0.8 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-        >
-          {/* Stem */}
-          <motion.path
-            d="M100 300 Q100 250 100 200"
-            stroke="var(--zen-sage-dark)"
-            strokeWidth="4"
-            fill="none"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: mounted ? 1 : 0 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-          />
-          
-          {/* Branches */}
-          {[...Array(5)].map((_, i) => {
-            const y = 300 - (i * githubGrowth / 5);
-            const angle = i % 2 === 0 ? 30 : -30;
-            const endX = 100 + (angle > 0 ? 40 : -40);
-            return (
-              <motion.path
-                key={i}
-                d={`M100 ${y} Q${100 + angle} ${y - 20} ${endX} ${y - 30}`}
-                stroke="var(--zen-sage)"
-                strokeWidth="2"
-                fill="none"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ 
-                  pathLength: mounted ? 1 : 0, 
-                  opacity: mounted ? 0.8 : 0 
-                }}
-                transition={{ 
-                  duration: 1, 
-                  delay: 0.5 + i * 0.1,
-                  ease: "easeOut" 
-                }}
-              />
-            );
-          })}
+          <motion.g
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: mounted ? 1 : 0, scale: mounted ? 1 : 0.8 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+          >
+            {/* Stem */}
+            <motion.path
+              d="M100 300 Q100 250 100 200"
+              stroke="var(--zen-sage-dark)"
+              strokeWidth="4"
+              fill="none"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: mounted ? 1 : 0 }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+            />
 
-          {/* Leaves */}
-          {[...Array(8)].map((_, i) => {
-            const angle = (i * 45) + (i % 2) * 20;
-            const radius = 60 + (i % 3) * 15;
-            const x = 100 + Math.cos((angle * Math.PI) / 180) * radius;
-            const y = 220 - Math.abs(Math.sin((angle * Math.PI) / 180)) * radius;
-            return (
-              <motion.circle
-                key={i}
-                cx={x}
-                cy={y}
-                r={8 + (i % 3) * 3}
-                fill="var(--zen-sage)"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ 
-                  scale: mounted ? 1 : 0, 
-                  opacity: mounted ? 0.7 : 0 
-                }}
-                transition={{ 
-                  duration: 0.6, 
-                  delay: 1 + i * 0.08,
-                  ease: "easeOut"
-                }}
-              />
-            );
-          })}
-        </motion.g>
+            {/* Branches */}
+            {[...Array(5)].map((_, i) => {
+              const y = 300 - (i * githubGrowth) / 5;
+              const angle = i % 2 === 0 ? 30 : -30;
+              const endX = 100 + (angle > 0 ? 40 : -40);
+              return (
+                <motion.path
+                  key={i}
+                  d={`M100 ${y} Q${100 + angle} ${y - 20} ${endX} ${y - 30}`}
+                  stroke="var(--zen-sage)"
+                  strokeWidth="2"
+                  fill="none"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{
+                    pathLength: mounted ? 1 : 0,
+                    opacity: mounted ? 0.8 : 0,
+                  }}
+                  transition={{
+                    duration: 1,
+                    delay: 0.5 + i * 0.1,
+                    ease: "easeOut",
+                  }}
+                />
+              );
+            })}
+
+            {/* Leaves */}
+            {[...Array(8)].map((_, i) => {
+              const angle = i * 45 + (i % 2) * 20;
+              const radius = 60 + (i % 3) * 15;
+              const x = 100 + Math.cos((angle * Math.PI) / 180) * radius;
+              const y =
+                220 - Math.abs(Math.sin((angle * Math.PI) / 180)) * radius;
+              return (
+                <motion.circle
+                  key={i}
+                  cx={x}
+                  cy={y}
+                  r={8 + (i % 3) * 3}
+                  fill="var(--zen-sage)"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{
+                    scale: mounted ? 1 : 0,
+                    opacity: mounted ? 0.7 : 0,
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    delay: 1 + i * 0.08,
+                    ease: "easeOut",
+                  }}
+                />
+              );
+            })}
+          </motion.g>
         )}
 
         {/* Slack - Flowing water-like structure (center) */}
         {show("slack") && (
-        <motion.g
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 20 }}
-          transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
-        >
-          {/* Wave paths */}
-          {[...Array(4)].map((_, i) => {
-            const yOffset = 280 - (i * slackGrowth / 4);
-            return (
-              <motion.path
-                key={i}
-                d={`M400 ${yOffset} Q430 ${yOffset - 15} 460 ${yOffset} T520 ${yOffset}`}
-                stroke="var(--zen-blue)"
-                strokeWidth="3"
-                fill="none"
-                opacity={0.6 - i * 0.1}
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: mounted ? 1 : 0 }}
-                transition={{ 
-                  duration: 1.5, 
-                  delay: 0.6 + i * 0.15,
-                  ease: "easeInOut" 
-                }}
-              />
-            );
-          })}
+          <motion.g
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 20 }}
+            transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
+          >
+            {/* Wave paths */}
+            {[...Array(4)].map((_, i) => {
+              const yOffset = 280 - (i * slackGrowth) / 4;
+              return (
+                <motion.path
+                  key={i}
+                  d={`M400 ${yOffset} Q430 ${yOffset - 15} 460 ${yOffset} T520 ${yOffset}`}
+                  stroke="var(--zen-blue)"
+                  strokeWidth="3"
+                  fill="none"
+                  opacity={0.6 - i * 0.1}
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: mounted ? 1 : 0 }}
+                  transition={{
+                    duration: 1.5,
+                    delay: 0.6 + i * 0.15,
+                    ease: "easeInOut",
+                  }}
+                />
+              );
+            })}
 
-          {/* Bubbles */}
-          {[...Array(12)].map((_, i) => {
-            const x = 420 + (i % 4) * 30;
-            const y = 270 - (Math.floor(i / 4) * 30);
-            const size = 4 + (i % 3) * 2;
-            return (
-              <motion.circle
-                key={i}
-                cx={x}
-                cy={y}
-                r={size}
-                fill="var(--zen-blue)"
-                opacity={0.4}
-                initial={{ scale: 0, y: 20 }}
-                animate={{ 
-                  scale: mounted ? 1 : 0,
-                  y: mounted ? 0 : 20
-                }}
-                transition={{ 
-                  duration: 0.8, 
-                  delay: 1.2 + i * 0.06,
-                  ease: "easeOut"
-                }}
-              />
-            );
-          })}
-        </motion.g>
+            {/* Bubbles */}
+            {[...Array(12)].map((_, i) => {
+              const x = 420 + (i % 4) * 30;
+              const y = 270 - Math.floor(i / 4) * 30;
+              const size = 4 + (i % 3) * 2;
+              return (
+                <motion.circle
+                  key={i}
+                  cx={x}
+                  cy={y}
+                  r={size}
+                  fill="var(--zen-blue)"
+                  opacity={0.4}
+                  initial={{ scale: 0, y: 20 }}
+                  animate={{
+                    scale: mounted ? 1 : 0,
+                    y: mounted ? 0 : 20,
+                  }}
+                  transition={{
+                    duration: 0.8,
+                    delay: 1.2 + i * 0.06,
+                    ease: "easeOut",
+                  }}
+                />
+              );
+            })}
+          </motion.g>
         )}
 
         {/* Linear - Geometric crystal structure (right) */}
         {show("linear") && (
-        <motion.g
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: mounted ? 1 : 0, scale: mounted ? 1 : 0.9 }}
-          transition={{ duration: 1.2, delay: 0.6, ease: "easeOut" }}
-        >
-          {/* Main crystal */}
-          <motion.path
-            d={`M600 300 L580 ${300 - linearGrowth * 0.5} L600 ${300 - linearGrowth} L620 ${300 - linearGrowth * 0.5} Z`}
-            fill="var(--zen-purple)"
-            opacity={0.6}
-            initial={{ scaleY: 0, transformOrigin: "center bottom" }}
-            animate={{ scaleY: mounted ? 1 : 0 }}
-            transition={{ duration: 1.2, delay: 0.9, ease: "easeOut" }}
-          />
+          <motion.g
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: mounted ? 1 : 0, scale: mounted ? 1 : 0.9 }}
+            transition={{ duration: 1.2, delay: 0.6, ease: "easeOut" }}
+          >
+            {/* Main crystal */}
+            <motion.path
+              d={`M600 300 L580 ${300 - linearGrowth * 0.5} L600 ${300 - linearGrowth} L620 ${300 - linearGrowth * 0.5} Z`}
+              fill="var(--zen-purple)"
+              opacity={0.6}
+              initial={{ scaleY: 0, transformOrigin: "center bottom" }}
+              animate={{ scaleY: mounted ? 1 : 0 }}
+              transition={{ duration: 1.2, delay: 0.9, ease: "easeOut" }}
+            />
 
-          {/* Side crystals */}
-          <motion.path
-            d={`M570 300 L560 ${300 - linearGrowth * 0.3} L570 ${300 - linearGrowth * 0.6} L580 ${300 - linearGrowth * 0.3} Z`}
-            fill="var(--zen-purple)"
-            opacity={0.5}
-            initial={{ scaleY: 0, transformOrigin: "center bottom" }}
-            animate={{ scaleY: mounted ? 1 : 0 }}
-            transition={{ duration: 1, delay: 1.1, ease: "easeOut" }}
-          />
+            {/* Side crystals */}
+            <motion.path
+              d={`M570 300 L560 ${300 - linearGrowth * 0.3} L570 ${300 - linearGrowth * 0.6} L580 ${300 - linearGrowth * 0.3} Z`}
+              fill="var(--zen-purple)"
+              opacity={0.5}
+              initial={{ scaleY: 0, transformOrigin: "center bottom" }}
+              animate={{ scaleY: mounted ? 1 : 0 }}
+              transition={{ duration: 1, delay: 1.1, ease: "easeOut" }}
+            />
 
-          <motion.path
-            d={`M620 300 L630 ${300 - linearGrowth * 0.3} L620 ${300 - linearGrowth * 0.6} L610 ${300 - linearGrowth * 0.3} Z`}
-            fill="var(--zen-purple)"
-            opacity={0.5}
-            initial={{ scaleY: 0, transformOrigin: "center bottom" }}
-            animate={{ scaleY: mounted ? 1 : 0 }}
-            transition={{ duration: 1, delay: 1.1, ease: "easeOut" }}
-          />
+            <motion.path
+              d={`M620 300 L630 ${300 - linearGrowth * 0.3} L620 ${300 - linearGrowth * 0.6} L610 ${300 - linearGrowth * 0.3} Z`}
+              fill="var(--zen-purple)"
+              opacity={0.5}
+              initial={{ scaleY: 0, transformOrigin: "center bottom" }}
+              animate={{ scaleY: mounted ? 1 : 0 }}
+              transition={{ duration: 1, delay: 1.1, ease: "easeOut" }}
+            />
 
-          {/* Small accent crystals */}
-          {[...Array(6)].map((_, i) => {
-            const baseX = 550 + i * 20;
-            const height = 15 + (i % 3) * 10;
-            return (
-              <motion.path
-                key={i}
-                d={`M${baseX} 300 L${baseX - 4} ${300 - height} L${baseX} ${300 - height - 8} L${baseX + 4} ${300 - height} Z`}
-                fill="var(--zen-purple)"
-                opacity={0.3}
-                initial={{ scaleY: 0, transformOrigin: "center bottom" }}
-                animate={{ scaleY: mounted ? 1 : 0 }}
-                transition={{ 
-                  duration: 0.6, 
-                  delay: 1.3 + i * 0.08,
-                  ease: "easeOut" 
-                }}
-              />
-            );
-          })}
-        </motion.g>
+            {/* Small accent crystals */}
+            {[...Array(6)].map((_, i) => {
+              const baseX = 550 + i * 20;
+              const height = 15 + (i % 3) * 10;
+              return (
+                <motion.path
+                  key={i}
+                  d={`M${baseX} 300 L${baseX - 4} ${300 - height} L${baseX} ${300 - height - 8} L${baseX + 4} ${300 - height} Z`}
+                  fill="var(--zen-purple)"
+                  opacity={0.3}
+                  initial={{ scaleY: 0, transformOrigin: "center bottom" }}
+                  animate={{ scaleY: mounted ? 1 : 0 }}
+                  transition={{
+                    duration: 0.6,
+                    delay: 1.3 + i * 0.08,
+                    ease: "easeOut",
+                  }}
+                />
+              );
+            })}
+          </motion.g>
         )}
       </svg>
 

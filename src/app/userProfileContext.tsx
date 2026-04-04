@@ -15,9 +15,7 @@ export type UserProfile = {
   bio: string;
 };
 
-export type ChangePasswordResult =
-  | { ok: true }
-  | { ok: false; error: string };
+export type ChangePasswordResult = { ok: true } | { ok: false; error: string };
 
 export type UserProfileContextValue = {
   profile: UserProfile;
@@ -87,11 +85,7 @@ export function useUserProfile(): UserProfileContextValue {
 }
 
 export function profileInitials(fullName: string): string {
-  const names = fullName
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2);
+  const names = fullName.trim().split(/\s+/).filter(Boolean).slice(0, 2);
   if (names.length === 0) {
     return "??";
   }

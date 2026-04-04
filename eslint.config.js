@@ -1,14 +1,14 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import js from "@eslint/js";
+import globals from "globals";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import tseslint from "typescript-eslint";
+import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(["dist"]),
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ["**/*.{ts,tsx}"],
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
@@ -20,27 +20,27 @@ export default defineConfig([
       globals: globals.browser,
     },
     rules: {
-      'react-refresh/only-export-components': [
-        'error',
+      "react-refresh/only-export-components": [
+        "error",
         {
           allowConstantExport: true,
           allowExportNames: [
             // shadcn-style UI: variant helpers + form field hook
-            'buttonVariants',
-            'badgeVariants',
-            'toggleVariants',
-            'useFormField',
-            'navigationMenuTriggerStyle',
-            'useSidebar',
+            "buttonVariants",
+            "badgeVariants",
+            "toggleVariants",
+            "useFormField",
+            "navigationMenuTriggerStyle",
+            "useSidebar",
             // app context modules
-            'useIntegrations',
-            'useConnectedIntegrations',
-            'useHasIntegration',
-            'useUserProfile',
-            'profileInitials',
+            "useIntegrations",
+            "useConnectedIntegrations",
+            "useHasIntegration",
+            "useUserProfile",
+            "profileInitials",
           ],
         },
       ],
     },
   },
-])
+]);

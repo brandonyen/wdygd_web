@@ -11,7 +11,13 @@ import {
   Check,
   KeyRound,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type FormEvent,
+} from "react";
 import { useIntegrations } from "../integrationsContext";
 import { patchStoredAccount } from "../accountStorage";
 import {
@@ -407,9 +413,7 @@ export function ProfilePage() {
                       <Icon className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <p
-                        style={{ color: "var(--zen-charcoal)" }}
-                      >
+                      <p style={{ color: "var(--zen-charcoal)" }}>
                         {integration.name}
                       </p>
                       <p
@@ -429,8 +433,7 @@ export function ProfilePage() {
                       <div
                         className="flex items-center gap-1 px-3 py-1 rounded-full text-sm"
                         style={{
-                          backgroundColor:
-                            "var(--zen-sage-light)",
+                          backgroundColor: "var(--zen-sage-light)",
                           color: "var(--zen-sage-dark)",
                         }}
                       >
@@ -455,9 +458,7 @@ export function ProfilePage() {
                           : "white",
                       }}
                     >
-                      {integration.connected
-                        ? "Disconnect"
-                        : "Connect"}
+                      {integration.connected ? "Disconnect" : "Connect"}
                     </button>
                   </div>
                 </motion.div>
@@ -491,9 +492,7 @@ export function ProfilePage() {
               }}
             >
               <div>
-                <p style={{ color: "var(--zen-charcoal)" }}>
-                  Daily Summary
-                </p>
+                <p style={{ color: "var(--zen-charcoal)" }}>Daily Summary</p>
                 <p
                   className="text-sm"
                   style={{ color: "var(--zen-charcoal-light)" }}
@@ -532,9 +531,7 @@ export function ProfilePage() {
               }}
             >
               <div>
-                <p style={{ color: "var(--zen-charcoal)" }}>
-                  Weekly Report
-                </p>
+                <p style={{ color: "var(--zen-charcoal)" }}>Weekly Report</p>
                 <p
                   className="text-sm"
                   style={{ color: "var(--zen-charcoal-light)" }}
@@ -600,9 +597,7 @@ export function ProfilePage() {
                 <motion.div
                   className="w-5 h-5 rounded-full bg-white absolute top-1"
                   animate={{
-                    left: notifications.achievements
-                      ? "24px"
-                      : "4px",
+                    left: notifications.achievements ? "24px" : "4px",
                   }}
                   transition={{ duration: 0.2 }}
                 />
@@ -624,9 +619,7 @@ export function ProfilePage() {
               className="w-5 h-5"
               style={{ color: "var(--zen-charcoal)" }}
             />
-            <h3 style={{ color: "var(--zen-charcoal)" }}>
-              Theme & Appearance
-            </h3>
+            <h3 style={{ color: "var(--zen-charcoal)" }}>Theme & Appearance</h3>
           </div>
           <div className="grid grid-cols-3 gap-4">
             <button
@@ -702,9 +695,7 @@ export function ProfilePage() {
           className="p-8 rounded-3xl space-y-4"
           style={{ backgroundColor: "white" }}
         >
-          <h3 style={{ color: "var(--zen-charcoal)" }}>
-            Account Actions
-          </h3>
+          <h3 style={{ color: "var(--zen-charcoal)" }}>Account Actions</h3>
           <div className="space-y-3">
             <button
               className={`w-full flex items-center justify-between p-4 rounded-xl ${interactiveButtonClass}`}
@@ -731,10 +722,7 @@ export function ProfilePage() {
                   </p>
                 </div>
               </div>
-              <span
-                className="text-sm"
-                style={{ color: "var(--zen-sage)" }}
-              >
+              <span className="text-sm" style={{ color: "var(--zen-sage)" }}>
                 Download
               </span>
             </button>
@@ -748,14 +736,9 @@ export function ProfilePage() {
               }}
             >
               <div className="flex items-center gap-3">
-                <LogOut
-                  className="w-5 h-5"
-                  style={{ color: "#e07b7b" }}
-                />
+                <LogOut className="w-5 h-5" style={{ color: "#e07b7b" }} />
                 <div className="text-left">
-                  <p style={{ color: "var(--zen-charcoal)" }}>
-                    Sign Out
-                  </p>
+                  <p style={{ color: "var(--zen-charcoal)" }}>Sign Out</p>
                   <p
                     className="text-sm"
                     style={{
@@ -766,10 +749,7 @@ export function ProfilePage() {
                   </p>
                 </div>
               </div>
-              <span
-                className="text-sm"
-                style={{ color: "#e07b7b" }}
-              >
+              <span className="text-sm" style={{ color: "#e07b7b" }}>
                 Sign Out
               </span>
             </button>
@@ -861,9 +841,7 @@ export function ProfilePage() {
                         type="password"
                         autoComplete="current-password"
                         value={currentPassword}
-                        onChange={(e) =>
-                          setCurrentPassword(e.target.value)
-                        }
+                        onChange={(e) => setCurrentPassword(e.target.value)}
                         className="w-full px-3 py-2 rounded-xl border outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                         style={{
                           borderColor: "var(--zen-sand)",
@@ -906,9 +884,7 @@ export function ProfilePage() {
                         type="password"
                         autoComplete="new-password"
                         value={confirmNewPassword}
-                        onChange={(e) =>
-                          setConfirmNewPassword(e.target.value)
-                        }
+                        onChange={(e) => setConfirmNewPassword(e.target.value)}
                         className="w-full px-3 py-2 rounded-xl border outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                         style={{
                           borderColor: "var(--zen-sand)",

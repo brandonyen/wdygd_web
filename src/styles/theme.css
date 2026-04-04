@@ -2,7 +2,7 @@
 
 :root {
   --font-size: 16px;
-  
+
   /* Zen color palette */
   --zen-sage: #a8b5a0;
   --zen-sage-light: #c5d1be;
@@ -14,7 +14,7 @@
   --zen-charcoal-light: #6b6b6b;
   --zen-blue: #9db4c8;
   --zen-purple: #b8a8c5;
-  
+
   --background: #faf8f5;
   --foreground: #4a4a4a;
   --card: #ffffff;
@@ -130,7 +130,7 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  
+
   /* Custom Zen colors */
   --color-zen-sage: var(--zen-sage);
   --color-zen-sage-light: var(--zen-sage-light);

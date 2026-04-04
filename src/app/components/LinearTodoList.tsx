@@ -52,8 +52,11 @@ export function LinearTodoList({
         >
           {taskListHeading(connectedIntegrationIds)}
         </h3>
-        <span className="text-sm" style={{ color: 'var(--zen-charcoal-light)' }}>
-          {todos.filter(t => t.completed).length} of {todos.length}
+        <span
+          className="text-sm"
+          style={{ color: "var(--zen-charcoal-light)" }}
+        >
+          {todos.filter((t) => t.completed).length} of {todos.length}
         </span>
       </div>
 
@@ -65,20 +68,24 @@ export function LinearTodoList({
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: index * 0.05 }}
             className="flex items-start gap-3 p-4 rounded-2xl transition-all duration-200 hover:shadow-sm"
-            style={{ backgroundColor: todo.completed ? 'var(--zen-sand-light)' : 'white' }}
+            style={{
+              backgroundColor: todo.completed
+                ? "var(--zen-sand-light)"
+                : "white",
+            }}
           >
             <Checkbox
               checked={todo.completed}
               onCheckedChange={() => onToggle(todo.id)}
               className="mt-0.5"
             />
-            
+
             <div className="flex-1 min-w-0">
               <p
                 className={`transition-all duration-200 ${
-                  todo.completed ? 'line-through opacity-50' : ''
+                  todo.completed ? "line-through opacity-50" : ""
                 }`}
-                style={{ color: 'var(--zen-charcoal)' }}
+                style={{ color: "var(--zen-charcoal)" }}
               >
                 {todo.title}
               </p>
@@ -92,8 +99,8 @@ export function LinearTodoList({
                     todo.priority === "high"
                       ? "#e07b7b"
                       : todo.priority === "medium"
-                      ? "var(--zen-blue)"
-                      : "var(--zen-sage-light)"
+                        ? "var(--zen-blue)"
+                        : "var(--zen-sage-light)",
                 }}
               />
             )}

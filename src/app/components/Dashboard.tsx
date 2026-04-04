@@ -19,17 +19,47 @@ export function Dashboard() {
   const activityData = {
     github: 75,
     slack: 60,
-    linear: 85
+    linear: 85,
   };
 
   // Mock to-do items
   const [todos, setTodos] = useState<TodoItem[]>([
-    { id: "1", title: "Review PR for authentication refactor", completed: true, priority: "high" },
-    { id: "2", title: "Update API documentation", completed: false, priority: "medium" },
-    { id: "3", title: "Fix responsive layout on dashboard", completed: false, priority: "high" },
-    { id: "4", title: "Team sync meeting at 2pm", completed: true, priority: "low" },
-    { id: "5", title: "Investigate performance issues in prod", completed: false, priority: "high" },
-    { id: "6", title: "Write unit tests for new feature", completed: false, priority: "medium" }
+    {
+      id: "1",
+      title: "Review PR for authentication refactor",
+      completed: true,
+      priority: "high",
+    },
+    {
+      id: "2",
+      title: "Update API documentation",
+      completed: false,
+      priority: "medium",
+    },
+    {
+      id: "3",
+      title: "Fix responsive layout on dashboard",
+      completed: false,
+      priority: "high",
+    },
+    {
+      id: "4",
+      title: "Team sync meeting at 2pm",
+      completed: true,
+      priority: "low",
+    },
+    {
+      id: "5",
+      title: "Investigate performance issues in prod",
+      completed: false,
+      priority: "high",
+    },
+    {
+      id: "6",
+      title: "Write unit tests for new feature",
+      completed: false,
+      priority: "medium",
+    },
   ]);
 
   const summary = useMemo(() => {
@@ -52,9 +82,11 @@ export function Dashboard() {
   }, [connectedIds]);
 
   const handleToggleTodo = (id: string) => {
-    setTodos(todos.map(todo => 
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ));
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+      ),
+    );
   };
 
   return (

@@ -21,7 +21,7 @@ export function AISummary({ summary }: AISummaryProps) {
   ];
 
   const handleCopy = () => {
-    const text = currentSummary.map(item => `• ${item}`).join('\n');
+    const text = currentSummary.map((item) => `• ${item}`).join("\n");
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -29,19 +29,19 @@ export function AISummary({ summary }: AISummaryProps) {
 
   const handleGenerate = () => {
     setIsGenerating(true);
-    
+
     // Simulate API call with mock data based on selected period
     setTimeout(() => {
       let newSummary: string[] = [];
-      
-      switch(selectedPeriod) {
+
+      switch (selectedPeriod) {
         case "today":
           newSummary = [
             "Merged 3 pull requests related to the authentication system refactor, improving security and code maintainability",
             "Participated in 12 Slack discussions across #engineering and #product channels, helping unblock teammates",
             "Completed 4 high-priority Linear tickets, including fixing critical bugs in the payment flow",
             "Reviewed and provided feedback on 5 PRs from team members",
-            "Updated project documentation for the new API endpoints"
+            "Updated project documentation for the new API endpoints",
           ];
           break;
         case "yesterday":
@@ -50,7 +50,7 @@ export function AISummary({ summary }: AISummaryProps) {
             "Led architecture discussion for the upcoming mobile app redesign",
             "Resolved 3 critical production incidents affecting payment processing",
             "Mentored junior developer on React best practices during pair programming session",
-            "Completed sprint planning and estimated 15 tickets for next iteration"
+            "Completed sprint planning and estimated 15 tickets for next iteration",
           ];
           break;
         case "week":
@@ -61,7 +61,7 @@ export function AISummary({ summary }: AISummaryProps) {
             "Completed 12 Linear tickets including 6 high-priority items",
             "Conducted 3 technical interviews for senior engineer positions",
             "Reviewed 20+ PRs from team members with detailed feedback",
-            "Reduced API response time by 40% through database query optimization"
+            "Reduced API response time by 40% through database query optimization",
           ];
           break;
         case "month":
@@ -73,11 +73,11 @@ export function AISummary({ summary }: AISummaryProps) {
             "Contributed to 180+ Slack discussions, establishing yourself as a go-to technical resource",
             "Reduced production incidents by 60% through improved monitoring and error handling",
             "Mentored 2 junior developers and conducted 8 technical interviews",
-            "Published 5 technical documentation articles for internal knowledge base"
+            "Published 5 technical documentation articles for internal knowledge base",
           ];
           break;
       }
-      
+
       setCurrentSummary(newSummary);
       setLastUpdated(new Date());
       setIsGenerating(false);
@@ -85,14 +85,14 @@ export function AISummary({ summary }: AISummaryProps) {
   };
 
   const getPeriodTitle = () => {
-    const period = timePeriods.find(p => p.value === selectedPeriod);
+    const period = timePeriods.find((p) => p.value === selectedPeriod);
     return period ? `${period.label}'s Accomplishments` : "Accomplishments";
   };
 
   const getTimeAgo = () => {
     const now = new Date();
     const diff = Math.floor((now.getTime() - lastUpdated.getTime()) / 1000); // difference in seconds
-    
+
     if (diff < 60) return "Just now";
     if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
     if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
@@ -102,7 +102,11 @@ export function AISummary({ summary }: AISummaryProps) {
   const getNextUpdate = () => {
     const nextUpdate = new Date(lastUpdated);
     nextUpdate.setHours(nextUpdate.getHours() + 1);
-    return nextUpdate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    return nextUpdate.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
   };
 
   return (
@@ -159,7 +163,7 @@ export function AISummary({ summary }: AISummaryProps) {
             </button>
           ))}
         </div>
-        
+
         {/* Generate Button */}
         <button
           onClick={handleGenerate}
@@ -195,9 +199,7 @@ export function AISummary({ summary }: AISummaryProps) {
             className="flex gap-3"
           >
             <span className="text-zen-sage">•</span>
-            <p className="text-zen-charcoal leading-relaxed">
-              {item}
-            </p>
+            <p className="text-zen-charcoal leading-relaxed">{item}</p>
           </motion.div>
         ))}
       </div>
@@ -208,7 +210,8 @@ export function AISummary({ summary }: AISummaryProps) {
         transition={{ duration: 0.6, delay: 0.5 }}
         className="text-sm pt-4 italic text-zen-charcoal-light"
       >
-        Generated by AI from your GitHub commits, Slack messages, and Linear updates
+        Generated by AI from your GitHub commits, Slack messages, and Linear
+        updates
       </motion.p>
     </motion.div>
   );

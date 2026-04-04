@@ -14,10 +14,7 @@ import {
   ConnectedIntegrationsProvider,
   type IntegrationId,
 } from "./integrationsContext";
-import {
-  UserProfileProvider,
-  type UserProfile,
-} from "./userProfileContext";
+import { UserProfileProvider, type UserProfile } from "./userProfileContext";
 
 export default function App() {
   const [authScreen, setAuthScreen] = useState<"signup" | "login">(() =>

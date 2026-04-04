@@ -59,13 +59,19 @@ function NavigationBar() {
   ];
 
   return (
-    <nav className="border-b" style={{ borderColor: 'var(--zen-sand)' }}>
+    <nav className="border-b" style={{ borderColor: "var(--zen-sand)" }}>
       <div className="max-w-7xl mx-auto px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full" style={{ backgroundColor: 'var(--zen-sage)' }} />
-            <span className="text-xl" style={{ color: 'var(--zen-charcoal)', fontWeight: 300 }}>
+            <div
+              className="w-8 h-8 rounded-full"
+              style={{ backgroundColor: "var(--zen-sage)" }}
+            />
+            <span
+              className="text-xl"
+              style={{ color: "var(--zen-charcoal)", fontWeight: 300 }}
+            >
               WDYGD
             </span>
           </div>
@@ -75,15 +81,17 @@ function NavigationBar() {
             {links.map((link) => {
               const Icon = link.icon;
               const isActive = location.pathname === link.path;
-              
+
               return (
                 <Link
                   key={link.path}
                   to={link.path}
                   className="relative px-6 py-2 rounded-full transition-all duration-200 flex items-center gap-2"
                   style={{
-                    color: isActive ? 'white' : 'var(--zen-charcoal-light)',
-                    backgroundColor: isActive ? 'var(--zen-sage)' : 'transparent',
+                    color: isActive ? "white" : "var(--zen-charcoal-light)",
+                    backgroundColor: isActive
+                      ? "var(--zen-sage)"
+                      : "transparent",
                   }}
                 >
                   <Icon className="w-4 h-4" />
@@ -92,8 +100,12 @@ function NavigationBar() {
                     <motion.div
                       layoutId="activeTab"
                       className="absolute inset-0 rounded-full -z-10"
-                      style={{ backgroundColor: 'var(--zen-sage)' }}
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      style={{ backgroundColor: "var(--zen-sage)" }}
+                      transition={{
+                        type: "spring",
+                        bounce: 0.2,
+                        duration: 0.6,
+                      }}
                     />
                   )}
                 </Link>
