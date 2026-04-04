@@ -12,6 +12,11 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useIntegrations } from "../integrationsContext";
+import {
+  useUserProfile,
+  profileInitials as getProfileInitials,
+  type UserProfile,
+} from "../userProfileContext";
 
 const integrationCatalog = [
   {
@@ -34,26 +39,14 @@ const integrationCatalog = [
   },
 ];
 
-type Profile = {
-  fullName: string;
-  email: string;
-  title: string;
-  bio: string;
-};
-
 export function ProfilePage() {
   const interactiveButtonClass =
     "transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
   const interactiveToggleClass =
     "transition-all duration-200 ease-out hover:scale-[1.04] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
 
-  const [profile, setProfile] = useState<Profile>({
-    fullName: "Beabadoobee",
-    email: "bea.badoobee@example.com",
-    title: "Creative Focus Builder",
-    bio: "Singer-songwriter focused on deep work and consistent creative output.",
-  });
-  const [draftProfile, setDraftProfile] = useState<Profile>(profile);
+  const { profile, setProfile } = useUserProfile();
+  const [draftProfile, setDraftProfile] = useState<UserProfile>(profile);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [notifications, setNotifications] = useState({
     daily: true,
@@ -71,17 +64,10 @@ export function ProfilePage() {
       })),
     [connectedIds],
   );
-  const profileInitials = useMemo(() => {
-    const names = profile.fullName
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2);
-    if (names.length === 0) {
-      return "??";
-    }
-    return names.map((name) => name[0]?.toUpperCase() ?? "").join("");
-  }, [profile.fullName]);
+  const initials = useMemo(
+    () => getProfileInitials(profile.fullName),
+    [profile.fullName],
+  );
 
   const handleStartEditProfile = () => {
     setDraftProfile(profile);
@@ -150,7 +136,7 @@ export function ProfilePage() {
               className="w-24 h-24 rounded-3xl flex items-center justify-center text-3xl"
               style={{ backgroundColor: "var(--zen-sage)" }}
             >
-              <span className="text-white">{profileInitials}</span>
+              <span className="text-white">{initials}</span>
             </div>
             <div className="flex-1">
               <AnimatePresence mode="wait" initial={false}>

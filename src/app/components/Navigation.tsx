@@ -1,6 +1,8 @@
 import { Link, useLocation } from "react-router";
 import { motion } from "motion/react";
 import { Github, MessageSquare, Target, LayoutGrid } from "lucide-react";
+import { useMemo } from "react";
+import { useUserProfile, profileInitials } from "../userProfileContext";
 
 const integrationNav = [
   { path: "/github", label: "GitHub", icon: Github },
@@ -10,6 +12,11 @@ const integrationNav = [
 
 export function Navigation() {
   const location = useLocation();
+  const { profile } = useUserProfile();
+  const avatarInitials = useMemo(
+    () => profileInitials(profile.fullName),
+    [profile.fullName],
+  );
 
   const links = [
     { path: "/", label: "Garden", icon: LayoutGrid },
@@ -67,7 +74,7 @@ export function Navigation() {
               backgroundColor: 'var(--zen-sage)',
             }}
           >
-            <span className="text-white text-sm">JD</span>
+            <span className="text-white text-sm">{avatarInitials}</span>
           </Link>
         </div>
       </div>
