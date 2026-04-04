@@ -1,56 +1,57 @@
 import { motion } from "motion/react";
-import { LogIn } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { useState, type FormEvent } from "react";
-import { readStoredAccount, type StoredAccount } from "../accountStorage";
 
-interface LoginPageProps {
-  onLoginSuccess: (account: StoredAccount) => void;
-  onSwitchToSignup: () => void;
+interface SignupPageProps {
+  onSignupComplete: (account: {
+    fullName: string;
+    email: string;
+    password: string;
+  }) => void;
+  onSwitchToLogin: () => void;
 }
 
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
-export function LoginPage({
-  onLoginSuccess,
-  onSwitchToSignup,
-}: LoginPageProps) {
+export function SignupPage({
+  onSignupComplete,
+  onSwitchToLogin,
+}: SignupPageProps) {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setError(null);
 
+    const name = fullName.trim();
+    if (!name) {
+      setError("Please enter your name.");
+      return;
+    }
     if (!isValidEmail(email)) {
       setError("Please enter a valid email address.");
       return;
     }
-    if (!password) {
-      setError("Please enter your password.");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
       return;
     }
 
-    const stored = readStoredAccount();
-    if (!stored) {
-      setError("No saved account found. Create one first.");
-      return;
-    }
-
-    const inputEmail = email.trim().toLowerCase();
-    const savedEmail = stored.email.trim().toLowerCase();
-    if (inputEmail !== savedEmail) {
-      setError("Email does not match this device’s saved account.");
-      return;
-    }
-    if (password !== stored.password) {
-      setError("Incorrect password.");
-      return;
-    }
-
-    onLoginSuccess(stored);
+    onSignupComplete({
+      fullName: name,
+      email: email.trim(),
+      password,
+    });
   };
 
   return (
@@ -66,7 +67,7 @@ export function LoginPage({
             className="w-14 h-14 rounded-2xl flex items-center justify-center"
             style={{ backgroundColor: "var(--zen-sage)" }}
           >
-            <LogIn className="w-7 h-7 text-white" strokeWidth={1.75} />
+            <UserPlus className="w-7 h-7 text-white" strokeWidth={1.75} />
           </div>
           <h1
             className="text-4xl tracking-tight"
@@ -75,13 +76,13 @@ export function LoginPage({
               fontWeight: 300,
             }}
           >
-            Welcome back
+            Create your account
           </h1>
           <p
             className="text-base"
             style={{ color: "var(--zen-charcoal-light)" }}
           >
-            Log in with the email and password you used to sign up.
+            Sign up to start tracking what you got done in WDYGD.
           </p>
         </div>
 
@@ -95,14 +96,38 @@ export function LoginPage({
         >
           <div className="space-y-1">
             <label
-              htmlFor="login-email"
+              htmlFor="signup-name"
+              className="text-sm"
+              style={{ color: "var(--zen-charcoal)" }}
+            >
+              Full name
+            </label>
+            <input
+              id="signup-name"
+              name="name"
+              type="text"
+              autoComplete="name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+              style={{
+                borderColor: "var(--zen-sand)",
+                color: "var(--zen-charcoal)",
+              }}
+              placeholder="Ada Lovelace"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label
+              htmlFor="signup-email"
               className="text-sm"
               style={{ color: "var(--zen-charcoal)" }}
             >
               Email
             </label>
             <input
-              id="login-email"
+              id="signup-email"
               name="email"
               type="email"
               autoComplete="email"
@@ -119,17 +144,17 @@ export function LoginPage({
 
           <div className="space-y-1">
             <label
-              htmlFor="login-password"
+              htmlFor="signup-password"
               className="text-sm"
               style={{ color: "var(--zen-charcoal)" }}
             >
               Password
             </label>
             <input
-              id="login-password"
+              id="signup-password"
               name="password"
               type="password"
-              autoComplete="current-password"
+              autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
@@ -137,6 +162,31 @@ export function LoginPage({
                 borderColor: "var(--zen-sand)",
                 color: "var(--zen-charcoal)",
               }}
+              placeholder="At least 8 characters"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label
+              htmlFor="signup-confirm"
+              className="text-sm"
+              style={{ color: "var(--zen-charcoal)" }}
+            >
+              Confirm password
+            </label>
+            <input
+              id="signup-confirm"
+              name="confirmPassword"
+              type="password"
+              autoComplete="new-password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+              style={{
+                borderColor: "var(--zen-sand)",
+                color: "var(--zen-charcoal)",
+              }}
+              placeholder="Repeat password"
             />
           </div>
 
@@ -156,7 +206,7 @@ export function LoginPage({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            Log in
+            Create account
           </motion.button>
         </form>
 
@@ -164,14 +214,20 @@ export function LoginPage({
           className="text-center text-sm mt-8"
           style={{ color: "var(--zen-charcoal-light)" }}
         >
-          New here?{" "}
+          After signing up, you will connect your tools before entering the app.
+        </p>
+        <p
+          className="text-center text-sm mt-3"
+          style={{ color: "var(--zen-charcoal-light)" }}
+        >
+          Already have an account?{" "}
           <button
             type="button"
-            onClick={onSwitchToSignup}
+            onClick={onSwitchToLogin}
             className="underline underline-offset-2 hover:opacity-80"
             style={{ color: "var(--zen-sage-dark)" }}
           >
-            Create an account
+            Log in
           </button>
         </p>
       </motion.div>

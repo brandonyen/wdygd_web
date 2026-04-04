@@ -23,7 +23,9 @@ export function ProductivityGarden({
     enabledIntegrationIds === undefined || enabledIntegrationIds.includes(id);
 
   useEffect(() => {
-    setMounted(true);
+    queueMicrotask(() => {
+      setMounted(true);
+    });
   }, []);
 
   // Calculate growth based on activity levels
