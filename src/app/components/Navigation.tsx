@@ -1,7 +1,14 @@
 import { Link, useLocation } from "react-router";
 import { motion } from "motion/react";
-import { Github, MessageSquare, Target, LayoutGrid } from "lucide-react";
-import { useMemo } from "react";
+import {
+  Github,
+  MessageSquare,
+  Target,
+  LayoutGrid,
+  Settings,
+  LogOut,
+} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useUserProfile, profileInitials } from "../userProfileContext";
 
 const integrationNav = [
@@ -12,11 +19,37 @@ const integrationNav = [
 
 export function Navigation() {
   const location = useLocation();
-  const { profile } = useUserProfile();
+  const { profile, signOut } = useUserProfile();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
   const avatarInitials = useMemo(
     () => profileInitials(profile.fullName),
     [profile.fullName],
   );
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handlePointerDown = (e: MouseEvent | PointerEvent) => {
+      const el = menuRef.current;
+      if (el && !el.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [menuOpen]);
 
   const links = [
     { path: "/", label: "Garden", icon: LayoutGrid },
@@ -66,16 +99,61 @@ export function Navigation() {
             })}
           </div>
 
-          {/* User Avatar - Link to Profile */}
-          <Link 
-            to="/profile"
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:ring-2 hover:ring-offset-2 hover:ring-[var(--zen-sage)]"
-            style={{ 
-              backgroundColor: 'var(--zen-sage)',
-            }}
-          >
-            <span className="text-white text-sm">{avatarInitials}</span>
-          </Link>
+          {/* User menu */}
+          <div className="relative flex items-center" ref={menuRef}>
+            <button
+              type="button"
+              onClick={() => setMenuOpen((open) => !open)}
+              aria-expanded={menuOpen}
+              aria-haspopup="menu"
+              aria-label="Account menu"
+              className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:ring-2 hover:ring-offset-2 hover:ring-[var(--zen-sage)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--zen-sage)]"
+              style={{
+                backgroundColor: "var(--zen-sage)",
+              }}
+            >
+              <span className="text-white text-sm">{avatarInitials}</span>
+            </button>
+
+            {menuOpen && (
+              <motion.div
+                role="menu"
+                aria-orientation="vertical"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.15 }}
+                className="absolute right-0 top-full mt-2 min-w-[13.5rem] py-1.5 rounded-2xl shadow-lg z-50 border"
+                style={{
+                  backgroundColor: "white",
+                  borderColor: "var(--zen-sand)",
+                }}
+              >
+                <Link
+                  role="menuitem"
+                  to="/profile"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-[var(--zen-off-white)]"
+                  style={{ color: "var(--zen-charcoal)" }}
+                >
+                  <Settings className="w-4 h-4 shrink-0 opacity-70" />
+                  Profile settings
+                </Link>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    signOut();
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors hover:bg-[var(--zen-off-white)]"
+                  style={{ color: "#c45c5c" }}
+                >
+                  <LogOut className="w-4 h-4 shrink-0 opacity-90" />
+                  Log out
+                </button>
+              </motion.div>
+            )}
+          </div>
         </div>
       </div>
     </nav>
