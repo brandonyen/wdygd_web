@@ -57,7 +57,10 @@ export function Navigation() {
   ];
 
   return (
-    <nav className="border-b" style={{ borderColor: 'var(--zen-sand)' }}>
+    <nav
+      className="border-b bg-card"
+      style={{ borderColor: "var(--zen-sand)" }}
+    >
       <div className="max-w-7xl mx-auto px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -124,7 +127,7 @@ export function Navigation() {
                 transition={{ duration: 0.15 }}
                 className="absolute right-0 top-full mt-2 min-w-[13.5rem] py-1.5 rounded-2xl shadow-lg z-50 border"
                 style={{
-                  backgroundColor: "white",
+                  backgroundColor: "var(--card)",
                   borderColor: "var(--zen-sand)",
                 }}
               >

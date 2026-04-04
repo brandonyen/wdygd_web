@@ -42,7 +42,7 @@ export function GitHubPage() {
   };
 
   return (
-    <div className="min-h-screen px-8 py-8">
+    <div className="min-h-screen px-8 py-8 bg-background">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <motion.div
@@ -70,7 +70,7 @@ export function GitHubPage() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="grid grid-cols-1 md:grid-cols-4 gap-6"
         >
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'white' }}>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'var(--card)' }}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm" style={{ color: 'var(--zen-charcoal-light)' }}>Commits</span>
               <GitCommit className="w-4 h-4" style={{ color: 'var(--zen-sage)' }} />
@@ -78,7 +78,7 @@ export function GitHubPage() {
             <p className="text-3xl" style={{ color: 'var(--zen-charcoal)', fontWeight: 300 }}>{stats.commits}</p>
           </div>
 
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'white' }}>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'var(--card)' }}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm" style={{ color: 'var(--zen-charcoal-light)' }}>Pull Requests</span>
               <GitPullRequest className="w-4 h-4" style={{ color: 'var(--zen-sage)' }} />
@@ -86,7 +86,7 @@ export function GitHubPage() {
             <p className="text-3xl" style={{ color: 'var(--zen-charcoal)', fontWeight: 300 }}>{stats.pullRequests}</p>
           </div>
 
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'white' }}>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'var(--card)' }}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm" style={{ color: 'var(--zen-charcoal-light)' }}>Reviews</span>
               <Star className="w-4 h-4" style={{ color: 'var(--zen-sage)' }} />
@@ -94,7 +94,7 @@ export function GitHubPage() {
             <p className="text-3xl" style={{ color: 'var(--zen-charcoal)', fontWeight: 300 }}>{stats.reviews}</p>
           </div>
 
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'white' }}>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'var(--card)' }}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm" style={{ color: 'var(--zen-charcoal-light)' }}>Repositories</span>
               <GitBranch className="w-4 h-4" style={{ color: 'var(--zen-sage)' }} />
@@ -111,7 +111,7 @@ export function GitHubPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="p-8 rounded-3xl space-y-6"
-            style={{ backgroundColor: 'white' }}
+            style={{ backgroundColor: 'var(--card)' }}
           >
             <h3 style={{ color: 'var(--zen-charcoal)' }}>Recent Commits</h3>
             <div className="space-y-4">
@@ -156,7 +156,7 @@ export function GitHubPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="p-8 rounded-3xl space-y-6"
-            style={{ backgroundColor: 'white' }}
+            style={{ backgroundColor: 'var(--card)' }}
           >
             <h3 style={{ color: 'var(--zen-charcoal)' }}>Pull Requests</h3>
             <div className="space-y-4">

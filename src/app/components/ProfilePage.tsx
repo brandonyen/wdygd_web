@@ -148,7 +148,7 @@ export function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen px-8 py-8">
+    <div className="min-h-screen px-8 py-8 bg-background">
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Header */}
         <motion.div
@@ -187,7 +187,7 @@ export function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
           className="p-8 rounded-3xl"
-          style={{ backgroundColor: "white" }}
+          style={{ backgroundColor: "var(--card)" }}
         >
           <div className="flex items-start gap-6">
             <div
@@ -378,7 +378,7 @@ export function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="p-8 rounded-3xl space-y-6"
-          style={{ backgroundColor: "white" }}
+          style={{ backgroundColor: "var(--card)" }}
         >
           <h3 style={{ color: "var(--zen-charcoal)" }}>
             Connected Integrations
@@ -475,7 +475,7 @@ export function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
           className="p-8 rounded-3xl space-y-6"
-          style={{ backgroundColor: "white" }}
+          style={{ backgroundColor: "var(--card)" }}
         >
           <div className="flex items-center gap-2">
             <Bell
@@ -620,7 +620,7 @@ export function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           className="p-8 rounded-3xl space-y-6"
-          style={{ backgroundColor: "white" }}
+          style={{ backgroundColor: "var(--card)" }}
         >
           <div className="flex items-center gap-2">
             <Palette
@@ -631,26 +631,41 @@ export function ProfilePage() {
               Theme & Appearance
             </h3>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {(
               [
                 {
                   id: "zen" as const,
-                  label: "Zen (Default)",
-                  swatch: "var(--zen-sage)",
+                  label: "Zen",
+                  subtitle: "Default",
+                  swatch: "#a8b5a0",
                 },
                 {
-                  id: "minimal" as const,
-                  label: "Minimal",
-                  swatch: "var(--zen-charcoal)",
+                  id: "dark" as const,
+                  label: "Dark",
+                  subtitle: "Dim UI",
+                  swatch: "#171b22",
                 },
                 {
                   id: "ocean" as const,
                   label: "Ocean",
-                  swatch: "var(--zen-blue)",
+                  subtitle: "Cool teal",
+                  swatch: "#5a9494",
+                },
+                {
+                  id: "forest" as const,
+                  label: "Forest",
+                  subtitle: "Moss green",
+                  swatch: "#5f8f6a",
+                },
+                {
+                  id: "dusk" as const,
+                  label: "Dusk",
+                  subtitle: "Soft lilac",
+                  swatch: "#9b8ab5",
                 },
               ] as const
-            ).map(({ id, label, swatch }) => {
+            ).map(({ id, label, subtitle, swatch }) => {
               const selected = activeAppTheme === id;
               return (
                 <button
@@ -662,10 +677,10 @@ export function ProfilePage() {
                   }`}
                   style={{
                     borderColor: selected
-                      ? "var(--zen-sage)"
+                      ? "var(--ring)"
                       : "var(--zen-sand)",
                     backgroundColor: selected
-                      ? "var(--zen-sage-light)"
+                      ? "var(--accent)"
                       : "var(--zen-off-white)",
                   }}
                 >
@@ -676,10 +691,16 @@ export function ProfilePage() {
                     />
                   </div>
                   <p
-                    className="text-sm text-center"
+                    className="text-sm text-center font-medium leading-tight"
                     style={{ color: "var(--zen-charcoal)" }}
                   >
                     {label}
+                  </p>
+                  <p
+                    className="text-xs text-center mt-0.5 leading-tight"
+                    style={{ color: "var(--zen-charcoal-light)" }}
+                  >
+                    {subtitle}
                   </p>
                 </button>
               );
@@ -693,7 +714,7 @@ export function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
           className="p-8 rounded-3xl space-y-4"
-          style={{ backgroundColor: "white" }}
+          style={{ backgroundColor: "var(--card)" }}
         >
           <h3 style={{ color: "var(--zen-charcoal)" }}>
             Account Actions
@@ -787,7 +808,7 @@ export function ProfilePage() {
                 aria-modal="true"
                 aria-labelledby="change-password-title"
                 className="w-full max-w-md rounded-3xl p-8 shadow-xl"
-                style={{ backgroundColor: "white" }}
+                style={{ backgroundColor: "var(--card)" }}
                 initial={{ opacity: 0, scale: 0.96, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96, y: 12 }}

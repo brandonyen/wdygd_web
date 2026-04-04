@@ -1,8 +1,22 @@
-export type AppTheme = "zen" | "minimal" | "ocean";
+export type AppTheme = "zen" | "dark" | "ocean" | "forest" | "dusk";
+
+/** Older builds stored the former gray theme as `minimal`; map to dark. */
+const LEGACY_THEME_MAP: Record<string, AppTheme> = {
+  minimal: "dark",
+};
 
 export function parseAppTheme(value: unknown): AppTheme {
-  if (value === "zen" || value === "minimal" || value === "ocean") {
+  if (
+    value === "zen" ||
+    value === "dark" ||
+    value === "ocean" ||
+    value === "forest" ||
+    value === "dusk"
+  ) {
     return value;
+  }
+  if (typeof value === "string" && value in LEGACY_THEME_MAP) {
+    return LEGACY_THEME_MAP[value]!;
   }
   return "zen";
 }

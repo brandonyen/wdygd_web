@@ -110,7 +110,7 @@ export function AISummary({ summary }: AISummaryProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.4 }}
-      className="p-8 rounded-3xl bg-white space-y-6"
+      className="p-8 rounded-3xl bg-card space-y-6"
     >
       <div className="flex items-start justify-between">
         <div>
