@@ -1,15 +1,18 @@
 import { motion } from "motion/react";
 import { Github, Check } from "lucide-react";
 import { useState } from "react";
+import type { IntegrationId } from "../integrationsContext";
 
 interface LoginPageProps {
-  onLogin: (integrations: string[]) => void;
+  onLogin: (integrations: IntegrationId[]) => void;
 }
 
 export function LoginPage({ onLogin }: LoginPageProps) {
-  const [selectedIntegrations, setSelectedIntegrations] = useState<Set<string>>(new Set());
+  const [selectedIntegrations, setSelectedIntegrations] = useState<
+    Set<IntegrationId>
+  >(new Set());
 
-  const toggleIntegration = (integration: string) => {
+  const toggleIntegration = (integration: IntegrationId) => {
     const newSelected = new Set(selectedIntegrations);
     if (newSelected.has(integration)) {
       newSelected.delete(integration);

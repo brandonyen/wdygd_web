@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { Checkbox } from "./ui/checkbox";
+import type { IntegrationId } from "../integrationsContext";
 
 interface TodoItem {
   id: string;
@@ -8,16 +9,49 @@ interface TodoItem {
   priority: "low" | "medium" | "high";
 }
 
+const INTEGRATION_LABELS: Record<IntegrationId, string> = {
+  github: "GitHub",
+  slack: "Slack",
+  linear: "Linear",
+};
+
+function taskListHeading(integrationIds: IntegrationId[]): string {
+  if (integrationIds.length === 0) {
+    return "Your tasks";
+  }
+  const labels = integrationIds.map((id) => INTEGRATION_LABELS[id]);
+  if (labels.length === 1) {
+    return `Your ${labels[0]} tasks`;
+  }
+  if (labels.length === 2) {
+    return `Your ${labels[0]} and ${labels[1]} tasks`;
+  }
+  const rest = labels.slice(0, -1).join(", ");
+  const last = labels[labels.length - 1];
+  return `Your ${rest}, and ${last} tasks`;
+}
+
 interface LinearTodoListProps {
   todos: TodoItem[];
   onToggle: (id: string) => void;
+  /** Connected tools; drives the heading (e.g. "Your GitHub and Slack tasks"). */
+  connectedIntegrationIds: IntegrationId[];
 }
 
-export function LinearTodoList({ todos, onToggle }: LinearTodoListProps) {
+export function LinearTodoList({
+  todos,
+  onToggle,
+  connectedIntegrationIds,
+}: LinearTodoListProps) {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 style={{ color: 'var(--zen-charcoal)' }}>Your Linear Tasks</h3>
+      <div className="flex items-center justify-between gap-3">
+        <h3
+          className="text-left leading-snug"
+          style={{ color: "var(--zen-charcoal)" }}
+        >
+          {taskListHeading(connectedIntegrationIds)}
+        </h3>
         <span className="text-sm" style={{ color: 'var(--zen-charcoal-light)' }}>
           {todos.filter(t => t.completed).length} of {todos.length}
         </span>
