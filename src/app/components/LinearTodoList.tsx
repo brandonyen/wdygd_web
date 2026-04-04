@@ -65,7 +65,7 @@ export function LinearTodoList({
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: index * 0.05 }}
             className="flex items-start gap-3 p-4 rounded-2xl transition-all duration-200 hover:shadow-sm"
-            style={{ backgroundColor: todo.completed ? 'var(--zen-sand-light)' : 'white' }}
+            style={{ backgroundColor: todo.completed ? 'var(--zen-sand-light)' : 'var(--card)' }}
           >
             <Checkbox
               checked={todo.completed}

@@ -41,7 +41,7 @@ export function SlackPage() {
   };
 
   return (
-    <div className="min-h-screen px-8 py-8">
+    <div className="min-h-screen px-8 py-8 bg-background">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <motion.div
@@ -69,7 +69,7 @@ export function SlackPage() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="grid grid-cols-1 md:grid-cols-4 gap-6"
         >
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'white' }}>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'var(--card)' }}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm" style={{ color: 'var(--zen-charcoal-light)' }}>Messages</span>
               <MessageSquare className="w-4 h-4" style={{ color: 'var(--zen-blue)' }} />
@@ -77,7 +77,7 @@ export function SlackPage() {
             <p className="text-3xl" style={{ color: 'var(--zen-charcoal)', fontWeight: 300 }}>{stats.messages}</p>
           </div>
 
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'white' }}>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'var(--card)' }}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm" style={{ color: 'var(--zen-charcoal-light)' }}>Channels</span>
               <Hash className="w-4 h-4" style={{ color: 'var(--zen-blue)' }} />
@@ -85,7 +85,7 @@ export function SlackPage() {
             <p className="text-3xl" style={{ color: 'var(--zen-charcoal)', fontWeight: 300 }}>{stats.channels}</p>
           </div>
 
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'white' }}>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'var(--card)' }}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm" style={{ color: 'var(--zen-charcoal-light)' }}>Replies</span>
               <Users className="w-4 h-4" style={{ color: 'var(--zen-blue)' }} />
@@ -93,7 +93,7 @@ export function SlackPage() {
             <p className="text-3xl" style={{ color: 'var(--zen-charcoal)', fontWeight: 300 }}>{stats.replies}</p>
           </div>
 
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'white' }}>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'var(--card)' }}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm" style={{ color: 'var(--zen-charcoal-light)' }}>Mentions</span>
               <TrendingUp className="w-4 h-4" style={{ color: 'var(--zen-blue)' }} />
@@ -110,7 +110,7 @@ export function SlackPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="lg:col-span-2 p-8 rounded-3xl space-y-6"
-            style={{ backgroundColor: 'white' }}
+            style={{ backgroundColor: 'var(--card)' }}
           >
             <h3 style={{ color: 'var(--zen-charcoal)' }}>Recent Messages</h3>
             <div className="space-y-3">
@@ -157,7 +157,7 @@ export function SlackPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="p-8 rounded-3xl space-y-6"
-            style={{ backgroundColor: 'white' }}
+            style={{ backgroundColor: 'var(--card)' }}
           >
             <h3 style={{ color: 'var(--zen-charcoal)' }}>Top Channels</h3>
             <div className="space-y-4">
