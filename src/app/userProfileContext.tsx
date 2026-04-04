@@ -26,6 +26,7 @@ export type UserProfileContextValue = {
     currentPassword: string,
     newPassword: string,
   ) => ChangePasswordResult;
+  signOut: () => void;
 };
 
 const UserProfileContext = createContext<UserProfileContextValue | null>(null);
@@ -35,12 +36,16 @@ export function UserProfileProvider({
   setProfile,
   accountPassword,
   setAccountPassword,
+  onPasswordUpdated,
+  signOut,
   children,
 }: {
   profile: UserProfile;
   setProfile: Dispatch<SetStateAction<UserProfile>>;
   accountPassword: string;
   setAccountPassword: Dispatch<SetStateAction<string>>;
+  onPasswordUpdated?: (newPassword: string) => void;
+  signOut: () => void;
   children: ReactNode;
 }) {
   const changePassword = useCallback(
@@ -55,14 +60,15 @@ export function UserProfileProvider({
         };
       }
       setAccountPassword(newPassword);
+      onPasswordUpdated?.(newPassword);
       return { ok: true };
     },
-    [accountPassword, setAccountPassword],
+    [accountPassword, setAccountPassword, onPasswordUpdated],
   );
 
   const value = useMemo(
-    () => ({ profile, setProfile, changePassword }),
-    [profile, setProfile, changePassword],
+    () => ({ profile, setProfile, changePassword, signOut }),
+    [profile, setProfile, changePassword, signOut],
   );
 
   return (

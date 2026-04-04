@@ -5,7 +5,7 @@ import {
   type ReactNode,
 } from "react";
 
-/** IDs match `LoginPage` toggle keys and route segments. */
+/** IDs match integration onboarding toggles and route segments. */
 export type IntegrationId = "github" | "slack" | "linear";
 
 export type IntegrationsContextValue = {

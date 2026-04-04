@@ -8,13 +8,17 @@ interface SignupPageProps {
     email: string;
     password: string;
   }) => void;
+  onSwitchToLogin: () => void;
 }
 
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
-export function SignupPage({ onSignupComplete }: SignupPageProps) {
+export function SignupPage({
+  onSignupComplete,
+  onSwitchToLogin,
+}: SignupPageProps) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -211,6 +215,20 @@ export function SignupPage({ onSignupComplete }: SignupPageProps) {
           style={{ color: "var(--zen-charcoal-light)" }}
         >
           After signing up, you will connect your tools before entering the app.
+        </p>
+        <p
+          className="text-center text-sm mt-3"
+          style={{ color: "var(--zen-charcoal-light)" }}
+        >
+          Already have an account?{" "}
+          <button
+            type="button"
+            onClick={onSwitchToLogin}
+            className="underline underline-offset-2 hover:opacity-80"
+            style={{ color: "var(--zen-sage-dark)" }}
+          >
+            Log in
+          </button>
         </p>
       </motion.div>
     </div>

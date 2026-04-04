@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { useIntegrations } from "../integrationsContext";
+import { patchStoredAccount } from "../accountStorage";
 import {
   useUserProfile,
   profileInitials as getProfileInitials,
@@ -46,7 +47,7 @@ export function ProfilePage() {
   const interactiveToggleClass =
     "transition-all duration-200 ease-out hover:scale-[1.04] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
 
-  const { profile, setProfile, changePassword } = useUserProfile();
+  const { profile, setProfile, changePassword, signOut } = useUserProfile();
   const [draftProfile, setDraftProfile] = useState<UserProfile>(profile);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
@@ -89,11 +90,18 @@ export function ProfilePage() {
   };
 
   const handleSaveProfile = () => {
-    setProfile({
+    const next: UserProfile = {
       fullName: draftProfile.fullName.trim() || profile.fullName,
       email: draftProfile.email.trim() || profile.email,
       title: draftProfile.title.trim(),
       bio: draftProfile.bio.trim(),
+    };
+    setProfile(next);
+    patchStoredAccount({
+      fullName: next.fullName,
+      email: next.email,
+      title: next.title,
+      bio: next.bio,
     });
     setIsEditingProfile(false);
   };
@@ -732,6 +740,8 @@ export function ProfilePage() {
             </button>
 
             <button
+              type="button"
+              onClick={signOut}
               className={`w-full flex items-center justify-between p-4 rounded-xl ${interactiveButtonClass}`}
               style={{
                 backgroundColor: "var(--zen-off-white)",
