@@ -19,6 +19,12 @@ const integrationNav = [
 
 export function Navigation() {
   const location = useLocation();
+  // Remount on route change so local menu state resets without setState in an effect.
+  return <NavigationBar key={location.pathname} />;
+}
+
+function NavigationBar() {
+  const location = useLocation();
   const { profile, signOut } = useUserProfile();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -27,10 +33,6 @@ export function Navigation() {
     () => profileInitials(profile.fullName),
     [profile.fullName],
   );
-
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [location.pathname]);
 
   useEffect(() => {
     if (!menuOpen) return;
