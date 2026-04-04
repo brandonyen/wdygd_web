@@ -3,7 +3,11 @@ import { UserPlus } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
 interface SignupPageProps {
-  onSignupComplete: (account: { fullName: string; email: string }) => void;
+  onSignupComplete: (account: {
+    fullName: string;
+    email: string;
+    password: string;
+  }) => void;
 }
 
 function isValidEmail(value: string): boolean {
@@ -42,6 +46,7 @@ export function SignupPage({ onSignupComplete }: SignupPageProps) {
     onSignupComplete({
       fullName: name,
       email: email.trim(),
+      password,
     });
   };
 

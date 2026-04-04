@@ -9,8 +9,9 @@ import {
   Download,
   LogOut,
   Check,
+  KeyRound,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { useIntegrations } from "../integrationsContext";
 import {
   useUserProfile,
@@ -45,9 +46,17 @@ export function ProfilePage() {
   const interactiveToggleClass =
     "transition-all duration-200 ease-out hover:scale-[1.04] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
 
-  const { profile, setProfile } = useUserProfile();
+  const { profile, setProfile, changePassword } = useUserProfile();
   const [draftProfile, setDraftProfile] = useState<UserProfile>(profile);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [passwordFormError, setPasswordFormError] = useState<string | null>(
+    null,
+  );
+  const [passwordChangeSuccess, setPasswordChangeSuccess] = useState(false);
   const [notifications, setNotifications] = useState({
     daily: true,
     weekly: true,
@@ -87,6 +96,44 @@ export function ProfilePage() {
       bio: draftProfile.bio.trim(),
     });
     setIsEditingProfile(false);
+  };
+
+  const closePasswordModal = useCallback(() => {
+    setPasswordModalOpen(false);
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmNewPassword("");
+    setPasswordFormError(null);
+    setPasswordChangeSuccess(false);
+  }, []);
+
+  useEffect(() => {
+    if (!passwordModalOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closePasswordModal();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [passwordModalOpen, closePasswordModal]);
+
+  const handlePasswordModalSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    setPasswordFormError(null);
+    if (newPassword !== confirmNewPassword) {
+      setPasswordFormError("New passwords do not match.");
+      return;
+    }
+    const result = changePassword(currentPassword, newPassword);
+    if (!result.ok) {
+      setPasswordFormError(result.error);
+      return;
+    }
+    setPasswordChangeSuccess(true);
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmNewPassword("");
   };
 
   return (
@@ -296,6 +343,11 @@ export function ProfilePage() {
                 )}
                 <button
                   type="button"
+                  onClick={() => {
+                    setPasswordFormError(null);
+                    setPasswordChangeSuccess(false);
+                    setPasswordModalOpen(true);
+                  }}
                   className={`px-4 py-2 rounded-full text-sm ${interactiveButtonClass}`}
                   style={{
                     backgroundColor: "var(--zen-off-white)",
@@ -713,6 +765,185 @@ export function ProfilePage() {
             </button>
           </div>
         </motion.div>
+
+        <AnimatePresence>
+          {passwordModalOpen && (
+            <motion.div
+              key="password-modal-overlay"
+              role="presentation"
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              style={{ backgroundColor: "rgba(0,0,0,0.35)" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={closePasswordModal}
+            >
+              <motion.div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="change-password-title"
+                className="w-full max-w-md rounded-3xl p-8 shadow-xl"
+                style={{ backgroundColor: "white" }}
+                initial={{ opacity: 0, scale: 0.96, y: 12 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96, y: 12 }}
+                transition={{ duration: 0.2 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center"
+                    style={{ backgroundColor: "var(--zen-sage-light)" }}
+                  >
+                    <KeyRound
+                      className="w-5 h-5"
+                      style={{ color: "var(--zen-sage-dark)" }}
+                    />
+                  </div>
+                  <h2
+                    id="change-password-title"
+                    className="text-xl"
+                    style={{
+                      color: "var(--zen-charcoal)",
+                      fontWeight: 300,
+                    }}
+                  >
+                    Change password
+                  </h2>
+                </div>
+
+                {passwordChangeSuccess ? (
+                  <div className="space-y-6">
+                    <p
+                      className="text-sm"
+                      style={{ color: "var(--zen-sage-dark)" }}
+                    >
+                      Your password was updated successfully.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={closePasswordModal}
+                      className={`w-full px-4 py-3 rounded-full text-sm ${interactiveButtonClass}`}
+                      style={{
+                        backgroundColor: "var(--zen-charcoal)",
+                        color: "white",
+                      }}
+                    >
+                      Done
+                    </button>
+                  </div>
+                ) : (
+                  <form
+                    onSubmit={handlePasswordModalSubmit}
+                    className="space-y-4"
+                  >
+                    <div className="space-y-1">
+                      <label
+                        htmlFor="current-password"
+                        className="text-sm"
+                        style={{ color: "var(--zen-charcoal)" }}
+                      >
+                        Current password
+                      </label>
+                      <input
+                        id="current-password"
+                        type="password"
+                        autoComplete="current-password"
+                        value={currentPassword}
+                        onChange={(e) =>
+                          setCurrentPassword(e.target.value)
+                        }
+                        className="w-full px-3 py-2 rounded-xl border outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                        style={{
+                          borderColor: "var(--zen-sand)",
+                          color: "var(--zen-charcoal)",
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label
+                        htmlFor="new-password"
+                        className="text-sm"
+                        style={{ color: "var(--zen-charcoal)" }}
+                      >
+                        New password
+                      </label>
+                      <input
+                        id="new-password"
+                        type="password"
+                        autoComplete="new-password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl border outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                        style={{
+                          borderColor: "var(--zen-sand)",
+                          color: "var(--zen-charcoal)",
+                        }}
+                        placeholder="At least 8 characters"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label
+                        htmlFor="confirm-new-password"
+                        className="text-sm"
+                        style={{ color: "var(--zen-charcoal)" }}
+                      >
+                        Confirm new password
+                      </label>
+                      <input
+                        id="confirm-new-password"
+                        type="password"
+                        autoComplete="new-password"
+                        value={confirmNewPassword}
+                        onChange={(e) =>
+                          setConfirmNewPassword(e.target.value)
+                        }
+                        className="w-full px-3 py-2 rounded-xl border outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                        style={{
+                          borderColor: "var(--zen-sand)",
+                          color: "var(--zen-charcoal)",
+                        }}
+                      />
+                    </div>
+                    {passwordFormError && (
+                      <p
+                        className="text-sm"
+                        style={{ color: "#c45c5c" }}
+                        role="alert"
+                      >
+                        {passwordFormError}
+                      </p>
+                    )}
+                    <div className="flex gap-3 pt-2">
+                      <button
+                        type="submit"
+                        className={`flex-1 px-4 py-2.5 rounded-full text-sm ${interactiveButtonClass}`}
+                        style={{
+                          backgroundColor: "var(--zen-charcoal)",
+                          color: "white",
+                        }}
+                      >
+                        Update password
+                      </button>
+                      <button
+                        type="button"
+                        onClick={closePasswordModal}
+                        className={`px-4 py-2.5 rounded-full text-sm ${interactiveButtonClass}`}
+                        style={{
+                          backgroundColor: "var(--zen-off-white)",
+                          color: "var(--zen-charcoal)",
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

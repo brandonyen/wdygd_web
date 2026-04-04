@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useMemo,
   type Dispatch,
@@ -14,9 +15,17 @@ export type UserProfile = {
   bio: string;
 };
 
+export type ChangePasswordResult =
+  | { ok: true }
+  | { ok: false; error: string };
+
 export type UserProfileContextValue = {
   profile: UserProfile;
   setProfile: Dispatch<SetStateAction<UserProfile>>;
+  changePassword: (
+    currentPassword: string,
+    newPassword: string,
+  ) => ChangePasswordResult;
 };
 
 const UserProfileContext = createContext<UserProfileContextValue | null>(null);
@@ -24,15 +33,36 @@ const UserProfileContext = createContext<UserProfileContextValue | null>(null);
 export function UserProfileProvider({
   profile,
   setProfile,
+  accountPassword,
+  setAccountPassword,
   children,
 }: {
   profile: UserProfile;
   setProfile: Dispatch<SetStateAction<UserProfile>>;
+  accountPassword: string;
+  setAccountPassword: Dispatch<SetStateAction<string>>;
   children: ReactNode;
 }) {
+  const changePassword = useCallback(
+    (currentPassword: string, newPassword: string): ChangePasswordResult => {
+      if (currentPassword !== accountPassword) {
+        return { ok: false, error: "Current password is incorrect." };
+      }
+      if (newPassword.length < 8) {
+        return {
+          ok: false,
+          error: "New password must be at least 8 characters.",
+        };
+      }
+      setAccountPassword(newPassword);
+      return { ok: true };
+    },
+    [accountPassword, setAccountPassword],
+  );
+
   const value = useMemo(
-    () => ({ profile, setProfile }),
-    [profile, setProfile],
+    () => ({ profile, setProfile, changePassword }),
+    [profile, setProfile, changePassword],
   );
 
   return (

@@ -21,6 +21,7 @@ export default function App() {
     title: "",
     bio: "",
   });
+  const [accountPassword, setAccountPassword] = useState("");
   const [connectedIntegrations, setConnectedIntegrations] = useState<
     IntegrationId[]
   >([]);
@@ -43,6 +44,7 @@ export default function App() {
   const handleSignupComplete = (account: {
     fullName: string;
     email: string;
+    password: string;
   }) => {
     setUserProfile({
       fullName: account.fullName.trim(),
@@ -50,6 +52,7 @@ export default function App() {
       title: "",
       bio: "",
     });
+    setAccountPassword(account.password);
     setSignupComplete(true);
   };
 
@@ -70,7 +73,12 @@ export default function App() {
   }
 
   return (
-    <UserProfileProvider profile={userProfile} setProfile={setUserProfile}>
+    <UserProfileProvider
+      profile={userProfile}
+      setProfile={setUserProfile}
+      accountPassword={accountPassword}
+      setAccountPassword={setAccountPassword}
+    >
       <ConnectedIntegrationsProvider
         connectedIds={connectedIntegrations}
         connectIntegration={connectIntegration}
