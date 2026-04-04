@@ -48,7 +48,7 @@ export function ConnectIntegrationPage({
   };
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center px-8 py-16 bg-background">
+    <div className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center px-8 py-16">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}

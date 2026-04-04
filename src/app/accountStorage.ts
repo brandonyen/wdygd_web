@@ -1,5 +1,3 @@
-import type { AppTheme } from "./appTheme";
-import { parseAppTheme } from "./appTheme";
 import type { IntegrationId } from "./integrationsContext";
 import type { UserProfile } from "./userProfileContext";
 
@@ -8,7 +6,6 @@ const KEY = "wdygd_account";
 export type StoredAccount = UserProfile & {
   password: string;
   connectedIntegrations: IntegrationId[];
-  theme: AppTheme;
 };
 
 function isIntegrationId(x: unknown): x is IntegrationId {
@@ -39,7 +36,6 @@ export function readStoredAccount(): StoredAccount | null {
       bio: typeof data.bio === "string" ? data.bio : "",
       password: data.password,
       connectedIntegrations,
-      theme: parseAppTheme(data.theme),
     };
   } catch {
     return null;

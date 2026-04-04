@@ -14,8 +14,6 @@ import {
   ConnectedIntegrationsProvider,
   type IntegrationId,
 } from "./integrationsContext";
-import { applyAppThemeToDocument, parseAppTheme } from "./appTheme";
-import { AppThemeProvider } from "./appThemeContext";
 import {
   UserProfileProvider,
   type UserProfile,
@@ -66,7 +64,6 @@ export default function App() {
       bio: "",
       password: account.password,
       connectedIntegrations: [],
-      theme: "zen",
     };
     writeStoredAccount(record);
     setUserProfile({
@@ -85,7 +82,6 @@ export default function App() {
   }, [connectedIntegrations, isLoggedIn]);
 
   const handleSignOut = useCallback(() => {
-    applyAppThemeToDocument("zen");
     setIsLoggedIn(false);
     setSignupComplete(false);
     setUserProfile({
@@ -143,8 +139,6 @@ export default function App() {
     );
   }
 
-  const storedTheme = parseAppTheme(readStoredAccount()?.theme);
-
   return (
     <UserProfileProvider
       profile={userProfile}
@@ -156,15 +150,13 @@ export default function App() {
       }
       signOut={handleSignOut}
     >
-      <AppThemeProvider initialTheme={storedTheme}>
-        <ConnectedIntegrationsProvider
-          connectedIds={connectedIntegrations}
-          connectIntegration={connectIntegration}
-          disconnectIntegration={disconnectIntegration}
-        >
-          <RouterProvider router={router} />
-        </ConnectedIntegrationsProvider>
-      </AppThemeProvider>
+      <ConnectedIntegrationsProvider
+        connectedIds={connectedIntegrations}
+        connectIntegration={connectIntegration}
+        disconnectIntegration={disconnectIntegration}
+      >
+        <RouterProvider router={router} />
+      </ConnectedIntegrationsProvider>
     </UserProfileProvider>
   );
 }

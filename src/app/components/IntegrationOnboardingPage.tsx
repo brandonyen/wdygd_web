@@ -31,7 +31,7 @@ export function IntegrationOnboardingPage({
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-8 py-16 bg-background">
+    <div className="min-h-screen flex flex-col items-center justify-center px-8 py-16">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -79,7 +79,7 @@ export function IntegrationOnboardingPage({
             style={{
               backgroundColor: selectedIntegrations.has("github")
                 ? "var(--zen-sage)"
-                : "var(--card)",
+                : "white",
               color: selectedIntegrations.has("github")
                 ? "white"
                 : "var(--zen-charcoal)",
@@ -110,7 +110,7 @@ export function IntegrationOnboardingPage({
             style={{
               backgroundColor: selectedIntegrations.has("slack")
                 ? "var(--zen-blue)"
-                : "var(--card)",
+                : "white",
               color: selectedIntegrations.has("slack")
                 ? "white"
                 : "var(--zen-charcoal)",
@@ -147,7 +147,7 @@ export function IntegrationOnboardingPage({
             style={{
               backgroundColor: selectedIntegrations.has("linear")
                 ? "var(--zen-purple)"
-                : "var(--card)",
+                : "white",
               color: selectedIntegrations.has("linear")
                 ? "white"
                 : "var(--zen-charcoal)",
