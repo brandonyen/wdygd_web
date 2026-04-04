@@ -54,7 +54,7 @@ export function LoginPage({
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-8 py-16 bg-background">
+    <div className="min-h-screen flex flex-col items-center justify-center px-8 py-16">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -89,7 +89,7 @@ export function LoginPage({
           onSubmit={handleSubmit}
           className="space-y-4 p-8 rounded-3xl"
           style={{
-            backgroundColor: "var(--card)",
+            backgroundColor: "white",
             boxShadow: "0 24px 48px -12px rgba(0,0,0,0.08)",
           }}
         >

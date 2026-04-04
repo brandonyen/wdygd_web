@@ -63,7 +63,7 @@ export function LinearPage() {
   };
 
   return (
-    <div className="min-h-screen px-8 py-8 bg-background">
+    <div className="min-h-screen px-8 py-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <motion.div
@@ -91,7 +91,7 @@ export function LinearPage() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="grid grid-cols-1 md:grid-cols-4 gap-6"
         >
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'var(--card)' }}>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'white' }}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm" style={{ color: 'var(--zen-charcoal-light)' }}>Completed</span>
               <CheckCircle2 className="w-4 h-4" style={{ color: 'var(--zen-sage)' }} />
@@ -99,7 +99,7 @@ export function LinearPage() {
             <p className="text-3xl" style={{ color: 'var(--zen-charcoal)', fontWeight: 300 }}>{stats.completed}</p>
           </div>
 
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'var(--card)' }}>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'white' }}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm" style={{ color: 'var(--zen-charcoal-light)' }}>In Progress</span>
               <Clock className="w-4 h-4" style={{ color: 'var(--zen-purple)' }} />
@@ -107,7 +107,7 @@ export function LinearPage() {
             <p className="text-3xl" style={{ color: 'var(--zen-charcoal)', fontWeight: 300 }}>{stats.inProgress}</p>
           </div>
 
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'var(--card)' }}>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'white' }}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm" style={{ color: 'var(--zen-charcoal-light)' }}>To Do</span>
               <Circle className="w-4 h-4" style={{ color: 'var(--zen-blue)' }} />
@@ -115,7 +115,7 @@ export function LinearPage() {
             <p className="text-3xl" style={{ color: 'var(--zen-charcoal)', fontWeight: 300 }}>{stats.todo}</p>
           </div>
 
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'var(--card)' }}>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'white' }}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm" style={{ color: 'var(--zen-charcoal-light)' }}>Cycle Time</span>
               <Zap className="w-4 h-4" style={{ color: 'var(--zen-sage)' }} />
@@ -132,7 +132,7 @@ export function LinearPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="lg:col-span-2 p-8 rounded-3xl space-y-6"
-            style={{ backgroundColor: 'var(--card)' }}
+            style={{ backgroundColor: 'white' }}
           >
             <h3 style={{ color: 'var(--zen-charcoal)' }}>Recent Issues</h3>
             <div className="space-y-3">
@@ -202,7 +202,7 @@ export function LinearPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="p-8 rounded-3xl space-y-6"
-            style={{ backgroundColor: 'var(--card)' }}
+            style={{ backgroundColor: 'white' }}
           >
             <h3 style={{ color: 'var(--zen-charcoal)' }}>Project Progress</h3>
             <div className="space-y-6">

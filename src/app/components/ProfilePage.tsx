@@ -14,7 +14,6 @@ import {
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { useIntegrations } from "../integrationsContext";
 import { patchStoredAccount } from "../accountStorage";
-import { useAppTheme } from "../appThemeContext";
 import {
   useUserProfile,
   profileInitials as getProfileInitials,
@@ -64,8 +63,6 @@ export function ProfilePage() {
     weekly: true,
     achievements: false,
   });
-
-  const { theme: activeAppTheme, setTheme: setAppTheme } = useAppTheme();
 
   const { connectedIds, connectIntegration, disconnectIntegration } =
     useIntegrations();
@@ -148,7 +145,7 @@ export function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen px-8 py-8 bg-background">
+    <div className="min-h-screen px-8 py-8">
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Header */}
         <motion.div
@@ -187,7 +184,7 @@ export function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
           className="p-8 rounded-3xl"
-          style={{ backgroundColor: "var(--card)" }}
+          style={{ backgroundColor: "white" }}
         >
           <div className="flex items-start gap-6">
             <div
@@ -378,7 +375,7 @@ export function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="p-8 rounded-3xl space-y-6"
-          style={{ backgroundColor: "var(--card)" }}
+          style={{ backgroundColor: "white" }}
         >
           <h3 style={{ color: "var(--zen-charcoal)" }}>
             Connected Integrations
@@ -475,7 +472,7 @@ export function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
           className="p-8 rounded-3xl space-y-6"
-          style={{ backgroundColor: "var(--card)" }}
+          style={{ backgroundColor: "white" }}
         >
           <div className="flex items-center gap-2">
             <Bell
@@ -620,7 +617,7 @@ export function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           className="p-8 rounded-3xl space-y-6"
-          style={{ backgroundColor: "var(--card)" }}
+          style={{ backgroundColor: "white" }}
         >
           <div className="flex items-center gap-2">
             <Palette
@@ -631,80 +628,69 @@ export function ProfilePage() {
               Theme & Appearance
             </h3>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            {(
-              [
-                {
-                  id: "zen" as const,
-                  label: "Zen",
-                  subtitle: "Default",
-                  swatch: "#a8b5a0",
-                },
-                {
-                  id: "dark" as const,
-                  label: "Dark",
-                  subtitle: "Dim UI",
-                  swatch: "#171b22",
-                },
-                {
-                  id: "ocean" as const,
-                  label: "Ocean",
-                  subtitle: "Cool teal",
-                  swatch: "#5a9494",
-                },
-                {
-                  id: "forest" as const,
-                  label: "Forest",
-                  subtitle: "Moss green",
-                  swatch: "#5f8f6a",
-                },
-                {
-                  id: "dusk" as const,
-                  label: "Dusk",
-                  subtitle: "Soft lilac",
-                  swatch: "#9b8ab5",
-                },
-              ] as const
-            ).map(({ id, label, subtitle, swatch }) => {
-              const selected = activeAppTheme === id;
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => setAppTheme(id)}
-                  className={`p-4 rounded-xl border-2 ${interactiveButtonClass} ${
-                    selected ? "" : "opacity-60"
-                  }`}
+          <div className="grid grid-cols-3 gap-4">
+            <button
+              className={`p-4 rounded-xl border-2 ${interactiveButtonClass}`}
+              style={{
+                borderColor: "var(--zen-sage)",
+                backgroundColor: "var(--zen-sage-light)",
+              }}
+            >
+              <div className="flex items-center justify-center mb-2">
+                <div
+                  className="w-16 h-16 rounded-lg"
+                  style={{ backgroundColor: "var(--zen-sage)" }}
+                />
+              </div>
+              <p
+                className="text-sm text-center"
+                style={{ color: "var(--zen-charcoal)" }}
+              >
+                Zen (Default)
+              </p>
+            </button>
+            <button
+              className={`p-4 rounded-xl border opacity-60 ${interactiveButtonClass}`}
+              style={{
+                borderColor: "var(--zen-sand)",
+                backgroundColor: "var(--zen-off-white)",
+              }}
+            >
+              <div className="flex items-center justify-center mb-2">
+                <div
+                  className="w-16 h-16 rounded-lg"
                   style={{
-                    borderColor: selected
-                      ? "var(--ring)"
-                      : "var(--zen-sand)",
-                    backgroundColor: selected
-                      ? "var(--accent)"
-                      : "var(--zen-off-white)",
+                    backgroundColor: "var(--zen-charcoal)",
                   }}
-                >
-                  <div className="flex items-center justify-center mb-2">
-                    <div
-                      className="w-16 h-16 rounded-lg"
-                      style={{ backgroundColor: swatch }}
-                    />
-                  </div>
-                  <p
-                    className="text-sm text-center font-medium leading-tight"
-                    style={{ color: "var(--zen-charcoal)" }}
-                  >
-                    {label}
-                  </p>
-                  <p
-                    className="text-xs text-center mt-0.5 leading-tight"
-                    style={{ color: "var(--zen-charcoal-light)" }}
-                  >
-                    {subtitle}
-                  </p>
-                </button>
-              );
-            })}
+                />
+              </div>
+              <p
+                className="text-sm text-center"
+                style={{ color: "var(--zen-charcoal)" }}
+              >
+                Minimal
+              </p>
+            </button>
+            <button
+              className={`p-4 rounded-xl border opacity-60 ${interactiveButtonClass}`}
+              style={{
+                borderColor: "var(--zen-sand)",
+                backgroundColor: "var(--zen-off-white)",
+              }}
+            >
+              <div className="flex items-center justify-center mb-2">
+                <div
+                  className="w-16 h-16 rounded-lg"
+                  style={{ backgroundColor: "var(--zen-blue)" }}
+                />
+              </div>
+              <p
+                className="text-sm text-center"
+                style={{ color: "var(--zen-charcoal)" }}
+              >
+                Ocean
+              </p>
+            </button>
           </div>
         </motion.div>
 
@@ -714,7 +700,7 @@ export function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
           className="p-8 rounded-3xl space-y-4"
-          style={{ backgroundColor: "var(--card)" }}
+          style={{ backgroundColor: "white" }}
         >
           <h3 style={{ color: "var(--zen-charcoal)" }}>
             Account Actions
@@ -808,7 +794,7 @@ export function ProfilePage() {
                 aria-modal="true"
                 aria-labelledby="change-password-title"
                 className="w-full max-w-md rounded-3xl p-8 shadow-xl"
-                style={{ backgroundColor: "var(--card)" }}
+                style={{ backgroundColor: "white" }}
                 initial={{ opacity: 0, scale: 0.96, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96, y: 12 }}
