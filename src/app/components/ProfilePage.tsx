@@ -14,6 +14,7 @@ import {
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { useIntegrations } from "../integrationsContext";
 import { patchStoredAccount } from "../accountStorage";
+import { useAppTheme } from "../appThemeContext";
 import {
   useUserProfile,
   profileInitials as getProfileInitials,
@@ -63,6 +64,8 @@ export function ProfilePage() {
     weekly: true,
     achievements: false,
   });
+
+  const { theme: activeAppTheme, setTheme: setAppTheme } = useAppTheme();
 
   const { connectedIds, connectIntegration, disconnectIntegration } =
     useIntegrations();
@@ -629,68 +632,58 @@ export function ProfilePage() {
             </h3>
           </div>
           <div className="grid grid-cols-3 gap-4">
-            <button
-              className={`p-4 rounded-xl border-2 ${interactiveButtonClass}`}
-              style={{
-                borderColor: "var(--zen-sage)",
-                backgroundColor: "var(--zen-sage-light)",
-              }}
-            >
-              <div className="flex items-center justify-center mb-2">
-                <div
-                  className="w-16 h-16 rounded-lg"
-                  style={{ backgroundColor: "var(--zen-sage)" }}
-                />
-              </div>
-              <p
-                className="text-sm text-center"
-                style={{ color: "var(--zen-charcoal)" }}
-              >
-                Zen (Default)
-              </p>
-            </button>
-            <button
-              className={`p-4 rounded-xl border opacity-60 ${interactiveButtonClass}`}
-              style={{
-                borderColor: "var(--zen-sand)",
-                backgroundColor: "var(--zen-off-white)",
-              }}
-            >
-              <div className="flex items-center justify-center mb-2">
-                <div
-                  className="w-16 h-16 rounded-lg"
+            {(
+              [
+                {
+                  id: "zen" as const,
+                  label: "Zen (Default)",
+                  swatch: "var(--zen-sage)",
+                },
+                {
+                  id: "minimal" as const,
+                  label: "Minimal",
+                  swatch: "var(--zen-charcoal)",
+                },
+                {
+                  id: "ocean" as const,
+                  label: "Ocean",
+                  swatch: "var(--zen-blue)",
+                },
+              ] as const
+            ).map(({ id, label, swatch }) => {
+              const selected = activeAppTheme === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setAppTheme(id)}
+                  className={`p-4 rounded-xl border-2 ${interactiveButtonClass} ${
+                    selected ? "" : "opacity-60"
+                  }`}
                   style={{
-                    backgroundColor: "var(--zen-charcoal)",
+                    borderColor: selected
+                      ? "var(--zen-sage)"
+                      : "var(--zen-sand)",
+                    backgroundColor: selected
+                      ? "var(--zen-sage-light)"
+                      : "var(--zen-off-white)",
                   }}
-                />
-              </div>
-              <p
-                className="text-sm text-center"
-                style={{ color: "var(--zen-charcoal)" }}
-              >
-                Minimal
-              </p>
-            </button>
-            <button
-              className={`p-4 rounded-xl border opacity-60 ${interactiveButtonClass}`}
-              style={{
-                borderColor: "var(--zen-sand)",
-                backgroundColor: "var(--zen-off-white)",
-              }}
-            >
-              <div className="flex items-center justify-center mb-2">
-                <div
-                  className="w-16 h-16 rounded-lg"
-                  style={{ backgroundColor: "var(--zen-blue)" }}
-                />
-              </div>
-              <p
-                className="text-sm text-center"
-                style={{ color: "var(--zen-charcoal)" }}
-              >
-                Ocean
-              </p>
-            </button>
+                >
+                  <div className="flex items-center justify-center mb-2">
+                    <div
+                      className="w-16 h-16 rounded-lg"
+                      style={{ backgroundColor: swatch }}
+                    />
+                  </div>
+                  <p
+                    className="text-sm text-center"
+                    style={{ color: "var(--zen-charcoal)" }}
+                  >
+                    {label}
+                  </p>
+                </button>
+              );
+            })}
           </div>
         </motion.div>
 
