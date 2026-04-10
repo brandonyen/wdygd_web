@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import {
   GitBranch,
@@ -7,98 +8,44 @@ import {
   GitMerge,
 } from "lucide-react";
 
-interface Commit {
-  id: string;
-  message: string;
-  repo: string;
-  time: string;
-  branch: string;
-}
+const API_URL = "https://28gthv6fu1.execute-api.us-east-1.amazonaws.com/prod/github";
 
-interface PullRequest {
-  id: string;
-  title: string;
-  repo: string;
-  status: "open" | "merged" | "closed";
-  time: string;
+interface GitHubData {
+  commits: { sha: string; message: string; author: string; date: string; url: string }[];
+  pullRequests: { number: number; title: string; state: "open" | "closed" | "merged"; author: string; createdAt: string; url: string }[];
+  stats: { totalCommits: number; totalPRsOpened: number; totalPRsMerged: number; totalReviews: number };
 }
 
 export function GitHubPage() {
-  // Mock data
-  const commits: Commit[] = [
-    {
-      id: "1",
-      message: "Add authentication middleware",
-      repo: "backend-api",
-      time: "2h ago",
-      branch: "main",
-    },
-    {
-      id: "2",
-      message: "Fix responsive layout on mobile",
-      repo: "web-app",
-      time: "3h ago",
-      branch: "feature/mobile-fix",
-    },
-    {
-      id: "3",
-      message: "Update dependencies to latest versions",
-      repo: "backend-api",
-      time: "4h ago",
-      branch: "main",
-    },
-    {
-      id: "4",
-      message: "Implement dark mode toggle",
-      repo: "web-app",
-      time: "5h ago",
-      branch: "feature/dark-mode",
-    },
-    {
-      id: "5",
-      message: "Add unit tests for payment flow",
-      repo: "backend-api",
-      time: "6h ago",
-      branch: "test/payments",
-    },
-  ];
+  const [data, setData] = useState<GitHubData | null>(null);
 
-  const pullRequests: PullRequest[] = [
-    {
-      id: "1",
-      title: "Refactor authentication system",
-      repo: "backend-api",
-      status: "merged",
-      time: "1h ago",
-    },
-    {
-      id: "2",
-      title: "Add user profile page",
-      repo: "web-app",
-      status: "open",
-      time: "2h ago",
-    },
-    {
-      id: "3",
-      title: "Fix memory leak in worker",
-      repo: "backend-api",
-      status: "merged",
-      time: "4h ago",
-    },
-    {
-      id: "4",
-      title: "Update API documentation",
-      repo: "docs",
-      status: "open",
-      time: "5h ago",
-    },
-  ];
+  useEffect(() => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(start.getDate() - 90);
 
+    fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        githubToken: import.meta.env.VITE_GITHUB_TOKEN,
+        owner: "brandonyen",
+        repo: "wdygd_web",
+        startDate: start.toISOString(),
+        endDate: end.toISOString(),
+      }),
+    })
+      .then((r) => r.json())
+      .then(setData);
+  }, []);
+
+  const commits = data?.commits ?? [];
+  const pullRequests = data?.pullRequests ?? [];
   const stats = {
-    commits: 23,
-    pullRequests: 8,
-    reviews: 12,
-    repos: 3,
+    commits: data?.stats.totalCommits ?? 0,
+    pullRequests: data?.stats.totalPRsOpened ?? 0,
+    reviews: data?.stats.totalReviews ?? 0,
+    merged: data?.stats.totalPRsMerged ?? 0,
   };
 
   return (
@@ -208,9 +155,9 @@ export function GitHubPage() {
                 className="text-sm"
                 style={{ color: "var(--zen-charcoal-light)" }}
               >
-                Repositories
+                Merged
               </span>
-              <GitBranch
+              <GitMerge
                 className="w-4 h-4"
                 style={{ color: "var(--zen-sage)" }}
               />
@@ -219,7 +166,7 @@ export function GitHubPage() {
               className="text-3xl"
               style={{ color: "var(--zen-charcoal)", fontWeight: 300 }}
             >
-              {stats.repos}
+              {stats.merged}
             </p>
           </div>
         </motion.div>
@@ -238,7 +185,7 @@ export function GitHubPage() {
             <div className="space-y-4">
               {commits.map((commit, index) => (
                 <motion.div
-                  key={commit.id}
+                  key={commit.sha}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.4, delay: 0.3 + index * 0.05 }}
@@ -269,14 +216,9 @@ export function GitHubPage() {
                         className="flex items-center gap-3 text-sm"
                         style={{ color: "var(--zen-charcoal-light)" }}
                       >
-                        <span className="truncate">{commit.repo}</span>
+                        <span className="truncate">{commit.author}</span>
                         <span>•</span>
-                        <span className="flex items-center gap-1">
-                          <GitBranch className="w-3 h-3" />
-                          {commit.branch}
-                        </span>
-                        <span>•</span>
-                        <span>{commit.time}</span>
+                        <span>{new Date(commit.date).toLocaleDateString()}</span>
                       </div>
                     </div>
                   </div>
@@ -297,7 +239,7 @@ export function GitHubPage() {
             <div className="space-y-4">
               {pullRequests.map((pr, index) => (
                 <motion.div
-                  key={pr.id}
+                  key={pr.number}
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.4, delay: 0.3 + index * 0.05 }}
@@ -312,14 +254,14 @@ export function GitHubPage() {
                       className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-1"
                       style={{
                         backgroundColor:
-                          pr.status === "merged"
+                          pr.state === "merged"
                             ? "var(--zen-sage-light)"
-                            : pr.status === "open"
+                            : pr.state === "open"
                               ? "var(--zen-blue)"
                               : "var(--zen-sand)",
                       }}
                     >
-                      {pr.status === "merged" ? (
+                      {pr.state === "merged" ? (
                         <GitMerge
                           className="w-4 h-4"
                           style={{ color: "var(--zen-sage-dark)" }}
@@ -342,11 +284,11 @@ export function GitHubPage() {
                         className="flex items-center gap-3 text-sm"
                         style={{ color: "var(--zen-charcoal-light)" }}
                       >
-                        <span className="truncate">{pr.repo}</span>
+                        <span className="truncate">{pr.author}</span>
                         <span>•</span>
-                        <span className="capitalize">{pr.status}</span>
+                        <span className="capitalize">{pr.state}</span>
                         <span>•</span>
-                        <span>{pr.time}</span>
+                        <span>{new Date(pr.createdAt).toLocaleDateString()}</span>
                       </div>
                     </div>
                   </div>
