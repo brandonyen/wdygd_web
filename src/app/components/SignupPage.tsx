@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { UserPlus } from "lucide-react";
 import { useState, type FormEvent } from "react";
+import axios from "axios";
 
 const USER_CONFIG_API_URL =
   "https://28gthv6fu1.execute-api.us-east-1.amazonaws.com/prod/user-config";
@@ -56,17 +57,15 @@ export function SignupPage({
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(USER_CONFIG_API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const response = await axios.post(
+        USER_CONFIG_API_URL,
+        {
           email: normalizedEmail,
-        }),
-      });
+        },
+        { headers: { "Content-Type": "application/json" } },
+      );
 
-      if (!response.ok) {
+      if (response.status < 200 || response.status >= 300) {
         throw new Error(`Request failed with status ${response.status}`);
       }
 
