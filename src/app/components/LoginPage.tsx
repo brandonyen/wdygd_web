@@ -89,7 +89,7 @@ export function LoginPage({
           onSubmit={handleSubmit}
           className="space-y-4 p-8 rounded-3xl"
           style={{
-            backgroundColor: "white",
+            backgroundColor: "var(--card)",
             boxShadow: "0 24px 48px -12px rgba(0,0,0,0.08)",
           }}
         >

@@ -89,7 +89,7 @@ export function GitHubPage() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="grid grid-cols-1 md:grid-cols-4 gap-6"
         >
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: "white" }}>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: "var(--card)" }}>
             <div className="flex items-center justify-between mb-2">
               <span
                 className="text-sm"
@@ -110,7 +110,7 @@ export function GitHubPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: "white" }}>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: "var(--card)" }}>
             <div className="flex items-center justify-between mb-2">
               <span
                 className="text-sm"
@@ -131,7 +131,7 @@ export function GitHubPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: "white" }}>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: "var(--card)" }}>
             <div className="flex items-center justify-between mb-2">
               <span
                 className="text-sm"
@@ -149,7 +149,7 @@ export function GitHubPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: "white" }}>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: "var(--card)" }}>
             <div className="flex items-center justify-between mb-2">
               <span
                 className="text-sm"
@@ -179,7 +179,7 @@ export function GitHubPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="p-8 rounded-3xl space-y-6"
-            style={{ backgroundColor: "white" }}
+            style={{ backgroundColor: "var(--card)" }}
           >
             <h3 style={{ color: "var(--zen-charcoal)" }}>Recent Commits</h3>
             <div className="space-y-4">
@@ -233,7 +233,7 @@ export function GitHubPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="p-8 rounded-3xl space-y-6"
-            style={{ backgroundColor: "white" }}
+            style={{ backgroundColor: "var(--card)" }}
           >
             <h3 style={{ color: "var(--zen-charcoal)" }}>Pull Requests</h3>
             <div className="space-y-4">

@@ -14,12 +14,14 @@
   --zen-charcoal-light: #6b6b6b;
   --zen-blue: #9db4c8;
   --zen-purple: #b8a8c5;
+  --garden-surface: #f1ede7;
 
-  --background: #faf8f5;
+  /* Zen: warm cream canvas, soft ivory cards */
+  --background: #f3ede4;
   --foreground: #4a4a4a;
-  --card: #ffffff;
+  --card: #fffbf5;
   --card-foreground: #4a4a4a;
-  --popover: oklch(1 0 0);
+  --popover: #fffbf5;
   --popover-foreground: #4a4a4a;
   --primary: #a8b5a0;
   --primary-foreground: #ffffff;
@@ -31,7 +33,7 @@
   --accent-foreground: #4a4a4a;
   --destructive: #d4183d;
   --destructive-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.08);
+  --border: rgba(74, 74, 74, 0.1);
   --input: transparent;
   --input-background: #f5efe3;
   --switch-background: #cbced4;
@@ -52,6 +54,149 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+}
+
+/* Productivity garden: always Zen palette (ignores app theme on :root) */
+.garden-theme-isolated {
+  --zen-sage: #a8b5a0;
+  --zen-sage-light: #c5d1be;
+  --zen-sage-dark: #8a9682;
+  --zen-sand: #e8dcc4;
+  --zen-off-white: #faf8f5;
+  --zen-blue: #9db4c8;
+  --zen-purple: #b8a8c5;
+  --zen-charcoal-light: #6b6b6b;
+}
+
+/* Ocean — teal / cyan primary */
+[data-app-theme="ocean"] {
+  --zen-sage: #0f766e;
+  --zen-sage-light: #5eead4;
+  --zen-sage-dark: #115e59;
+  --zen-sand: #99f6e4;
+  --zen-sand-light: #ccfbf1;
+  --zen-off-white: #b2f5ea;
+  --zen-charcoal: #134e4a;
+  --zen-charcoal-light: #2d7a72;
+  --zen-blue: #0891b2;
+  --zen-purple: #6366f1;
+  --garden-surface: #d6eceb;
+  --background: #b8ece5;
+  --foreground: #134e4a;
+  --card: #ecfeff;
+  --card-foreground: #134e4a;
+  --popover: #ecfeff;
+  --popover-foreground: #134e4a;
+  --primary: #0d9488;
+  --primary-foreground: #f0fdfa;
+  --secondary: #5eead4;
+  --secondary-foreground: #134e4a;
+  --muted: #ccfbf1;
+  --muted-foreground: #2d7a72;
+  --accent: #99f6e4;
+  --accent-foreground: #134e4a;
+  --ring: #14b8a6;
+  --input-background: #ccfbf1;
+  --border: rgba(19, 78, 74, 0.18);
+}
+
+/* Matcha — tea green primary */
+[data-app-theme="matcha"] {
+  --zen-sage: #6b8f3a;
+  --zen-sage-light: #c7dca0;
+  --zen-sage-dark: #4f6a2b;
+  --zen-sand: #d7e6b8;
+  --zen-sand-light: #edf5de;
+  --zen-off-white: #dce9c0;
+  --zen-charcoal: #2e3b1f;
+  --zen-charcoal-light: #596c43;
+  --zen-blue: #6fa08a;
+  --zen-purple: #8fa56f;
+  --garden-surface: #e8f0d6;
+  --background: #d2e2b0;
+  --foreground: #2e3b1f;
+  --card: #f7fbe9;
+  --card-foreground: #2e3b1f;
+  --popover: #f7fbe9;
+  --popover-foreground: #2e3b1f;
+  --primary: #6b8f3a;
+  --primary-foreground: #f7fbe9;
+  --secondary: #c7dca0;
+  --secondary-foreground: #2e3b1f;
+  --muted: #edf5de;
+  --muted-foreground: #596c43;
+  --accent: #d7e6b8;
+  --accent-foreground: #2e3b1f;
+  --ring: #7ca247;
+  --input-background: #edf5de;
+  --border: rgba(46, 59, 31, 0.14);
+}
+
+/* Ube — creamy purple primary */
+[data-app-theme="ube"] {
+  --zen-sage: #7a5aa6;
+  --zen-sage-light: #d8c7ec;
+  --zen-sage-dark: #5f4586;
+  --zen-sand: #e7d8f6;
+  --zen-sand-light: #f3ebfb;
+  --zen-off-white: #e2d3f1;
+  --zen-charcoal: #3a2b50;
+  --zen-charcoal-light: #685584;
+  --zen-blue: #8d78c8;
+  --zen-purple: #9b67cf;
+  --garden-surface: #efe8f8;
+  --background: #d9c7ee;
+  --foreground: #3a2b50;
+  --card: #faf6ff;
+  --card-foreground: #3a2b50;
+  --popover: #faf6ff;
+  --popover-foreground: #3a2b50;
+  --primary: #7a5aa6;
+  --primary-foreground: #faf6ff;
+  --secondary: #d8c7ec;
+  --secondary-foreground: #3a2b50;
+  --muted: #f3ebfb;
+  --muted-foreground: #685584;
+  --accent: #e7d8f6;
+  --accent-foreground: #3a2b50;
+  --ring: #8f6ebd;
+  --input-background: #f3ebfb;
+  --border: rgba(58, 43, 80, 0.14);
+}
+
+/* Dark — replaces former “Minimal”; dim UI, sage accent */
+[data-app-theme="dark"] {
+  --zen-sage: #7cb87a;
+  --zen-sage-light: #2a3d28;
+  --zen-sage-dark: #9fdf9a;
+  --zen-sand: #3d424d;
+  --zen-sand-light: #2a2f38;
+  --zen-off-white: #22262e;
+  --zen-charcoal: #e8eaef;
+  --zen-charcoal-light: #9aa3b2;
+  --zen-blue: #7eb3d4;
+  --zen-purple: #b4a8d8;
+  --garden-surface: #1d222b;
+  --background: #0e1117;
+  --foreground: #e8eaef;
+  --card: #171b22;
+  --card-foreground: #e8eaef;
+  --popover: #171b22;
+  --popover-foreground: #e8eaef;
+  --primary: #7cb87a;
+  --primary-foreground: #0e1117;
+  --secondary: #3d424d;
+  --secondary-foreground: #e8eaef;
+  --muted: #22262e;
+  --muted-foreground: #9aa3b2;
+  --accent: #2a3d28;
+  --accent-foreground: #e8eaef;
+  --ring: #7cb87a;
+  --input-background: #22262e;
+  --border: rgba(232, 234, 239, 0.12);
+  --destructive: #f87171;
+  --destructive-foreground: #0e1117;
+  --switch-background: #4b5563;
 }
 
 .dark {

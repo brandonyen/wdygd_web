@@ -127,7 +127,7 @@ export function Dashboard() {
             initial={{ opacity: 0, x: 16 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.28 }}
-            className="lg:col-span-1 p-8 rounded-3xl bg-white lg:sticky lg:top-24"
+            className="lg:col-span-1 p-8 rounded-3xl bg-card lg:sticky lg:top-24"
           >
             <LinearTodoList
               todos={todos}

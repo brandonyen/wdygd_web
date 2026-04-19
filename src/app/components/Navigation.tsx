@@ -8,7 +8,7 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useUserProfile, profileInitials } from "../userProfileContext";
 
 const integrationNav = [
@@ -19,20 +19,23 @@ const integrationNav = [
 
 export function Navigation() {
   const location = useLocation();
-  // Remount on route change so local menu state resets without setState in an effect.
-  return <NavigationBar key={location.pathname} />;
-}
-
-function NavigationBar() {
-  const location = useLocation();
   const { profile, signOut } = useUserProfile();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const navLinksRef = useRef<HTMLDivElement>(null);
+  const [activeTabBounds, setActiveTabBounds] = useState<{
+    left: number;
+    width: number;
+  } | null>(null);
 
   const avatarInitials = useMemo(
     () => profileInitials(profile.fullName),
     [profile.fullName],
   );
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -58,6 +61,39 @@ function NavigationBar() {
     ...integrationNav,
   ];
 
+  useLayoutEffect(() => {
+    const container = navLinksRef.current;
+    if (!container) return;
+    const activeLink = container.querySelector<HTMLAnchorElement>(
+      `[data-nav-path="${location.pathname}"]`,
+    );
+    if (!activeLink) {
+      setActiveTabBounds(null);
+      return;
+    }
+    setActiveTabBounds({
+      left: activeLink.offsetLeft,
+      width: activeLink.offsetWidth,
+    });
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const onResize = () => {
+      const container = navLinksRef.current;
+      if (!container) return;
+      const activeLink = container.querySelector<HTMLAnchorElement>(
+        `[data-nav-path="${location.pathname}"]`,
+      );
+      if (!activeLink) return;
+      setActiveTabBounds({
+        left: activeLink.offsetLeft,
+        width: activeLink.offsetWidth,
+      });
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [location.pathname]);
+
   return (
     <nav className="border-b" style={{ borderColor: "var(--zen-sand)" }}>
       <div className="max-w-7xl mx-auto px-8">
@@ -77,7 +113,22 @@ function NavigationBar() {
           </div>
 
           {/* Navigation Links */}
-          <div className="flex gap-2">
+          <div ref={navLinksRef} className="relative flex gap-2">
+            {activeTabBounds && (
+              <motion.div
+                className="absolute top-0 h-full rounded-full z-0"
+                style={{ backgroundColor: "var(--zen-sage)" }}
+                animate={{
+                  left: activeTabBounds.left,
+                  width: activeTabBounds.width,
+                }}
+                transition={{
+                  type: "spring",
+                  bounce: 0.2,
+                  duration: 0.6,
+                }}
+              />
+            )}
             {links.map((link) => {
               const Icon = link.icon;
               const isActive = location.pathname === link.path;
@@ -86,28 +137,14 @@ function NavigationBar() {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className="relative px-6 py-2 rounded-full transition-all duration-200 flex items-center gap-2"
+                  data-nav-path={link.path}
+                  className="relative px-6 py-2 rounded-full transition-all duration-200 flex items-center gap-2 overflow-hidden"
                   style={{
                     color: isActive ? "white" : "var(--zen-charcoal-light)",
-                    backgroundColor: isActive
-                      ? "var(--zen-sage)"
-                      : "transparent",
                   }}
                 >
-                  <Icon className="w-4 h-4" />
-                  <span>{link.label}</span>
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeTab"
-                      className="absolute inset-0 rounded-full -z-10"
-                      style={{ backgroundColor: "var(--zen-sage)" }}
-                      transition={{
-                        type: "spring",
-                        bounce: 0.2,
-                        duration: 0.6,
-                      }}
-                    />
-                  )}
+                  <Icon className="w-4 h-4 relative z-10" />
+                  <span className="relative z-10">{link.label}</span>
                 </Link>
               );
             })}
@@ -138,7 +175,7 @@ function NavigationBar() {
                 transition={{ duration: 0.15 }}
                 className="absolute right-0 top-full mt-2 min-w-[13.5rem] py-1.5 rounded-2xl shadow-lg z-50 border"
                 style={{
-                  backgroundColor: "white",
+                  backgroundColor: "var(--card)",
                   borderColor: "var(--zen-sand)",
                 }}
               >

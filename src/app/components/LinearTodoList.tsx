@@ -71,7 +71,7 @@ export function LinearTodoList({
             style={{
               backgroundColor: todo.completed
                 ? "var(--zen-sand-light)"
-                : "white",
+                : "var(--card)",
             }}
           >
             <Checkbox

@@ -34,7 +34,10 @@ export function ProductivityGarden({
   const linearGrowth = (activityData.linear / 100) * 60 + 40;
 
   return (
-    <div className="w-full h-96 relative rounded-3xl overflow-hidden bg-zen-off-white">
+    <div
+      className="garden-theme-isolated w-full h-96 relative rounded-3xl overflow-hidden"
+      style={{ backgroundColor: "var(--garden-surface)" }}
+    >
       {/* Ambient background gradients */}
       <div className="absolute inset-0 opacity-30">
         {show("github") && (
