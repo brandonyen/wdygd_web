@@ -39,15 +39,15 @@ export function ProductivityGarden({
       style={{ backgroundColor: "var(--garden-surface)" }}
     >
       {/* Ambient background gradients */}
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 opacity-25">
         {show("github") && (
-          <div className="absolute bottom-0 left-0 w-1/3 h-1/2 rounded-full blur-3xl bg-zen-sage-light" />
+          <div className="absolute top-8 left-8 w-40 h-40 rounded-full blur-3xl bg-zen-sage-light" />
         )}
         {show("slack") && (
-          <div className="absolute bottom-0 right-0 w-1/3 h-1/2 rounded-full blur-3xl bg-zen-blue" />
+          <div className="absolute top-20 left-1/2 -translate-x-1/2 w-44 h-44 rounded-full blur-3xl bg-zen-blue" />
         )}
         {show("linear") && (
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-1/3 h-1/3 rounded-full blur-3xl bg-zen-purple" />
+          <div className="absolute top-10 right-12 w-44 h-44 rounded-full blur-3xl bg-zen-purple" />
         )}
       </div>
 
@@ -57,205 +57,156 @@ export function ProductivityGarden({
         viewBox="0 0 800 400"
         preserveAspectRatio="xMidYMid meet"
       >
-        {/* Ground line */}
+        {/* Base horizon */}
         <line
-          x1="0"
+          x1="20"
           y1="300"
-          x2="800"
+          x2="780"
           y2="300"
           stroke="var(--zen-sand)"
           strokeWidth="2"
-          opacity="0.3"
+          opacity="0.35"
         />
 
-        {/* GitHub - Organic tree-like structure (left) */}
+        {/* Subtle hill layers for a calmer, modern canvas */}
+        <motion.path
+          d="M20 300 C140 282 240 306 360 294 C480 282 600 304 780 290 L780 330 L20 330 Z"
+          fill="var(--zen-off-white)"
+          opacity={0.45}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: mounted ? 0.45 : 0 }}
+          transition={{ duration: 1 }}
+        />
+        <motion.path
+          d="M20 302 C170 294 300 316 430 304 C560 292 680 312 780 304 L780 336 L20 336 Z"
+          fill="var(--zen-sand-light)"
+          opacity={0.35}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: mounted ? 0.35 : 0 }}
+          transition={{ duration: 1, delay: 0.1 }}
+        />
+
+        {/* GitHub - minimal tree (left) */}
         {show("github") && (
           <motion.g
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: mounted ? 1 : 0, scale: mounted ? 1 : 0.8 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 8 }}
+            transition={{ duration: 0.85, ease: "easeOut" }}
           >
-            {/* Stem */}
             <motion.path
-              d="M100 300 Q100 250 100 200"
+              d="M170 300 L170 210"
               stroke="var(--zen-sage-dark)"
               strokeWidth="4"
               fill="none"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: mounted ? 1 : 0 }}
-              transition={{ duration: 1.5, ease: "easeOut" }}
+              transition={{ duration: 1, ease: "easeOut" }}
             />
-
-            {/* Branches */}
-            {[...Array(5)].map((_, i) => {
-              const y = 300 - (i * githubGrowth) / 5;
-              const angle = i % 2 === 0 ? 30 : -30;
-              const endX = 100 + (angle > 0 ? 40 : -40);
-              return (
-                <motion.path
-                  key={i}
-                  d={`M100 ${y} Q${100 + angle} ${y - 20} ${endX} ${y - 30}`}
-                  stroke="var(--zen-sage)"
-                  strokeWidth="2"
-                  fill="none"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  animate={{
-                    pathLength: mounted ? 1 : 0,
-                    opacity: mounted ? 0.8 : 0,
-                  }}
-                  transition={{
-                    duration: 1,
-                    delay: 0.5 + i * 0.1,
-                    ease: "easeOut",
-                  }}
-                />
-              );
-            })}
-
-            {/* Leaves */}
-            {[...Array(8)].map((_, i) => {
-              const angle = i * 45 + (i % 2) * 20;
-              const radius = 60 + (i % 3) * 15;
-              const x = 100 + Math.cos((angle * Math.PI) / 180) * radius;
-              const y =
-                220 - Math.abs(Math.sin((angle * Math.PI) / 180)) * radius;
-              return (
-                <motion.circle
-                  key={i}
-                  cx={x}
-                  cy={y}
-                  r={8 + (i % 3) * 3}
-                  fill="var(--zen-sage)"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{
-                    scale: mounted ? 1 : 0,
-                    opacity: mounted ? 0.7 : 0,
-                  }}
-                  transition={{
-                    duration: 0.6,
-                    delay: 1 + i * 0.08,
-                    ease: "easeOut",
-                  }}
-                />
-              );
-            })}
+            {[
+              "M170 270 L130 238",
+              "M170 255 L205 230",
+              "M170 240 L138 214",
+            ].map((d, i) => (
+              <motion.path
+                key={d}
+                d={d}
+                stroke="var(--zen-sage)"
+                strokeWidth="2.4"
+                fill="none"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: mounted ? 1 : 0 }}
+                transition={{ duration: 0.7, delay: 0.18 + i * 0.08 }}
+              />
+            ))}
+            {[150, 188, 126, 210, 170].map((x, i) => (
+              <motion.circle
+                key={`leaf-${x}`}
+                cx={x}
+                cy={195 - (i % 2) * 18}
+                r={6 + ((githubGrowth / 10 + i) % 4)}
+                fill="var(--zen-sage)"
+                opacity={0.72}
+                initial={{ scale: 0 }}
+                animate={{ scale: mounted ? 1 : 0 }}
+                transition={{ duration: 0.45, delay: 0.55 + i * 0.05 }}
+              />
+            ))}
           </motion.g>
         )}
 
-        {/* Slack - Flowing water-like structure (center) */}
+        {/* Slack - centered wave motif (middle) */}
         {show("slack") && (
-          <motion.g
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 20 }}
-            transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
-          >
-            {/* Wave paths */}
-            {[...Array(4)].map((_, i) => {
-              const yOffset = 280 - (i * slackGrowth) / 4;
-              return (
-                <motion.path
-                  key={i}
-                  d={`M400 ${yOffset} Q430 ${yOffset - 15} 460 ${yOffset} T520 ${yOffset}`}
-                  stroke="var(--zen-blue)"
-                  strokeWidth="3"
-                  fill="none"
-                  opacity={0.6 - i * 0.1}
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: mounted ? 1 : 0 }}
-                  transition={{
-                    duration: 1.5,
-                    delay: 0.6 + i * 0.15,
-                    ease: "easeInOut",
-                  }}
-                />
-              );
-            })}
-
-            {/* Bubbles */}
-            {[...Array(12)].map((_, i) => {
-              const x = 420 + (i % 4) * 30;
-              const y = 270 - Math.floor(i / 4) * 30;
-              const size = 4 + (i % 3) * 2;
-              return (
-                <motion.circle
-                  key={i}
-                  cx={x}
-                  cy={y}
-                  r={size}
-                  fill="var(--zen-blue)"
-                  opacity={0.4}
-                  initial={{ scale: 0, y: 20 }}
-                  animate={{
-                    scale: mounted ? 1 : 0,
-                    y: mounted ? 0 : 20,
-                  }}
-                  transition={{
-                    duration: 0.8,
-                    delay: 1.2 + i * 0.06,
-                    ease: "easeOut",
-                  }}
-                />
-              );
-            })}
-          </motion.g>
-        )}
-
-        {/* Linear - Geometric crystal structure (right) */}
-        {show("linear") && (
           <motion.g
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: mounted ? 1 : 0, scale: mounted ? 1 : 0.9 }}
-            transition={{ duration: 1.2, delay: 0.6, ease: "easeOut" }}
+            transition={{ duration: 0.85, delay: 0.15 }}
           >
-            {/* Main crystal */}
-            <motion.path
-              d={`M600 300 L580 ${300 - linearGrowth * 0.5} L600 ${300 - linearGrowth} L620 ${300 - linearGrowth * 0.5} Z`}
-              fill="var(--zen-purple)"
-              opacity={0.6}
-              initial={{ scaleY: 0, transformOrigin: "center bottom" }}
-              animate={{ scaleY: mounted ? 1 : 0 }}
-              transition={{ duration: 1.2, delay: 0.9, ease: "easeOut" }}
-            />
-
-            {/* Side crystals */}
-            <motion.path
-              d={`M570 300 L560 ${300 - linearGrowth * 0.3} L570 ${300 - linearGrowth * 0.6} L580 ${300 - linearGrowth * 0.3} Z`}
-              fill="var(--zen-purple)"
-              opacity={0.5}
-              initial={{ scaleY: 0, transformOrigin: "center bottom" }}
-              animate={{ scaleY: mounted ? 1 : 0 }}
-              transition={{ duration: 1, delay: 1.1, ease: "easeOut" }}
-            />
-
-            <motion.path
-              d={`M620 300 L630 ${300 - linearGrowth * 0.3} L620 ${300 - linearGrowth * 0.6} L610 ${300 - linearGrowth * 0.3} Z`}
-              fill="var(--zen-purple)"
-              opacity={0.5}
-              initial={{ scaleY: 0, transformOrigin: "center bottom" }}
-              animate={{ scaleY: mounted ? 1 : 0 }}
-              transition={{ duration: 1, delay: 1.1, ease: "easeOut" }}
-            />
-
-            {/* Small accent crystals */}
-            {[...Array(6)].map((_, i) => {
-              const baseX = 550 + i * 20;
-              const height = 15 + (i % 3) * 10;
+            {[0, 1, 2, 3].map((i) => {
+              const y = 278 - i * 22;
               return (
                 <motion.path
-                  key={i}
-                  d={`M${baseX} 300 L${baseX - 4} ${300 - height} L${baseX} ${300 - height - 8} L${baseX + 4} ${300 - height} Z`}
-                  fill="var(--zen-purple)"
-                  opacity={0.3}
-                  initial={{ scaleY: 0, transformOrigin: "center bottom" }}
-                  animate={{ scaleY: mounted ? 1 : 0 }}
-                  transition={{
-                    duration: 0.6,
-                    delay: 1.3 + i * 0.08,
-                    ease: "easeOut",
-                  }}
+                  key={`flow-${i}`}
+                  d={`M270 ${y} C305 ${y - 16} 375 ${y + 16} 410 ${y} C445 ${y - 16} 495 ${y + 10} 530 ${y}`}
+                  stroke="var(--zen-blue)"
+                  strokeWidth="3"
+                  fill="none"
+                  opacity={0.52 - i * 0.09}
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: mounted ? 1 : 0 }}
+                  transition={{ duration: 1.1, delay: 0.3 + i * 0.1 }}
                 />
               );
             })}
+            {[328, 370, 414, 460].map((x, i) => (
+              <motion.circle
+                key={`drop-${x}`}
+                cx={x}
+                cy={232 + (i % 2) * 8}
+                r={4 + (slackGrowth / 100) * 3}
+                fill="var(--zen-blue)"
+                opacity={0.35}
+                initial={{ scale: 0 }}
+                animate={{ scale: mounted ? 1 : 0 }}
+                transition={{ duration: 0.4, delay: 0.75 + i * 0.06 }}
+              />
+            ))}
+          </motion.g>
+        )}
+
+        {/* Linear - simplified mountain cluster (right) */}
+        {show("linear") && (
+          <motion.g
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 10 }}
+            transition={{ duration: 0.85, delay: 0.3 }}
+          >
+            <motion.path
+              d={`M620 300 L662 ${300 - linearGrowth * 0.78} L704 300 Z`}
+              fill="var(--zen-purple)"
+              opacity={0.56}
+              initial={{ scaleY: 0 }}
+              animate={{ scaleY: mounted ? 1 : 0 }}
+              transition={{ duration: 0.8, delay: 0.55 }}
+              style={{ transformOrigin: "center bottom" }}
+            />
+            <motion.path
+              d={`M590 300 L635 ${300 - linearGrowth * 0.48} L680 300 Z`}
+              fill="var(--zen-purple)"
+              opacity={0.38}
+              initial={{ scaleY: 0 }}
+              animate={{ scaleY: mounted ? 1 : 0 }}
+              transition={{ duration: 0.7, delay: 0.68 }}
+              style={{ transformOrigin: "center bottom" }}
+            />
+            <motion.path
+              d={`M670 300 L700 ${300 - linearGrowth * 0.38} L730 300 Z`}
+              fill="var(--zen-purple)"
+              opacity={0.34}
+              initial={{ scaleY: 0 }}
+              animate={{ scaleY: mounted ? 1 : 0 }}
+              transition={{ duration: 0.65, delay: 0.75 }}
+              style={{ transformOrigin: "center bottom" }}
+            />
           </motion.g>
         )}
       </svg>
