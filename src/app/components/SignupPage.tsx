@@ -2,6 +2,9 @@ import { motion } from "motion/react";
 import { UserPlus } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
+const USER_CONFIG_API_URL =
+  "https://28gthv6fu1.execute-api.us-east-1.amazonaws.com/prod/user-config";
+
 interface SignupPageProps {
   onSignupComplete: (account: {
     fullName: string;
@@ -24,12 +27,16 @@ export function SignupPage({
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
     setError(null);
 
     const name = fullName.trim();
+    const normalizedEmail = email.trim();
+
     if (!name) {
       setError("Please enter your name.");
       return;
@@ -47,11 +54,34 @@ export function SignupPage({
       return;
     }
 
-    onSignupComplete({
-      fullName: name,
-      email: email.trim(),
-      password,
-    });
+    setIsSubmitting(true);
+    try {
+      const response = await fetch(USER_CONFIG_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: normalizedEmail,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      onSignupComplete({
+        fullName: name,
+        email: normalizedEmail,
+        password,
+      });
+    } catch {
+      setError(
+        "We couldn't create your account right now. Please try again in a moment.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -198,15 +228,18 @@ export function SignupPage({
 
           <motion.button
             type="submit"
+            disabled={isSubmitting}
             className="w-full px-6 py-3.5 rounded-full text-sm font-medium transition-colors"
             style={{
               backgroundColor: "var(--zen-charcoal)",
               color: "white",
+              opacity: isSubmitting ? 0.7 : 1,
+              cursor: isSubmitting ? "not-allowed" : "pointer",
             }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={isSubmitting ? {} : { scale: 1.02 }}
+            whileTap={isSubmitting ? {} : { scale: 0.98 }}
           >
-            Create account
+            {isSubmitting ? "Creating account..." : "Create account"}
           </motion.button>
         </form>
 
