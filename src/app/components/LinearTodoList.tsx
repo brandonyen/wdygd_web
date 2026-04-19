@@ -44,7 +44,7 @@ export function LinearTodoList({
   connectedIntegrationIds,
 }: LinearTodoListProps) {
   return (
-    <div className="space-y-6">
+    <div className="h-full flex flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
         <h3
           className="text-left leading-snug"
@@ -60,14 +60,14 @@ export function LinearTodoList({
         </span>
       </div>
 
-      <div className="space-y-3">
+      <div className="flex-1 min-h-0 overflow-y-auto pr-2 space-y-2">
         {todos.map((todo, index) => (
           <motion.div
             key={todo.id}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: index * 0.05 }}
-            className="flex items-start gap-3 p-4 rounded-2xl transition-all duration-200 hover:shadow-sm"
+            className="flex items-start gap-2.5 p-3 rounded-2xl transition-all duration-200 hover:shadow-sm"
             style={{
               backgroundColor: todo.completed
                 ? "var(--zen-sand-light)"
