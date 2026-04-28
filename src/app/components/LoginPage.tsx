@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { LogIn } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type KeyboardEvent } from "react";
 import { signInWithCognito } from "../cognitoAuth";
 
 interface LoginPageProps {
@@ -65,6 +65,12 @@ export function LoginPage({
     }
   };
 
+  const handleFormKeyDown = (e: KeyboardEvent<HTMLFormElement>) => {
+    if (e.key !== "Enter" || isSubmitting) return;
+    e.preventDefault();
+    e.currentTarget.requestSubmit();
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-8 py-16">
       <motion.div
@@ -99,6 +105,7 @@ export function LoginPage({
 
         <form
           onSubmit={handleSubmit}
+          onKeyDown={handleFormKeyDown}
           className="space-y-4 p-8 rounded-3xl"
           style={{
             backgroundColor: "var(--card)",

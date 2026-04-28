@@ -28,6 +28,15 @@ export default defineConfig({
       },
     },
   },
+  server: {
+    proxy: {
+      "/api/github": {
+        target: "https://28gthv6fu1.execute-api.us-east-1.amazonaws.com",
+        changeOrigin: true,
+        rewrite: () => "/prod/github",
+      },
+    },
+  },
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ["**/*.svg", "**/*.csv"],

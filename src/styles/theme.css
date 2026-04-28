@@ -349,3 +349,32 @@
     line-height: 1.5;
   }
 }
+
+/* Global scrollbar styling: thin with transparent track */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--zen-charcoal-light) 55%, transparent)
+    transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: color-mix(
+    in srgb,
+    var(--zen-charcoal-light) 55%,
+    transparent
+  );
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}

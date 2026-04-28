@@ -77,8 +77,8 @@ export function SlackPage() {
   };
 
   return (
-    <div className="min-h-screen px-8 py-8">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="overflow-y-auto px-8 py-8">
+      <div className="max-w-7xl mx-auto lg:h-full flex flex-col gap-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -194,17 +194,17 @@ export function SlackPage() {
         </motion.div>
 
         {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:flex-1 lg:min-h-0">
           {/* Recent Messages */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-2 p-8 rounded-3xl space-y-6"
+            className="lg:col-span-2 pl-8 pt-8 pb-8 pr-6 rounded-3xl space-y-6 max-h-[52vh] flex flex-col lg:min-h-0"
             style={{ backgroundColor: "var(--card)" }}
           >
             <h3 style={{ color: "var(--zen-charcoal)" }}>Recent Messages</h3>
-            <div className="space-y-3">
+            <div className="space-y-3 overflow-y-auto pr-1 flex-1 min-h-0 pr-3">
               {messages.map((message, index) => (
                 <motion.div
                   key={message.id}
@@ -264,11 +264,11 @@ export function SlackPage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="p-8 rounded-3xl space-y-6"
+            className="pl-8 pt-8 pb-8 pr-6 rounded-3xl space-y-6 max-h-[52vh] flex flex-col lg:min-h-0"
             style={{ backgroundColor: "var(--card)" }}
           >
             <h3 style={{ color: "var(--zen-charcoal)" }}>Top Channels</h3>
-            <div className="space-y-4">
+            <div className="space-y-4 overflow-y-auto pr-1 flex-1 min-h-0 pr-3">
               {topChannels.map((channel, index) => (
                 <motion.div
                   key={channel.name}

@@ -8,7 +8,9 @@ import {
   GitMerge,
 } from "lucide-react";
 
-const API_URL = "https://28gthv6fu1.execute-api.us-east-1.amazonaws.com/prod/github";
+const API_URL = import.meta.env.DEV
+  ? "/api/github"
+  : "https://28gthv6fu1.execute-api.us-east-1.amazonaws.com/prod/github";
 
 interface GitHubData {
   commits: { sha: string; message: string; author: string; date: string; url: string }[];
@@ -16,27 +18,88 @@ interface GitHubData {
   stats: { totalCommits: number; totalPRsOpened: number; totalPRsMerged: number; totalReviews: number };
 }
 
+function fallbackGitHubData(): GitHubData {
+  return {
+    commits: [
+      {
+        sha: "demo1",
+        message: "Set up Cognito login flow",
+        author: "You",
+        date: new Date().toISOString(),
+        url: "#",
+      },
+      {
+        sha: "demo2",
+        message: "Fix CORS handling for signup endpoint",
+        author: "You",
+        date: new Date(Date.now() - 86_400_000).toISOString(),
+        url: "#",
+      },
+    ],
+    pullRequests: [
+      {
+        number: 101,
+        title: "Add Cognito auth integration",
+        state: "open",
+        author: "You",
+        createdAt: new Date().toISOString(),
+        url: "#",
+      },
+    ],
+    stats: {
+      totalCommits: 2,
+      totalPRsOpened: 1,
+      totalPRsMerged: 0,
+      totalReviews: 0,
+    },
+  };
+}
+
 export function GitHubPage() {
   const [data, setData] = useState<GitHubData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const end = new Date();
     const start = new Date();
     start.setDate(start.getDate() - 90);
 
-    fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        githubToken: import.meta.env.VITE_GITHUB_TOKEN,
-        owner: "brandonyen",
-        repo: "wdygd_web",
-        startDate: start.toISOString(),
-        endDate: end.toISOString(),
-      }),
-    })
-      .then((r) => r.json())
-      .then(setData);
+    const loadData = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            githubToken: import.meta.env.VITE_GITHUB_TOKEN,
+            owner: "brandonyen",
+            repo: "wdygd_web",
+            startDate: start.toISOString(),
+            endDate: end.toISOString(),
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`GitHub API request failed: ${response.status}`);
+        }
+
+        const json = (await response.json()) as GitHubData;
+        setData(json);
+      } catch (err) {
+        setData(fallbackGitHubData());
+        if (err instanceof Error) {
+          setError(`${err.message}. Showing local demo data.`);
+        } else {
+          setError("GitHub data is unavailable. Showing local demo data.");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
   }, []);
 
   const commits = data?.commits ?? [];
@@ -49,8 +112,8 @@ export function GitHubPage() {
   };
 
   return (
-    <div className="min-h-screen px-8 py-8">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="px-8 py-8">
+      <div className="max-w-7xl mx-auto lg:h-full flex flex-col gap-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -80,6 +143,11 @@ export function GitHubPage() {
           >
             Your code contributions and collaboration
           </p>
+          {error && (
+            <p className="text-sm mt-2 ml-15" style={{ color: "#c45c5c" }}>
+              {error}
+            </p>
+          )}
         </motion.div>
 
         {/* Stats Grid */}
@@ -172,17 +240,22 @@ export function GitHubPage() {
         </motion.div>
 
         {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:flex-1 lg:min-h-0">
           {/* Recent Commits */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="p-8 rounded-3xl space-y-6"
+            className="pl-8 pt-8 pb-8 pr-6 rounded-3xl space-y-6 max-h-[52vh] flex flex-col lg:min-h-0"
             style={{ backgroundColor: "var(--card)" }}
           >
             <h3 style={{ color: "var(--zen-charcoal)" }}>Recent Commits</h3>
-            <div className="space-y-4">
+            {isLoading && (
+              <p className="text-sm" style={{ color: "var(--zen-charcoal-light)" }}>
+                Loading GitHub data...
+              </p>
+            )}
+            <div className="space-y-4 overflow-y-auto pr-1 flex-1 min-h-0 pr-3">
               {commits.map((commit, index) => (
                 <motion.div
                   key={commit.sha}
@@ -232,11 +305,16 @@ export function GitHubPage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="p-8 rounded-3xl space-y-6"
+            className="pl-8 pt-8 pb-8 pr-6 rounded-3xl space-y-6 max-h-[52vh] flex flex-col lg:min-h-0"
             style={{ backgroundColor: "var(--card)" }}
           >
             <h3 style={{ color: "var(--zen-charcoal)" }}>Pull Requests</h3>
-            <div className="space-y-4">
+            {isLoading && (
+              <p className="text-sm" style={{ color: "var(--zen-charcoal-light)" }}>
+                Loading GitHub data...
+              </p>
+            )}
+            <div className="space-y-4 overflow-y-auto pr-1 flex-1 min-h-0 pr-3">
               {pullRequests.map((pr, index) => (
                 <motion.div
                   key={pr.number}
