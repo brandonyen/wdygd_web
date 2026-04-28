@@ -6,6 +6,9 @@ import tailwindcss from "@tailwindcss/vite";
 // https://vite.dev/config/
 
 export default defineConfig({
+  define: {
+    global: "globalThis",
+  },
   plugins: [
     // The React and Tailwind plugins are both required for Make, even if
     // Tailwind is not being actively used – do not remove them
@@ -16,6 +19,13 @@ export default defineConfig({
     alias: {
       // Alias @ to the src directory
       "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: "globalThis",
+      },
     },
   },
 

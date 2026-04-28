@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { UserPlus } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import axios from "axios";
+import { signUpWithCognito } from "../cognitoAuth";
 
 const USER_CONFIG_API_URL =
   "https://28gthv6fu1.execute-api.us-east-1.amazonaws.com/prod/user-config";
@@ -10,7 +11,6 @@ interface SignupPageProps {
   onSignupComplete: (account: {
     fullName: string;
     email: string;
-    password: string;
   }) => void;
   onSwitchToLogin: () => void;
 }
@@ -57,6 +57,12 @@ export function SignupPage({
 
     setIsSubmitting(true);
     try {
+      await signUpWithCognito({
+        email: normalizedEmail,
+        password,
+        fullName: name,
+      });
+
       const response = await axios.post(
         USER_CONFIG_API_URL,
         {
@@ -72,9 +78,12 @@ export function SignupPage({
       onSignupComplete({
         fullName: name,
         email: normalizedEmail,
-        password,
       });
-    } catch {
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+        return;
+      }
       setError(
         "We couldn't create your account right now. Please try again in a moment.",
       );

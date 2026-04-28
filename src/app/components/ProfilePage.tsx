@@ -135,14 +135,14 @@ export function ProfilePage() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [passwordModalOpen, closePasswordModal]);
 
-  const handlePasswordModalSubmit = (e: FormEvent) => {
+  const handlePasswordModalSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setPasswordFormError(null);
     if (newPassword !== confirmNewPassword) {
       setPasswordFormError("New passwords do not match.");
       return;
     }
-    const result = changePassword(currentPassword, newPassword);
+    const result = await changePassword(currentPassword, newPassword);
     if (!result.ok) {
       setPasswordFormError(result.error);
       return;

@@ -1,12 +1,12 @@
 import {
   createContext,
-  useCallback,
   useContext,
   useMemo,
   type Dispatch,
   type ReactNode,
   type SetStateAction,
 } from "react";
+import { changeCognitoPassword } from "./cognitoAuth";
 
 export type UserProfile = {
   fullName: string;
@@ -23,7 +23,7 @@ export type UserProfileContextValue = {
   changePassword: (
     currentPassword: string,
     newPassword: string,
-  ) => ChangePasswordResult;
+  ) => Promise<ChangePasswordResult>;
   signOut: () => void;
 };
 
@@ -32,37 +32,35 @@ const UserProfileContext = createContext<UserProfileContextValue | null>(null);
 export function UserProfileProvider({
   profile,
   setProfile,
-  accountPassword,
-  setAccountPassword,
-  onPasswordUpdated,
   signOut,
   children,
 }: {
   profile: UserProfile;
   setProfile: Dispatch<SetStateAction<UserProfile>>;
-  accountPassword: string;
-  setAccountPassword: Dispatch<SetStateAction<string>>;
-  onPasswordUpdated?: (newPassword: string) => void;
   signOut: () => void;
   children: ReactNode;
 }) {
-  const changePassword = useCallback(
-    (currentPassword: string, newPassword: string): ChangePasswordResult => {
-      if (currentPassword !== accountPassword) {
-        return { ok: false, error: "Current password is incorrect." };
-      }
-      if (newPassword.length < 8) {
-        return {
-          ok: false,
-          error: "New password must be at least 8 characters.",
-        };
-      }
-      setAccountPassword(newPassword);
-      onPasswordUpdated?.(newPassword);
+  const changePassword = async (
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<ChangePasswordResult> => {
+    if (newPassword.length < 8) {
+      return {
+        ok: false,
+        error: "New password must be at least 8 characters.",
+      };
+    }
+
+    try {
+      await changeCognitoPassword(currentPassword, newPassword);
       return { ok: true };
-    },
-    [accountPassword, setAccountPassword, onPasswordUpdated],
-  );
+    } catch (err) {
+      if (err instanceof Error) {
+        return { ok: false, error: err.message };
+      }
+      return { ok: false, error: "Unable to change password right now." };
+    }
+  };
 
   const value = useMemo(
     () => ({ profile, setProfile, changePassword, signOut }),

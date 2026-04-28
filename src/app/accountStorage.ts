@@ -6,7 +6,6 @@ import type { UserProfile } from "./userProfileContext";
 const KEY = "wdygd_account";
 
 export type StoredAccount = UserProfile & {
-  password: string;
   connectedIntegrations: IntegrationId[];
   theme: AppTheme;
 };
@@ -22,7 +21,6 @@ export function readStoredAccount(): StoredAccount | null {
     const data = JSON.parse(raw) as Partial<StoredAccount>;
     if (
       typeof data.email !== "string" ||
-      typeof data.password !== "string" ||
       typeof data.fullName !== "string"
     ) {
       return null;
@@ -37,7 +35,6 @@ export function readStoredAccount(): StoredAccount | null {
       email: data.email,
       title: typeof data.title === "string" ? data.title : "",
       bio: typeof data.bio === "string" ? data.bio : "",
-      password: data.password,
       connectedIntegrations,
       theme: parseAppTheme(data.theme),
     };

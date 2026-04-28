@@ -3,6 +3,7 @@ import { RouterProvider } from "react-router";
 import { IntegrationOnboardingPage } from "./components/IntegrationOnboardingPage";
 import { LoginPage } from "./components/LoginPage";
 import { SignupPage } from "./components/SignupPage";
+import { ConfirmSignupPage } from "./components/ConfirmSignupPage";
 import { router } from "./routes";
 import {
   patchStoredAccount,
@@ -10,6 +11,7 @@ import {
   writeStoredAccount,
   type StoredAccount,
 } from "./accountStorage";
+import { signOutCognito } from "./cognitoAuth";
 import {
   ConnectedIntegrationsProvider,
   type IntegrationId,
@@ -19,9 +21,11 @@ import { AppThemeProvider } from "./appThemeContext";
 import { UserProfileProvider, type UserProfile } from "./userProfileContext";
 
 export default function App() {
-  const [authScreen, setAuthScreen] = useState<"signup" | "login">(() =>
+  const [authScreen, setAuthScreen] = useState<"signup" | "login" | "confirm">(
+    () =>
     readStoredAccount() ? "login" : "signup",
   );
+  const [pendingConfirmationEmail, setPendingConfirmationEmail] = useState("");
   const [signupComplete, setSignupComplete] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile>({
@@ -30,7 +34,6 @@ export default function App() {
     title: "",
     bio: "",
   });
-  const [accountPassword, setAccountPassword] = useState("");
   const [connectedIntegrations, setConnectedIntegrations] = useState<
     IntegrationId[]
   >([]);
@@ -54,14 +57,12 @@ export default function App() {
   const handleSignupComplete = (account: {
     fullName: string;
     email: string;
-    password: string;
   }) => {
     const record: StoredAccount = {
       fullName: account.fullName.trim(),
       email: account.email.trim(),
       title: "",
       bio: "",
-      password: account.password,
       connectedIntegrations: [],
       theme: "zen",
     };
@@ -72,8 +73,8 @@ export default function App() {
       title: "",
       bio: "",
     });
-    setAccountPassword(account.password);
-    setSignupComplete(true);
+    setPendingConfirmationEmail(record.email);
+    setAuthScreen("confirm");
   };
 
   useEffect(() => {
@@ -82,6 +83,7 @@ export default function App() {
   }, [connectedIntegrations, isLoggedIn]);
 
   const handleSignOut = useCallback(() => {
+    signOutCognito();
     applyAppThemeToDocument("zen");
     setIsLoggedIn(false);
     setSignupComplete(false);
@@ -91,22 +93,36 @@ export default function App() {
       title: "",
       bio: "",
     });
-    setAccountPassword("");
     setConnectedIntegrations([]);
+    setPendingConfirmationEmail("");
     setAuthScreen(readStoredAccount() ? "login" : "signup");
   }, []);
 
-  const handleCredentialLoginSuccess = (stored: StoredAccount) => {
+  const handleCredentialLoginSuccess = (email: string) => {
+    const stored = readStoredAccount();
+    const storedEmail = stored?.email.trim().toLowerCase();
+    const normalizedEmail = email.trim().toLowerCase();
+    const activeAccount: StoredAccount = stored && storedEmail === normalizedEmail
+      ? stored
+      : {
+          fullName: normalizedEmail.split("@")[0] ?? normalizedEmail,
+          email: normalizedEmail,
+          title: "",
+          bio: "",
+          connectedIntegrations: [],
+          theme: "zen",
+        };
+
+    writeStoredAccount(activeAccount);
     setUserProfile({
-      fullName: stored.fullName,
-      email: stored.email,
-      title: stored.title,
-      bio: stored.bio,
+      fullName: activeAccount.fullName,
+      email: activeAccount.email,
+      title: activeAccount.title,
+      bio: activeAccount.bio,
     });
-    setAccountPassword(stored.password);
-    setConnectedIntegrations(stored.connectedIntegrations);
+    setConnectedIntegrations(activeAccount.connectedIntegrations);
     setSignupComplete(true);
-    if (stored.connectedIntegrations.length > 0) {
+    if (activeAccount.connectedIntegrations.length > 0) {
       setIsLoggedIn(true);
     }
   };
@@ -122,11 +138,26 @@ export default function App() {
         </div>
       );
     }
+    if (authScreen === "confirm") {
+      return (
+        <div className="size-full">
+          <ConfirmSignupPage
+            email={pendingConfirmationEmail}
+            onConfirmed={() => setAuthScreen("login")}
+            onBackToLogin={() => setAuthScreen("login")}
+          />
+        </div>
+      );
+    }
     return (
       <div className="size-full">
         <LoginPage
           onLoginSuccess={handleCredentialLoginSuccess}
           onSwitchToSignup={() => setAuthScreen("signup")}
+          onUserNotConfirmed={(email) => {
+            setPendingConfirmationEmail(email);
+            setAuthScreen("confirm");
+          }}
         />
       </div>
     );
@@ -146,11 +177,6 @@ export default function App() {
     <UserProfileProvider
       profile={userProfile}
       setProfile={setUserProfile}
-      accountPassword={accountPassword}
-      setAccountPassword={setAccountPassword}
-      onPasswordUpdated={(newPassword) =>
-        patchStoredAccount({ password: newPassword })
-      }
       signOut={handleSignOut}
     >
       <AppThemeProvider initialTheme={initialAppTheme}>

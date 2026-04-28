@@ -1,67 +1,70 @@
 import { motion } from "motion/react";
-import { LogIn } from "lucide-react";
+import { MailCheck } from "lucide-react";
 import { useState, type FormEvent } from "react";
-import { signInWithCognito } from "../cognitoAuth";
+import {
+  confirmSignUpWithCognito,
+  resendCognitoConfirmationCode,
+} from "../cognitoAuth";
 
-interface LoginPageProps {
-  onLoginSuccess: (email: string) => void;
-  onSwitchToSignup: () => void;
-  onUserNotConfirmed: (email: string) => void;
+interface ConfirmSignupPageProps {
+  email: string;
+  onConfirmed: () => void;
+  onBackToLogin: () => void;
 }
 
-function isValidEmail(value: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
-}
-
-export function LoginPage({
-  onLoginSuccess,
-  onSwitchToSignup,
-  onUserNotConfirmed,
-}: LoginPageProps) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export function ConfirmSignupPage({
+  email,
+  onConfirmed,
+  onBackToLogin,
+}: ConfirmSignupPageProps) {
+  const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
     setError(null);
+    setInfo(null);
 
-    if (!isValidEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-    if (!password) {
-      setError("Please enter your password.");
+    if (!code.trim()) {
+      setError("Please enter the verification code from your email.");
       return;
     }
 
     setIsSubmitting(true);
-    const normalizedEmail = email.trim().toLowerCase();
     try {
-      await signInWithCognito({
-        email: normalizedEmail,
-        password,
-      });
-      onLoginSuccess(normalizedEmail);
+      await confirmSignUpWithCognito({ email, code });
+      onConfirmed();
     } catch (err) {
-      if (
-        typeof err === "object" &&
-        err !== null &&
-        "code" in err &&
-        err.code === "UserNotConfirmedException"
-      ) {
-        onUserNotConfirmed(normalizedEmail);
-        return;
-      }
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError("Unable to log in right now. Please try again.");
+        setError("Unable to verify code right now. Please try again.");
       }
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    if (isResending) return;
+    setError(null);
+    setInfo(null);
+    setIsResending(true);
+    try {
+      await resendCognitoConfirmationCode(email);
+      setInfo("Verification code sent. Check your email inbox.");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Unable to resend code right now. Please try again.");
+      }
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -78,7 +81,7 @@ export function LoginPage({
             className="w-14 h-14 rounded-2xl flex items-center justify-center"
             style={{ backgroundColor: "var(--zen-sage)" }}
           >
-            <LogIn className="w-7 h-7 text-white" strokeWidth={1.75} />
+            <MailCheck className="w-7 h-7 text-white" strokeWidth={1.75} />
           </div>
           <h1
             className="text-4xl tracking-tight"
@@ -87,13 +90,10 @@ export function LoginPage({
               fontWeight: 300,
             }}
           >
-            Welcome back
+            Verify your account
           </h1>
-          <p
-            className="text-base"
-            style={{ color: "var(--zen-charcoal-light)" }}
-          >
-            Log in with the email and password you used to sign up.
+          <p className="text-base" style={{ color: "var(--zen-charcoal-light)" }}>
+            Enter the verification code sent to {email}.
           </p>
         </div>
 
@@ -107,54 +107,34 @@ export function LoginPage({
         >
           <div className="space-y-1">
             <label
-              htmlFor="login-email"
+              htmlFor="verification-code"
               className="text-sm"
               style={{ color: "var(--zen-charcoal)" }}
             >
-              Email
+              Verification code
             </label>
             <input
-              id="login-email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="verification-code"
+              type="text"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
               style={{
                 borderColor: "var(--zen-sand)",
                 color: "var(--zen-charcoal)",
               }}
-              placeholder="you@example.com"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label
-              htmlFor="login-password"
-              className="text-sm"
-              style={{ color: "var(--zen-charcoal)" }}
-            >
-              Password
-            </label>
-            <input
-              id="login-password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-              style={{
-                borderColor: "var(--zen-sand)",
-                color: "var(--zen-charcoal)",
-              }}
+              placeholder="123456"
             />
           </div>
 
           {error && (
             <p className="text-sm" style={{ color: "#c45c5c" }} role="alert">
               {error}
+            </p>
+          )}
+          {info && (
+            <p className="text-sm" style={{ color: "var(--zen-sage-dark)" }}>
+              {info}
             </p>
           )}
 
@@ -171,24 +151,31 @@ export function LoginPage({
             whileHover={isSubmitting ? {} : { scale: 1.02 }}
             whileTap={isSubmitting ? {} : { scale: 0.98 }}
           >
-            {isSubmitting ? "Logging in..." : "Log in"}
+            {isSubmitting ? "Verifying..." : "Verify account"}
           </motion.button>
         </form>
 
-        <p
-          className="text-center text-sm mt-8"
-          style={{ color: "var(--zen-charcoal-light)" }}
-        >
-          New here?{" "}
+        <div className="mt-6 text-center space-y-2">
           <button
             type="button"
-            onClick={onSwitchToSignup}
-            className="underline underline-offset-2 hover:opacity-80"
+            onClick={handleResendCode}
+            disabled={isResending}
+            className="text-sm underline underline-offset-2 hover:opacity-80 disabled:opacity-60"
             style={{ color: "var(--zen-sage-dark)" }}
           >
-            Create an account
+            {isResending ? "Sending..." : "Resend code"}
           </button>
-        </p>
+          <p className="text-sm" style={{ color: "var(--zen-charcoal-light)" }}>
+            <button
+              type="button"
+              onClick={onBackToLogin}
+              className="underline underline-offset-2 hover:opacity-80"
+              style={{ color: "var(--zen-sage-dark)" }}
+            >
+              Back to login
+            </button>
+          </p>
+        </div>
       </motion.div>
     </div>
   );
