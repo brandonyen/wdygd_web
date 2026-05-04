@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { Target, Circle, CheckCircle2, Clock, Zap } from "lucide-react";
+import { Target } from "lucide-react";
 import { useConnectedIntegrations } from "../integrationsContext";
 
 export function LinearPage() {

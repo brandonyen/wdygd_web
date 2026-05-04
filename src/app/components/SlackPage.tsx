@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { MessageSquare, Hash, Users, TrendingUp } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { useConnectedIntegrations } from "../integrationsContext";
 
 export function SlackPage() {
