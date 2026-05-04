@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import Root from "./Root";
 import { Dashboard } from "./components/Dashboard";
 import { GitHubPage } from "./components/GitHubPage";
@@ -38,6 +38,7 @@ export const router = createBrowserRouter([
         ),
       },
       { path: "profile", Component: ProfilePage },
+      { path: "*", element: <Navigate to="/" replace /> },
     ],
   },
 ]);
