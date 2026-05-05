@@ -14,7 +14,6 @@ import { useUserProfile, profileInitials } from "../userProfileContext";
 const integrationNav = [
   { path: "/github", label: "GitHub", icon: Github },
   { path: "/slack", label: "Slack", icon: MessageSquare },
-  { path: "/linear", label: "Linear", icon: Target },
 ];
 
 export function Navigation() {

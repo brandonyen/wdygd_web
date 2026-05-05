@@ -11,7 +11,7 @@ export type StoredAccount = UserProfile & {
 };
 
 function isIntegrationId(x: unknown): x is IntegrationId {
-  return x === "github" || x === "slack" || x === "linear";
+  return x === "github" || x === "slack";
 }
 
 export function readStoredAccount(): StoredAccount | null {

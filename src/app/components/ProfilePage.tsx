@@ -40,12 +40,6 @@ const integrationCatalog = [
     icon: MessageSquare,
     color: "var(--zen-blue)",
   },
-  {
-    id: "linear" as const,
-    name: "Linear",
-    icon: Target,
-    color: "var(--zen-purple)",
-  },
 ];
 
 export function ProfilePage() {

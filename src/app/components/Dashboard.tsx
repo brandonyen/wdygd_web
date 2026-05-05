@@ -46,7 +46,7 @@ export function Dashboard() {
             </p>
             <div className="mt-8">
               <ProductivityGarden
-                activityData={{ github: 0, slack: 0, linear: 0 }}
+                activityData={{ github: 0, slack: 0 }}
                 enabledIntegrationIds={connectedIds}
               />
             </div>
