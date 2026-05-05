@@ -26,13 +26,6 @@ const META: Record<
     accentVar: "var(--zen-blue)",
     Icon: MessageSquare,
   },
-  linear: {
-    name: "Linear",
-    description:
-      "Connect Linear to sync issues and completed work into your daily picture.",
-    accentVar: "var(--zen-purple)",
-    Icon: Target,
-  },
 };
 
 export function ConnectIntegrationPage({

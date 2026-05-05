@@ -136,45 +136,6 @@ export function IntegrationOnboardingPage({
             )}
           </button>
 
-          <button
-            type="button"
-            onClick={() => toggleIntegration("linear")}
-            className="w-full max-w-md mx-auto flex items-center justify-between gap-3 px-8 py-4 rounded-full transition-all duration-300 hover:shadow-lg"
-            style={{
-              backgroundColor: selectedIntegrations.has("linear")
-                ? "var(--zen-purple)"
-                : "white",
-              color: selectedIntegrations.has("linear")
-                ? "white"
-                : "var(--zen-charcoal)",
-              border: selectedIntegrations.has("linear")
-                ? "none"
-                : "2px solid var(--zen-purple)",
-            }}
-          >
-            <div className="flex items-center gap-3">
-              <svg
-                className="w-5 h-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M0 11.5h24M12 0v24" />
-              </svg>
-              <span>Linear</span>
-            </div>
-            {selectedIntegrations.has("linear") && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Check className="w-5 h-5" />
-              </motion.div>
-            )}
-          </button>
-
           <motion.button
             type="button"
             onClick={handleContinue}

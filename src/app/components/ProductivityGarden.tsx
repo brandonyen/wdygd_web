@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 interface ActivityData {
   github: number; // 0-100
   slack: number; // 0-100
-  linear: number; // 0-100
 }
 
 interface ProductivityGardenProps {
@@ -31,7 +30,6 @@ export function ProductivityGarden({
   // Calculate growth based on activity levels
   const githubGrowth = (activityData.github / 100) * 80 + 20;
   const slackGrowth = (activityData.slack / 100) * 70 + 30;
-  const linearGrowth = (activityData.linear / 100) * 60 + 40;
 
   return (
     <div
@@ -45,9 +43,6 @@ export function ProductivityGarden({
         )}
         {show("slack") && (
           <div className="absolute top-20 left-1/2 -translate-x-1/2 w-44 h-44 rounded-full blur-3xl bg-zen-blue" />
-        )}
-        {show("linear") && (
-          <div className="absolute top-10 right-12 w-44 h-44 rounded-full blur-3xl bg-zen-purple" />
         )}
       </div>
 
@@ -172,43 +167,6 @@ export function ProductivityGarden({
             ))}
           </motion.g>
         )}
-
-        {/* Linear - simplified mountain cluster (right) */}
-        {show("linear") && (
-          <motion.g
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 10 }}
-            transition={{ duration: 0.85, delay: 0.3 }}
-          >
-            <motion.path
-              d={`M620 300 L662 ${300 - linearGrowth * 0.78} L704 300 Z`}
-              fill="var(--zen-purple)"
-              opacity={0.56}
-              initial={{ scaleY: 0 }}
-              animate={{ scaleY: mounted ? 1 : 0 }}
-              transition={{ duration: 0.8, delay: 0.55 }}
-              style={{ transformOrigin: "center bottom" }}
-            />
-            <motion.path
-              d={`M590 300 L635 ${300 - linearGrowth * 0.48} L680 300 Z`}
-              fill="var(--zen-purple)"
-              opacity={0.38}
-              initial={{ scaleY: 0 }}
-              animate={{ scaleY: mounted ? 1 : 0 }}
-              transition={{ duration: 0.7, delay: 0.68 }}
-              style={{ transformOrigin: "center bottom" }}
-            />
-            <motion.path
-              d={`M670 300 L700 ${300 - linearGrowth * 0.38} L730 300 Z`}
-              fill="var(--zen-purple)"
-              opacity={0.34}
-              initial={{ scaleY: 0 }}
-              animate={{ scaleY: mounted ? 1 : 0 }}
-              transition={{ duration: 0.65, delay: 0.75 }}
-              style={{ transformOrigin: "center bottom" }}
-            />
-          </motion.g>
-        )}
       </svg>
 
       {/* Legend */}
@@ -223,12 +181,6 @@ export function ProductivityGarden({
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-zen-blue" />
             <span className="text-zen-charcoal-light">Slack</span>
-          </div>
-        )}
-        {show("linear") && (
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-zen-purple" />
-            <span className="text-zen-charcoal-light">Linear</span>
           </div>
         )}
       </div>

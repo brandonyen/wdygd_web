@@ -3,7 +3,6 @@ import Root from "./Root";
 import { Dashboard } from "./components/Dashboard";
 import { GitHubPage } from "./components/GitHubPage";
 import { SlackPage } from "./components/SlackPage";
-import { LinearPage } from "./components/LinearPage";
 import { ProfilePage } from "./components/ProfilePage";
 import { IntegrationGate } from "./components/IntegrationGate";
 
@@ -26,14 +25,6 @@ export const router = createBrowserRouter([
         element: (
           <IntegrationGate integrationId="slack">
             <SlackPage />
-          </IntegrationGate>
-        ),
-      },
-      {
-        path: "linear",
-        element: (
-          <IntegrationGate integrationId="linear">
-            <LinearPage />
           </IntegrationGate>
         ),
       },
