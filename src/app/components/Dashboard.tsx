@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { useState } from "react";
+import axios from "axios";
 import { ProductivityGarden } from "./ProductivityGarden";
 import { useConnectedIntegrations } from "../integrationsContext";
 import { getCurrentUserSub } from "../cognitoAuth";
@@ -19,15 +20,7 @@ export function Dashboard() {
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/sync`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to sync data.");
-      }
+      await axios.post(`${API_BASE_URL}/sync`, { user_id: userId });
       
       alert("Data collection and summary generation started for the past day.");
     } catch (err) {
