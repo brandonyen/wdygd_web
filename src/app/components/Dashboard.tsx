@@ -1,9 +1,42 @@
 import { motion } from "motion/react";
+import { useState } from "react";
 import { ProductivityGarden } from "./ProductivityGarden";
 import { useConnectedIntegrations } from "../integrationsContext";
+import { getCurrentUserSub } from "../cognitoAuth";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://28gthv6fu1.execute-api.us-east-1.amazonaws.com/prod";
 
 export function Dashboard() {
   const connectedIds = useConnectedIntegrations();
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSync = async () => {
+    try {
+      setIsSyncing(true);
+      const userId = await getCurrentUserSub();
+      if (!userId) {
+        alert("You must be logged in to sync data.");
+        return;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/sync`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to sync data.");
+      }
+      
+      alert("Data collection and summary generation started for the past day.");
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred while trying to sync data.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   return (
     <div className="min-h-screen px-8 py-8">
@@ -12,9 +45,9 @@ export function Dashboard() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="mb-12"
+        className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4"
       >
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl">
           <h1 className="text-4xl mb-2 text-zen-charcoal font-light">
             Your Productivity Garden
           </h1>
@@ -27,6 +60,14 @@ export function Dashboard() {
             })}
           </p>
         </div>
+        <button
+          onClick={handleSync}
+          disabled={isSyncing}
+          className="px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-200 hover:shadow-md disabled:opacity-50"
+          style={{ backgroundColor: "var(--zen-sage)", color: "white" }}
+        >
+          {isSyncing ? "Syncing..." : "Manual Sync"}
+        </button>
       </motion.header>
 
       {/* Main Content */}

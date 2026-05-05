@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { Link } from "react-router";
-import { Github, MessageSquare, Target, Plug } from "lucide-react";
+import { Github, MessageSquare, Plug } from "lucide-react";
 import { useIntegrations, type IntegrationId } from "../integrationsContext";
 
 const META: Record<
