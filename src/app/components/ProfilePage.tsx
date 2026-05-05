@@ -3,7 +3,6 @@ import {
   User,
   Github,
   MessageSquare,
-  Target,
   Bell,
   Palette,
   Download,

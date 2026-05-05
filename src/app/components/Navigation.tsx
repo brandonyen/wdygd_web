@@ -3,7 +3,6 @@ import { motion } from "motion/react";
 import {
   Github,
   MessageSquare,
-  Target,
   LayoutGrid,
   Settings,
   LogOut,
