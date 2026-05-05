@@ -3,7 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { ProductivityGarden } from "./ProductivityGarden";
 import { useConnectedIntegrations } from "../integrationsContext";
-import { getCurrentUserSub } from "../cognitoAuth";
+import { getCurrentUserSub, getCurrentIdToken } from "../cognitoAuth";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://28gthv6fu1.execute-api.us-east-1.amazonaws.com/prod";
 
@@ -15,12 +15,21 @@ export function Dashboard() {
     try {
       setIsSyncing(true);
       const userId = await getCurrentUserSub();
-      if (!userId) {
+      const token = await getCurrentIdToken();
+      if (!userId || !token) {
         alert("You must be logged in to sync data.");
         return;
       }
 
-      await axios.post(`${API_BASE_URL}/sync`, { user_id: userId });
+      await axios.post(
+        `${API_BASE_URL}/sync`,
+        { user_id: userId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       
       alert("Data collection and summary generation started for the past day.");
     } catch (err) {

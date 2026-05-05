@@ -166,3 +166,18 @@ export async function getCurrentUserSub(): Promise<string | null> {
     });
   });
 }
+
+export async function getCurrentIdToken(): Promise<string | null> {
+  const currentUser = getUserPool().getCurrentUser();
+  if (!currentUser) return null;
+
+  return new Promise((resolve) => {
+    currentUser.getSession((err: unknown, session: any) => {
+      if (err || !session.isValid()) {
+        resolve(null);
+        return;
+      }
+      resolve(session.getIdToken().getJwtToken() || null);
+    });
+  });
+}
