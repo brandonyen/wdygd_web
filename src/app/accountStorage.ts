@@ -31,6 +31,7 @@ export function readStoredAccount(): StoredAccount | null {
       ? data.connectedIntegrations.filter(isIntegrationId)
       : [];
     return {
+      userId: data.userId,
       fullName: data.fullName,
       email: data.email,
       title: typeof data.title === "string" ? data.title : "",

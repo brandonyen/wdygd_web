@@ -3,15 +3,43 @@ import { Copy, Check, Calendar, Clock } from "lucide-react";
 import { useState } from "react";
 import { useConnectedIntegrations } from "../integrationsContext";
 
-export function AISummary() {
+export interface Summary {
+  summary_id: string;
+  user_id: string;
+  summary_type: "DAILY" | "USER_GENERATED";
+  created_at: string;
+  start_date: string;
+  end_date: string;
+  content: string;
+  content_array?: string[];
+}
+
+interface AISummaryProps {
+  summary?: Summary | null;
+  isLoading?: boolean;
+}
+
+export function AISummary({ summary, isLoading }: AISummaryProps) {
   const [copied, setCopied] = useState(false);
   const connectedIds = useConnectedIntegrations();
 
   const handleCopy = () => {
-    // If we had data, we would copy it here
-    navigator.clipboard.writeText("No data available to copy.");
+    if (!summary) return;
+    const text = summary.content_array?.join("\n") || summary.content;
+    navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const getTimeAgo = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diff < 60) return "Just now";
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return date.toLocaleDateString();
   };
 
   return (
@@ -27,17 +55,25 @@ export function AISummary() {
           <div className="flex items-center gap-4 text-xs text-zen-charcoal-light">
             <div className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
-              <span>Last updated Never</span>
+              <span>
+                {summary 
+                  ? `Last updated ${getTimeAgo(summary.created_at)}` 
+                  : isLoading ? "Updating..." : "Last updated Never"}
+              </span>
             </div>
             <div className="flex items-center gap-1">
               <Calendar className="w-3 h-3" />
-              <span>Next update at N/A</span>
+              <span>
+                {summary 
+                  ? new Date(summary.created_at).toLocaleDateString()
+                  : "Next update at N/A"}
+              </span>
             </div>
           </div>
         </div>
         <button
           onClick={handleCopy}
-          disabled={true}
+          disabled={!summary}
           className="flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all duration-200 hover:shadow-md bg-zen-sand-light text-zen-charcoal disabled:opacity-50"
         >
           {copied ? (
@@ -55,7 +91,24 @@ export function AISummary() {
       </div>
 
       <div className="space-y-4 pt-2">
-        {connectedIds.length === 0 ? (
+        {isLoading ? (
+          <p className="text-zen-charcoal-light animate-pulse">Fetching your latest accomplishments...</p>
+        ) : summary ? (
+          <div className="space-y-3">
+            {(summary.content_array || summary.content.split("\n")).map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 * i }}
+                className="flex items-start gap-3"
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-zen-sage mt-2 shrink-0" />
+                <p className="text-zen-charcoal leading-relaxed">{item}</p>
+              </motion.div>
+            ))}
+          </div>
+        ) : connectedIds.length === 0 ? (
           <p className="text-zen-charcoal-light">No integrations connected.</p>
         ) : (
           <p className="text-zen-charcoal-light">No data available from integrations yet.</p>

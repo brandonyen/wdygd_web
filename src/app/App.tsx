@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { RouterProvider } from "react-router";
+import axios from "axios";
 import { IntegrationOnboardingPage } from "./components/IntegrationOnboardingPage";
 import { LoginPage } from "./components/LoginPage";
 import { SignupPage } from "./components/SignupPage";
@@ -29,6 +30,7 @@ export default function App() {
   const [signupComplete, setSignupComplete] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile>({
+    userId: undefined,
     fullName: "",
     email: "",
     title: "",
@@ -88,6 +90,7 @@ export default function App() {
     setIsLoggedIn(false);
     setSignupComplete(false);
     setUserProfile({
+      userId: undefined,
       fullName: "",
       email: "",
       title: "",
@@ -98,13 +101,23 @@ export default function App() {
     setAuthScreen(readStoredAccount() ? "login" : "signup");
   }, []);
 
-  const handleCredentialLoginSuccess = (email: string) => {
+  const handleCredentialLoginSuccess = async (email: string) => {
+    let fetchedUserId: string | undefined;
+    try {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://28gthv6fu1.execute-api.us-east-1.amazonaws.com/prod";
+      const { data } = await axios.get(`${API_BASE_URL}/user-config`, { params: { email } });
+      fetchedUserId = data.data.user_id;
+    } catch (err) {
+      console.warn("Could not fetch user_id from backend:", err);
+    }
+
     const stored = readStoredAccount();
     const storedEmail = stored?.email.trim().toLowerCase();
     const normalizedEmail = email.trim().toLowerCase();
     const activeAccount: StoredAccount = stored && storedEmail === normalizedEmail
-      ? stored
+      ? { ...stored, userId: fetchedUserId || stored.userId }
       : {
+          userId: fetchedUserId,
           fullName: normalizedEmail.split("@")[0] ?? normalizedEmail,
           email: normalizedEmail,
           title: "",
@@ -115,6 +128,7 @@ export default function App() {
 
     writeStoredAccount(activeAccount);
     setUserProfile({
+      userId: activeAccount.userId,
       fullName: activeAccount.fullName,
       email: activeAccount.email,
       title: activeAccount.title,
