@@ -9,6 +9,7 @@ import {
 import { changeCognitoPassword } from "./cognitoAuth";
 
 export type UserProfile = {
+  userId?: string;
   fullName: string;
   email: string;
   title: string;

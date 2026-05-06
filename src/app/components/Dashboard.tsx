@@ -3,27 +3,28 @@ import { useState } from "react";
 import axios from "axios";
 import { ProductivityGarden } from "./ProductivityGarden";
 import { useConnectedIntegrations } from "../integrationsContext";
-import { getCurrentUserSub, getCurrentIdToken } from "../cognitoAuth";
+import { getCurrentIdToken } from "../cognitoAuth";
+import { useUserProfile } from "../userProfileContext";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://28gthv6fu1.execute-api.us-east-1.amazonaws.com/prod";
 
 export function Dashboard() {
   const connectedIds = useConnectedIntegrations();
   const [isSyncing, setIsSyncing] = useState(false);
+  const { profile } = useUserProfile();
 
   const handleSync = async () => {
     try {
       setIsSyncing(true);
-      const userId = await getCurrentUserSub();
       const token = await getCurrentIdToken();
-      if (!userId || !token) {
-        alert("You must be logged in to sync data.");
+      if (!profile.userId || !token) {
+        alert("You must be fully logged in to sync data.");
         return;
       }
 
       await axios.post(
         `${API_BASE_URL}/sync`,
-        { user_id: userId },
+        { user_id: profile.userId },
         {
           headers: {
             Authorization: `Bearer ${token}`,
