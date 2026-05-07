@@ -11,7 +11,7 @@ import {
   writeStoredAccount,
   type StoredAccount,
 } from "./accountStorage";
-import { signOutCognito, getCurrentCognitoUserEmail } from "./cognitoAuth";
+import { signOutCognito, getCurrentCognitoUserEmail, getCurrentIdToken } from "./cognitoAuth";
 import {
   ConnectedIntegrationsProvider,
   type IntegrationId,
@@ -142,6 +142,8 @@ export default function App() {
     const userId = userProfile.userId ?? readStoredAccount()?.userId;
     if (!userId) return;
 
+    const token = await getCurrentIdToken();
+
     const providers: IntegrationId[] = ["github", "slack"];
     const newStatuses: Record<IntegrationId, IntegrationStatus | null> = { github: null, slack: null };
 
@@ -152,6 +154,7 @@ export default function App() {
             `${API_BASE_URL}/auth/${provider}/status`,
             {
               params: { userId },
+              headers: token ? { Authorization: `Bearer ${token}` } : undefined,
             },
           );
           const parsed = parseConnectedStatus(data);
