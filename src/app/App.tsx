@@ -11,7 +11,7 @@ import {
   writeStoredAccount,
   type StoredAccount,
 } from "./accountStorage";
-import { signOutCognito } from "./cognitoAuth";
+import { signOutCognito, getCurrentCognitoUserEmail } from "./cognitoAuth";
 import {
   ConnectedIntegrationsProvider,
   type IntegrationId,
@@ -33,6 +33,7 @@ export default function App() {
   const [pendingConfirmationEmail, setPendingConfirmationEmail] = useState("");
   const [signupComplete, setSignupComplete] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile>({
     userId: undefined,
     fullName: "",
@@ -47,6 +48,65 @@ export default function App() {
     Record<IntegrationId, IntegrationStatus | null>
   >({ github: null, slack: null });
 
+  const handleCredentialLoginSuccess = useCallback(async (email: string) => {
+    let fetchedUserId: string | undefined;
+    try {
+      const { data } = await axios.get(`${API_BASE_URL}/user-config`, { params: { email } });
+      fetchedUserId = data.data.user_id;
+    } catch (err) {
+      console.warn("Could not fetch user_id from backend:", err);
+    }
+
+    const stored = readStoredAccount();
+    const storedEmail = stored?.email.trim().toLowerCase();
+    const normalizedEmail = email.trim().toLowerCase();
+    const activeAccount: StoredAccount = stored && storedEmail === normalizedEmail
+      ? { ...stored, userId: fetchedUserId || stored.userId }
+      : {
+          userId: fetchedUserId,
+          fullName: normalizedEmail.split("@")[0] ?? normalizedEmail,
+          email: normalizedEmail,
+          title: "",
+          bio: "",
+          connectedIntegrations: [],
+          theme: "zen",
+        };
+
+    writeStoredAccount(activeAccount);
+    setUserProfile({
+      userId: activeAccount.userId,
+      fullName: activeAccount.fullName,
+      email: activeAccount.email,
+      title: activeAccount.title,
+      bio: activeAccount.bio,
+    });
+    setConnectedIntegrations(activeAccount.connectedIntegrations);
+    setSignupComplete(true);
+    setIsLoggedIn(true);
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    const checkSession = async () => {
+      try {
+        const email = await getCurrentCognitoUserEmail();
+        if (mounted) {
+          if (email) {
+            await handleCredentialLoginSuccess(email);
+          }
+          setIsInitializing(false);
+        }
+      } catch (e) {
+        console.error("Session check failed", e);
+        if (mounted) setIsInitializing(false);
+      }
+    };
+    void checkSession();
+    return () => {
+      mounted = false;
+    };
+  }, [handleCredentialLoginSuccess]);
+
   const parseConnectedStatus = (raw: unknown): IntegrationStatus => {
     let data = raw;
     if (typeof raw === "string") {
@@ -58,21 +118,21 @@ export default function App() {
     }
     
     if (data && typeof data === "object") {
-      const maybeBody = (data as { body?: unknown }).body;
-      if (typeof maybeBody === "string") {
+      // Check if data itself has connected, or it is wrapped in data.data or data.body
+      let actualData = data as any;
+      if (actualData.data && typeof actualData.data === "object") {
+        actualData = actualData.data;
+      } else if (actualData.body && typeof actualData.body === "string") {
         try {
-          data = JSON.parse(maybeBody);
-        } catch {
-          // fallback
-        }
+          actualData = JSON.parse(actualData.body);
+        } catch { /* ignore */ }
       }
 
-      const status = data as Partial<IntegrationStatus>;
       return {
-        connected: status.connected === true,
-        connectedAt: status.connectedAt,
-        tokenExpiration: status.tokenExpiration,
-        workspaces: status.workspaces,
+        connected: actualData.connected === true,
+        connectedAt: actualData.connectedAt,
+        tokenExpiration: actualData.tokenExpiration,
+        workspaces: actualData.workspaces,
       };
     }
     return { connected: false };
@@ -224,42 +284,9 @@ export default function App() {
     setAuthScreen(readStoredAccount() ? "login" : "signup");
   }, []);
 
-  const handleCredentialLoginSuccess = async (email: string) => {
-    let fetchedUserId: string | undefined;
-    try {
-      const { data } = await axios.get(`${API_BASE_URL}/user-config`, { params: { email } });
-      fetchedUserId = data.data.user_id;
-    } catch (err) {
-      console.warn("Could not fetch user_id from backend:", err);
-    }
-
-    const stored = readStoredAccount();
-    const storedEmail = stored?.email.trim().toLowerCase();
-    const normalizedEmail = email.trim().toLowerCase();
-    const activeAccount: StoredAccount = stored && storedEmail === normalizedEmail
-      ? { ...stored, userId: fetchedUserId || stored.userId }
-      : {
-          userId: fetchedUserId,
-          fullName: normalizedEmail.split("@")[0] ?? normalizedEmail,
-          email: normalizedEmail,
-          title: "",
-          bio: "",
-          connectedIntegrations: [],
-          theme: "zen",
-        };
-
-    writeStoredAccount(activeAccount);
-    setUserProfile({
-      userId: activeAccount.userId,
-      fullName: activeAccount.fullName,
-      email: activeAccount.email,
-      title: activeAccount.title,
-      bio: activeAccount.bio,
-    });
-    setConnectedIntegrations(activeAccount.connectedIntegrations);
-    setSignupComplete(true);
-    setIsLoggedIn(true);
-  };
+  if (isInitializing) {
+    return null;
+  }
 
   if (!signupComplete) {
     if (authScreen === "signup") {
