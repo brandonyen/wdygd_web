@@ -11,7 +11,11 @@ import {
   writeStoredAccount,
   type StoredAccount,
 } from "./accountStorage";
-import { signOutCognito, getCurrentCognitoUserEmail, getCurrentIdToken } from "./cognitoAuth";
+import {
+  signOutCognito,
+  getCurrentCognitoUserEmail,
+  getCurrentIdToken,
+} from "./cognitoAuth";
 import {
   ConnectedIntegrationsProvider,
   type IntegrationId,
@@ -27,8 +31,7 @@ const API_BASE_URL =
 
 export default function App() {
   const [authScreen, setAuthScreen] = useState<"signup" | "login" | "confirm">(
-    () =>
-    readStoredAccount() ? "login" : "signup",
+    () => (readStoredAccount() ? "login" : "signup"),
   );
   const [pendingConfirmationEmail, setPendingConfirmationEmail] = useState("");
   const [signupComplete, setSignupComplete] = useState(false);
@@ -51,7 +54,9 @@ export default function App() {
   const handleCredentialLoginSuccess = useCallback(async (email: string) => {
     let fetchedUserId: string | undefined;
     try {
-      const { data } = await axios.get(`${API_BASE_URL}/user-config`, { params: { email } });
+      const { data } = await axios.get(`${API_BASE_URL}/user-config`, {
+        params: { email },
+      });
       fetchedUserId = data.data.user_id;
     } catch (err) {
       console.warn("Could not fetch user_id from backend:", err);
@@ -60,17 +65,18 @@ export default function App() {
     const stored = readStoredAccount();
     const storedEmail = stored?.email.trim().toLowerCase();
     const normalizedEmail = email.trim().toLowerCase();
-    const activeAccount: StoredAccount = stored && storedEmail === normalizedEmail
-      ? { ...stored, userId: fetchedUserId || stored.userId }
-      : {
-          userId: fetchedUserId,
-          fullName: normalizedEmail.split("@")[0] ?? normalizedEmail,
-          email: normalizedEmail,
-          title: "",
-          bio: "",
-          connectedIntegrations: [],
-          theme: "zen",
-        };
+    const activeAccount: StoredAccount =
+      stored && storedEmail === normalizedEmail
+        ? { ...stored, userId: fetchedUserId || stored.userId }
+        : {
+            userId: fetchedUserId,
+            fullName: normalizedEmail.split("@")[0] ?? normalizedEmail,
+            email: normalizedEmail,
+            title: "",
+            bio: "",
+            connectedIntegrations: [],
+            theme: "zen",
+          };
 
     writeStoredAccount(activeAccount);
     setUserProfile({
@@ -116,7 +122,7 @@ export default function App() {
         return { connected: false };
       }
     }
-    
+
     if (data && typeof data === "object") {
       // Check if data itself has connected, or it is wrapped in data.data or data.body
       let actualData = data as any;
@@ -125,7 +131,9 @@ export default function App() {
       } else if (actualData.body && typeof actualData.body === "string") {
         try {
           actualData = JSON.parse(actualData.body);
-        } catch { /* ignore */ }
+        } catch {
+          /* ignore */
+        }
       }
 
       return {
@@ -145,7 +153,10 @@ export default function App() {
     const token = await getCurrentIdToken();
 
     const providers: IntegrationId[] = ["github", "slack"];
-    const newStatuses: Record<IntegrationId, IntegrationStatus | null> = { github: null, slack: null };
+    const newStatuses: Record<IntegrationId, IntegrationStatus | null> = {
+      github: null,
+      slack: null,
+    };
 
     await Promise.all(
       providers.map(async (provider) => {
@@ -154,9 +165,9 @@ export default function App() {
             `${API_BASE_URL}/auth/${provider}/status`,
             {
               params: { userId },
-              headers: token ? { Authorization: `Bearer ${token}` } : undefined,
             },
           );
+          console.log(`Raw status data for ${provider}:`, data);
           const parsed = parseConnectedStatus(data);
           newStatuses[provider] = parsed;
         } catch (error) {
@@ -167,7 +178,10 @@ export default function App() {
     );
 
     setIntegrationStatuses(newStatuses);
-    console.log(`Integration statuses for user ${userId} received from backend:`, newStatuses);
+    console.log(
+      `Integration statuses for user ${userId} received from backend:`,
+      newStatuses,
+    );
     setConnectedIntegrations(
       providers.filter((id) => newStatuses[id]?.connected),
     );
@@ -183,12 +197,18 @@ export default function App() {
 
       const authUrl = new URL(`${API_BASE_URL}/auth/${id}`);
       authUrl.searchParams.set("userId", userId);
-      const redirectUrl = new URL(`${window.location.origin}/oauth-complete.html`);
+      const redirectUrl = new URL(
+        `${window.location.origin}/oauth-complete.html`,
+      );
       redirectUrl.searchParams.set("provider", id);
       authUrl.searchParams.set("redirectUrl", redirectUrl.toString());
       const popupFeatures =
         "popup=yes,width=600,height=800,menubar=no,toolbar=no,location=yes,resizable=yes,scrollbars=yes,status=no";
-      const popup = window.open(authUrl.toString(), `${id}-oauth`, popupFeatures);
+      const popup = window.open(
+        authUrl.toString(),
+        `${id}-oauth`,
+        popupFeatures,
+      );
       if (popup) {
         const popupMonitor = window.setInterval(() => {
           if (popup.closed) {
