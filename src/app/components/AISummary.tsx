@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { Copy, Check, Calendar, Clock } from "lucide-react";
+import { Copy, Check, Calendar, Clock, List, AlignLeft } from "lucide-react";
 import { useState } from "react";
 import { useConnectedIntegrations } from "../integrationsContext";
 
@@ -23,11 +23,14 @@ interface AISummaryProps {
 
 export function AISummary({ summary, isLoading }: AISummaryProps) {
   const [copied, setCopied] = useState(false);
+  const [viewMode, setViewMode] = useState<"bullets" | "text">("bullets");
   const connectedIds = useConnectedIntegrations();
 
   const handleCopy = () => {
     if (!summary) return;
-    const text = summary.content_array?.join("\n") || summary.content;
+    const text = viewMode === "bullets"
+      ? (summary.content_array?.map(i => `• ${i}`).join("\n") || summary.content)
+      : summary.content;
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -73,43 +76,74 @@ export function AISummary({ summary, isLoading }: AISummaryProps) {
             </div>
           </div>
         </div>
-        <button
-          onClick={handleCopy}
-          disabled={!summary}
-          className="flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all duration-200 hover:shadow-md bg-zen-sand-light text-zen-charcoal disabled:opacity-50"
-        >
-          {copied ? (
-            <>
-              <Check className="w-4 h-4" />
-              <span>Copied!</span>
-            </>
-          ) : (
-            <>
-              <Copy className="w-4 h-4" />
-              <span>Copy for Standup</span>
-            </>
+        
+        <div className="flex items-center gap-2">
+          {summary && (
+            <div className="flex items-center bg-zen-off-white rounded-full p-1 border border-[#E2E8F0]">
+              <button
+                onClick={() => setViewMode("bullets")}
+                className={`p-1.5 rounded-full transition-colors ${viewMode === "bullets" ? "bg-white shadow-sm text-zen-charcoal" : "text-zen-charcoal-light hover:text-zen-charcoal"}`}
+                title="Bullet Points"
+              >
+                <List className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode("text")}
+                className={`p-1.5 rounded-full transition-colors ${viewMode === "text" ? "bg-white shadow-sm text-zen-charcoal" : "text-zen-charcoal-light hover:text-zen-charcoal"}`}
+                title="Paragraph"
+              >
+                <AlignLeft className="w-4 h-4" />
+              </button>
+            </div>
           )}
-        </button>
+          <button
+            onClick={handleCopy}
+            disabled={!summary}
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all duration-200 hover:shadow-md bg-zen-sand-light text-zen-charcoal disabled:opacity-50"
+          >
+            {copied ? (
+              <>
+                <Check className="w-4 h-4" />
+                <span>Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4" />
+                <span>Copy for Standup</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       <div className="space-y-4 pt-2">
         {isLoading ? (
           <p className="text-zen-charcoal-light animate-pulse">Fetching your latest accomplishments...</p>
         ) : summary ? (
-          <div className="space-y-3">
-            {(summary.content_array || summary.content.split("\n")).map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 * i }}
-                className="flex items-start gap-3"
-              >
-                <div className="w-1.5 h-1.5 rounded-full bg-zen-sage mt-2 shrink-0" />
-                <p className="text-zen-charcoal leading-relaxed">{item}</p>
-              </motion.div>
-            ))}
-          </div>
+          viewMode === "bullets" ? (
+            <div className="space-y-3">
+              {(summary.content_array || summary.content.split("\n")).map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 * i }}
+                  className="flex items-start gap-3"
+                >
+                  <div className="w-1.5 h-1.5 rounded-full bg-zen-sage mt-2 shrink-0" />
+                  <p className="text-zen-charcoal leading-relaxed">{item}</p>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-zen-charcoal leading-relaxed whitespace-pre-wrap"
+            >
+              {summary.content}
+            </motion.div>
+          )
         ) : connectedIds.length === 0 ? (
           <p className="text-zen-charcoal-light">No integrations connected.</p>
         ) : (
