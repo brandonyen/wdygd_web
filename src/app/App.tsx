@@ -15,6 +15,7 @@ import { signOutCognito } from "./cognitoAuth";
 import {
   ConnectedIntegrationsProvider,
   type IntegrationId,
+  type IntegrationStatus,
 } from "./integrationsContext";
 import { applyAppThemeToDocument, parseAppTheme } from "./appTheme";
 import { AppThemeProvider } from "./appThemeContext";
@@ -42,30 +43,39 @@ export default function App() {
   const [connectedIntegrations, setConnectedIntegrations] = useState<
     IntegrationId[]
   >([]);
+  const [integrationStatuses, setIntegrationStatuses] = useState<
+    Record<IntegrationId, IntegrationStatus | null>
+  >({ github: null, slack: null });
 
-  const parseConnectedFromStatus = (raw: unknown): boolean => {
+  const parseConnectedStatus = (raw: unknown): IntegrationStatus => {
+    let data = raw;
     if (typeof raw === "string") {
       try {
-        return parseConnectedFromStatus(JSON.parse(raw));
+        data = JSON.parse(raw);
       } catch {
-        return false;
+        return { connected: false };
       }
     }
-    if (raw && typeof raw === "object") {
-      const maybeConnected = (raw as { connected?: unknown }).connected;
-      if (typeof maybeConnected === "boolean") return maybeConnected;
-
-      const maybeBody = (raw as { body?: unknown }).body;
+    
+    if (data && typeof data === "object") {
+      const maybeBody = (data as { body?: unknown }).body;
       if (typeof maybeBody === "string") {
         try {
-          const parsedBody = JSON.parse(maybeBody) as { connected?: unknown };
-          return parsedBody.connected === true;
+          data = JSON.parse(maybeBody);
         } catch {
-          return false;
+          // fallback
         }
       }
+
+      const status = data as Partial<IntegrationStatus>;
+      return {
+        connected: status.connected === true,
+        connectedAt: status.connectedAt,
+        tokenExpiration: status.tokenExpiration,
+        workspaces: status.workspaces,
+      };
     }
-    return false;
+    return { connected: false };
   };
 
   const refreshConnectedIntegrations = useCallback(async () => {
@@ -73,7 +83,9 @@ export default function App() {
     if (!userId) return;
 
     const providers: IntegrationId[] = ["github", "slack"];
-    const statuses = await Promise.all(
+    const newStatuses: Record<IntegrationId, IntegrationStatus | null> = { github: null, slack: null };
+
+    await Promise.all(
       providers.map(async (provider) => {
         try {
           const { data } = await axios.get(
@@ -82,16 +94,18 @@ export default function App() {
               params: { userId },
             },
           );
-          return parseConnectedFromStatus(data) ? provider : null;
+          const parsed = parseConnectedStatus(data);
+          newStatuses[provider] = parsed;
         } catch (error) {
           console.error(`Failed to check ${provider} status:`, error);
-          return null;
+          newStatuses[provider] = { connected: false };
         }
       }),
     );
 
+    setIntegrationStatuses(newStatuses);
     setConnectedIntegrations(
-      statuses.filter((provider): provider is IntegrationId => provider !== null),
+      providers.filter((id) => newStatuses[id]?.connected),
     );
   }, [userProfile.userId]);
 
@@ -296,8 +310,10 @@ export default function App() {
       <AppThemeProvider initialTheme={initialAppTheme}>
         <ConnectedIntegrationsProvider
           connectedIds={connectedIntegrations}
+          statuses={integrationStatuses}
           connectIntegration={connectIntegration}
           disconnectIntegration={disconnectIntegration}
+          refreshIntegrations={refreshConnectedIntegrations}
         >
           <RouterProvider router={router} />
         </ConnectedIntegrationsProvider>

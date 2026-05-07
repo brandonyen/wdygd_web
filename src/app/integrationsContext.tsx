@@ -3,10 +3,23 @@ import { createContext, useContext, useMemo, type ReactNode } from "react";
 /** IDs match integration onboarding toggles and route segments. */
 export type IntegrationId = "github" | "slack";
 
+export interface IntegrationStatus {
+  connected: boolean;
+  connectedAt?: string;
+  tokenExpiration?: string;
+  workspaces?: {
+    connectedAt: string;
+    tokenExpiration: string;
+    workspaceId: string;
+  }[];
+}
+
 export type IntegrationsContextValue = {
   connectedIds: IntegrationId[];
+  statuses: Record<IntegrationId, IntegrationStatus | null>;
   connectIntegration: (id: IntegrationId) => void;
   disconnectIntegration: (id: IntegrationId) => void;
+  refreshIntegrations: () => Promise<void>;
 };
 
 const IntegrationsContext = createContext<IntegrationsContextValue | null>(
@@ -15,22 +28,28 @@ const IntegrationsContext = createContext<IntegrationsContextValue | null>(
 
 export function ConnectedIntegrationsProvider({
   connectedIds,
+  statuses,
   connectIntegration,
   disconnectIntegration,
+  refreshIntegrations,
   children,
 }: {
   connectedIds: IntegrationId[];
+  statuses: Record<IntegrationId, IntegrationStatus | null>;
   connectIntegration: (id: IntegrationId) => void;
   disconnectIntegration: (id: IntegrationId) => void;
+  refreshIntegrations: () => Promise<void>;
   children: ReactNode;
 }) {
   const value = useMemo(
     () => ({
       connectedIds,
+      statuses,
       connectIntegration,
       disconnectIntegration,
+      refreshIntegrations,
     }),
-    [connectedIds, connectIntegration, disconnectIntegration],
+    [connectedIds, statuses, connectIntegration, disconnectIntegration, refreshIntegrations],
   );
 
   return (
@@ -56,4 +75,8 @@ export function useConnectedIntegrations(): IntegrationId[] {
 
 export function useHasIntegration(id: IntegrationId): boolean {
   return useConnectedIntegrations().includes(id);
+}
+
+export function useIntegrationStatus(id: IntegrationId): IntegrationStatus | null {
+  return useIntegrations().statuses[id];
 }

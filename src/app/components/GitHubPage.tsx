@@ -1,10 +1,19 @@
 import { motion } from "motion/react";
-import { GitBranch } from "lucide-react";
-import { useConnectedIntegrations } from "../integrationsContext";
+import { GitBranch, Calendar, Clock } from "lucide-react";
+import { useIntegrationStatus } from "../integrationsContext";
 
 export function GitHubPage() {
-  const connectedIds = useConnectedIntegrations();
-  const isConnected = connectedIds.includes("github");
+  const status = useIntegrationStatus("github");
+  const isConnected = status?.connected === true;
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "N/A";
+    return new Date(dateStr).toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
   return (
     <div className="px-8 py-8">
@@ -46,9 +55,47 @@ export function GitHubPage() {
             <p className="text-zen-charcoal-light">Please connect GitHub in Settings to see your activity.</p>
           </div>
         ) : (
-          <div className="text-center py-20 bg-white rounded-3xl border border-[#E2E8F0]">
-            <h2 className="text-2xl font-semibold text-zen-charcoal mb-4">No data available</h2>
-            <p className="text-zen-charcoal-light">GitHub is connected, but no activity data is available yet.</p>
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="p-8 rounded-3xl bg-white border border-[#E2E8F0] shadow-sm"
+            >
+              <h2 className="text-xl font-semibold text-zen-charcoal mb-6 flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+                Connection Status: Active
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-1">
+                  <p className="text-sm text-zen-charcoal-light flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Connected Since
+                  </p>
+                  <p className="text-lg text-zen-charcoal font-medium">
+                    {formatDate(status?.connectedAt)}
+                  </p>
+                </div>
+                
+                {status?.tokenExpiration && (
+                  <div className="space-y-1">
+                    <p className="text-sm text-zen-charcoal-light flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      Token Expiration
+                    </p>
+                    <p className="text-lg text-zen-charcoal font-medium">
+                      {formatDate(status.tokenExpiration)}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+
+            <div className="text-center py-12 bg-zen-off-white rounded-3xl border border-dashed border-[#E2E8F0]">
+              <h3 className="text-lg font-medium text-zen-charcoal mb-2">No activity data available yet</h3>
+              <p className="text-zen-charcoal-light">We've successfully linked your account, but your contribution data is still being processed.</p>
+            </div>
           </div>
         )}
       </div>

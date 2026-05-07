@@ -66,15 +66,16 @@ export function ProfilePage() {
 
   const { theme: activeAppTheme, setTheme: setAppTheme } = useAppTheme();
 
-  const { connectedIds, connectIntegration, disconnectIntegration } =
+  const { connectedIds, statuses, connectIntegration, disconnectIntegration } =
     useIntegrations();
   const connectedIntegrations = useMemo(
     () =>
       integrationCatalog.map((i) => ({
         ...i,
         connected: connectedIds.includes(i.id),
+        details: statuses[i.id],
       })),
-    [connectedIds],
+    [connectedIds, statuses],
   );
   const initials = useMemo(
     () => getProfileInitials(profile.fullName),
@@ -419,7 +420,7 @@ export function ProfilePage() {
                         }}
                       >
                         {integration.connected
-                          ? "Connected and syncing"
+                          ? `Connected since ${new Date(integration.details?.connectedAt || "").toLocaleDateString()}`
                           : "Not connected"}
                       </p>
                     </div>
