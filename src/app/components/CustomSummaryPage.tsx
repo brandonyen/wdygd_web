@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import axios from "axios";
 import { Calendar as CalendarIcon, Loader2, Sparkles } from "lucide-react";
 import { AISummary, type Summary } from "./AISummary";
@@ -13,8 +13,43 @@ export function CustomSummaryPage() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSummaryLoading, setIsSummaryLoading] = useState(false);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const fetchSummary = useCallback(async (startISO: string, endISO: string) => {
+    if (!profile.userId) return false;
+
+    try {
+      setIsSummaryLoading(true);
+      const token = await getCurrentIdToken();
+      const { data } = await axios.get(`${API_BASE_URL}/summary`, {
+        params: {
+          user_id: profile.userId,
+          start_date: startISO,
+          end_date: endISO,
+          summary_type: "USER_GENERATED",
+          latest: true,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Handle both [obj] and obj responses based on spec ambiguity
+      const summaryData = Array.isArray(data.data) ? data.data[0] : data.data;
+      if (summaryData) {
+        setSummary(summaryData);
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error("Failed to fetch custom summary:", err);
+      return false;
+    } finally {
+      setIsSummaryLoading(false);
+    }
+  }, [profile.userId]);
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,8 +76,8 @@ export function CustomSummaryPage() {
         return;
       }
 
-      const response = await axios.post(
-        `${API_BASE_URL}/summary`,
+      await axios.post(
+        `${API_BASE_URL}/sync`,
         {
           user_id: profile.userId,
           start_date: start.toISOString(),
@@ -54,14 +89,25 @@ export function CustomSummaryPage() {
         }
       );
 
-      if (response.data?.data) {
-        setSummary(response.data.data);
-      } else {
-        setError("Failed to generate summary. Please try again.");
-      }
+      alert("Data collection and summary generation started for your custom dates.");
+      
+      const startISO = start.toISOString();
+      const endISO = end.toISOString();
+      
+      // Poll briefly so users see new data appear without manual refresh.
+      window.setTimeout(() => {
+        void fetchSummary(startISO, endISO);
+      }, 5000);
+      window.setTimeout(() => {
+        void fetchSummary(startISO, endISO);
+      }, 15000);
+      window.setTimeout(() => {
+        void fetchSummary(startISO, endISO);
+      }, 30000);
+
     } catch (err) {
       console.error(err);
-      setError("An error occurred while generating the summary.");
+      setError("An error occurred while starting the summary generation.");
     } finally {
       setIsGenerating(false);
     }
@@ -146,7 +192,7 @@ export function CustomSummaryPage() {
               {isGenerating ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Generating...
+                  Starting...
                 </>
               ) : (
                 "Generate Summary"
@@ -155,9 +201,9 @@ export function CustomSummaryPage() {
           </form>
         </motion.div>
 
-        {summary && (
+        {(summary || isSummaryLoading) && (
           <div className="mt-8">
-            <AISummary summary={summary} isLoading={isGenerating} />
+            <AISummary summary={summary} isLoading={isSummaryLoading} />
           </div>
         )}
       </div>
