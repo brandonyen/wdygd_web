@@ -95,15 +95,20 @@ export function CustomSummaryPage() {
       const endISO = end.toISOString();
       
       // Poll briefly so users see new data appear without manual refresh.
-      window.setTimeout(() => {
-        void fetchSummary(startISO, endISO);
-      }, 5000);
-      window.setTimeout(() => {
-        void fetchSummary(startISO, endISO);
-      }, 15000);
-      window.setTimeout(() => {
-        void fetchSummary(startISO, endISO);
-      }, 30000);
+      const poll = async (delay: number) => {
+        await new Promise(resolve => window.setTimeout(resolve, delay));
+        // Check if we already have a summary to avoid redundant fetches
+        setSummary(prev => {
+          if (!prev) {
+            void fetchSummary(startISO, endISO);
+          }
+          return prev;
+        });
+      };
+
+      void poll(5000);
+      void poll(15000);
+      void poll(30000);
 
     } catch (err) {
       console.error(err);
