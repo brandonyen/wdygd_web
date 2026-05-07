@@ -147,16 +147,41 @@
         }
       }
 
+      if (window.opener && !window.opener.closed) {
+        try {
+          window.opener.postMessage(
+            {
+              type: "oauth-complete",
+              provider,
+              success,
+              error: error || null,
+            },
+            window.location.origin,
+          );
+        } catch {
+          // Ignore cross-window messaging failures.
+        }
+      }
+
+      const hasOpener = !!(window.opener && !window.opener.closed);
       let secondsLeft = success ? 4 : 7;
-      countdownEl.textContent = `This window will close in ${secondsLeft}s.`;
+      countdownEl.textContent = hasOpener
+        ? `This window will close in ${secondsLeft}s.`
+        : `Returning to the app in ${secondsLeft}s.`;
       const timer = window.setInterval(() => {
         secondsLeft -= 1;
         if (secondsLeft <= 0) {
           window.clearInterval(timer);
-          window.close();
+          if (hasOpener) {
+            window.close();
+          } else {
+            window.location.assign(`${window.location.origin}/`);
+          }
           return;
         }
-        countdownEl.textContent = `This window will close in ${secondsLeft}s.`;
+        countdownEl.textContent = hasOpener
+          ? `This window will close in ${secondsLeft}s.`
+          : `Returning to the app in ${secondsLeft}s.`;
       }, 1000);
     </script>
   </body>
