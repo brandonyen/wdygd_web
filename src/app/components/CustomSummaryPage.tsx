@@ -23,8 +23,8 @@ export function CustomSummaryPage() {
       return;
     }
 
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+    const start = new Date(`${startDate}T00:00:00.000Z`);
+    const end = new Date(`${endDate}T23:59:59.999Z`);
     
     if (end < start) {
       setError("End date cannot be before start date.");
@@ -45,8 +45,8 @@ export function CustomSummaryPage() {
         `${API_BASE_URL}/summary`,
         {
           user_id: profile.userId,
-          start_date: new Date(startDate).toISOString(),
-          end_date: new Date(endDate).toISOString(),
+          start_date: start.toISOString(),
+          end_date: end.toISOString(),
           summary_type: "USER_GENERATED"
         },
         {
