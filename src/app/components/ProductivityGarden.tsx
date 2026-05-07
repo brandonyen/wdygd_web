@@ -35,8 +35,8 @@ export function ProductivityGarden({
   );
   const slackScore = Math.min(100, (slackMetrics?.totalMessagesCount ?? 0) * 2);
 
-  const githubGrowth = (githubScore / 100) * 80 + 20;
-  const slackGrowth = (slackScore / 100) * 70 + 30;
+  const githubScale = githubScore === 0 ? 0.3 : 0.5 + (githubScore / 100) * 0.5;
+  const slackScale = slackScore === 0 ? 0.3 : 0.5 + (slackScore / 100) * 0.5;
 
   return (
     <div
@@ -91,9 +91,10 @@ export function ProductivityGarden({
         {/* GitHub - minimal tree (left) */}
         {show("github") && (
           <motion.g
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 8 }}
+            initial={{ opacity: 0, scale: 0, y: 8 }}
+            animate={{ opacity: mounted ? 1 : 0, scale: mounted ? githubScale : 0, y: mounted ? 0 : 8 }}
             transition={{ duration: 0.85, ease: "easeOut" }}
+            style={{ transformOrigin: "170px 300px" }}
           >
             <motion.path
               d="M170 300 L170 210"
@@ -108,7 +109,9 @@ export function ProductivityGarden({
               "M170 270 L130 238",
               "M170 255 L205 230",
               "M170 240 L138 214",
-            ].map((d, i) => (
+            ]
+              .slice(0, githubScore === 0 ? 0 : Math.max(1, Math.ceil(githubScore / 33)))
+              .map((d, i) => (
               <motion.path
                 key={d}
                 d={d}
@@ -120,12 +123,14 @@ export function ProductivityGarden({
                 transition={{ duration: 0.7, delay: 0.18 + i * 0.08 }}
               />
             ))}
-            {[150, 188, 126, 210, 170].map((x, i) => (
+            {[150, 188, 126, 210, 170]
+              .slice(0, githubScore === 0 ? 0 : Math.max(1, Math.ceil(githubScore / 20)))
+              .map((x, i) => (
               <motion.circle
                 key={`leaf-${x}`}
                 cx={x}
                 cy={195 - (i % 2) * 18}
-                r={6 + ((githubGrowth / 10 + i) % 4)}
+                r={6 + ((githubScore / 10 + i) % 4)}
                 fill="var(--zen-sage)"
                 opacity={0.72}
                 initial={{ scale: 0 }}
@@ -139,11 +144,14 @@ export function ProductivityGarden({
         {/* Slack - centered wave motif (middle) */}
         {show("slack") && (
           <motion.g
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: mounted ? 1 : 0, scale: mounted ? 1 : 0.9 }}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: mounted ? 1 : 0, scale: mounted ? slackScale : 0 }}
             transition={{ duration: 0.85, delay: 0.15 }}
+            style={{ transformOrigin: "400px 300px" }}
           >
-            {[0, 1, 2, 3].map((i) => {
+            {[0, 1, 2, 3]
+              .slice(0, slackScore === 0 ? 1 : Math.max(1, Math.ceil(slackScore / 25)))
+              .map((i) => {
               const y = 278 - i * 22;
               return (
                 <motion.path
@@ -159,12 +167,14 @@ export function ProductivityGarden({
                 />
               );
             })}
-            {[328, 370, 414, 460].map((x, i) => (
+            {[328, 370, 414, 460]
+              .slice(0, slackScore === 0 ? 0 : Math.max(1, Math.ceil(slackScore / 25)))
+              .map((x, i) => (
               <motion.circle
                 key={`drop-${x}`}
                 cx={x}
                 cy={232 + (i % 2) * 8}
-                r={4 + (slackGrowth / 100) * 3}
+                r={4 + (slackScore / 100) * 3}
                 fill="var(--zen-blue)"
                 opacity={0.35}
                 initial={{ scale: 0 }}
