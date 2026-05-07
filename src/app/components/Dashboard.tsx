@@ -99,7 +99,8 @@ export function Dashboard() {
           <div className="space-y-12">
             <div className="w-full">
               <ProductivityGarden
-                activityData={{ github: 0, slack: 0 }}
+                githubMetrics={latestSummary?.github_metrics}
+                slackMetrics={latestSummary?.slack_metrics}
                 enabledIntegrationIds={connectedIds}
               />
             </div>

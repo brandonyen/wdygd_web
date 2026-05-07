@@ -14,6 +14,20 @@ export interface Summary {
   content_array?: string[];
   github_content_array?: string[];
   slack_content_array?: string[];
+  github_metrics?: {
+    repos: string[];
+    commits: number;
+    prsClosed: number;
+    prsMerged: number;
+    prsOpened: number;
+    totalReviews: number;
+    totalIssuesClosed: number;
+    totalIssuesOpened: number;
+  };
+  slack_metrics?: {
+    totalChannels: number;
+    totalMessagesCount: number;
+  };
 }
 
 interface AISummaryProps {

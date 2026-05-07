@@ -1,24 +1,22 @@
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
-
-interface ActivityData {
-  github: number; // 0-100
-  slack: number; // 0-100
-}
+import type { Summary } from "./AISummary";
 
 interface ProductivityGardenProps {
-  activityData: ActivityData;
+  githubMetrics?: Summary["github_metrics"];
+  slackMetrics?: Summary["slack_metrics"];
   /** When set, only those tools appear in the garden and legend. */
   enabledIntegrationIds?: string[];
 }
 
 export function ProductivityGarden({
-  activityData,
+  githubMetrics,
+  slackMetrics,
   enabledIntegrationIds,
 }: ProductivityGardenProps) {
   const [mounted, setMounted] = useState(false);
 
-  const show = (id: keyof ActivityData) =>
+  const show = (id: "github" | "slack") =>
     enabledIntegrationIds === undefined || enabledIntegrationIds.includes(id);
 
   useEffect(() => {
@@ -28,8 +26,17 @@ export function ProductivityGarden({
   }, []);
 
   // Calculate growth based on activity levels
-  const githubGrowth = (activityData.github / 100) * 80 + 20;
-  const slackGrowth = (activityData.slack / 100) * 70 + 30;
+  const githubScore = Math.min(
+    100,
+    (githubMetrics?.commits ?? 0) * 2 +
+      (githubMetrics?.prsMerged ?? 0) * 10 +
+      (githubMetrics?.prsOpened ?? 0) * 5 +
+      (githubMetrics?.totalReviews ?? 0) * 5
+  );
+  const slackScore = Math.min(100, (slackMetrics?.totalMessagesCount ?? 0) * 2);
+
+  const githubGrowth = (githubScore / 100) * 80 + 20;
+  const slackGrowth = (slackScore / 100) * 70 + 30;
 
   return (
     <div
