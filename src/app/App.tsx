@@ -164,6 +164,7 @@ export default function App() {
     );
 
     setIntegrationStatuses(newStatuses);
+    console.log("Integration statuses received from backend:", newStatuses);
     setConnectedIntegrations(
       providers.filter((id) => newStatuses[id]?.connected),
     );
