@@ -1,19 +1,10 @@
 import { motion } from "motion/react";
-import { MessageSquare, Calendar, Hash } from "lucide-react";
+import { MessageSquare, Hash } from "lucide-react";
 import { useIntegrationStatus } from "../integrationsContext";
 
 export function SlackPage() {
   const status = useIntegrationStatus("slack");
   const isConnected = status?.connected === true;
-
-  const formatDate = (dateStr?: string) => {
-    if (!dateStr) return "N/A";
-    return new Date(dateStr).toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
 
   return (
     <div className="overflow-y-auto px-8 py-8">
@@ -61,20 +52,10 @@ export function SlackPage() {
             >
               <h2 className="text-xl font-semibold text-zen-charcoal mb-6 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-green-500" />
-                Connection Status: Active
+                Connection Status: Connected
               </h2>
               
               <div className="space-y-6">
-                <div className="space-y-1">
-                  <p className="text-sm text-zen-charcoal-light flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    Connected Since
-                  </p>
-                  <p className="text-lg text-zen-charcoal font-medium">
-                    {formatDate(status?.connectedAt)}
-                  </p>
-                </div>
-
                 {status?.workspaces && status.workspaces.length > 0 && (
                   <div className="pt-6 border-t border-[#E2E8F0]">
                     <h3 className="text-sm font-medium text-zen-charcoal-light mb-4 uppercase tracking-wider">Connected Workspaces</h3>

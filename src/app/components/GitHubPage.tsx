@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { GitBranch, Calendar, Clock } from "lucide-react";
+import { GitBranch, Clock } from "lucide-react";
 import { useIntegrationStatus } from "../integrationsContext";
 
 export function GitHubPage() {
@@ -64,20 +64,10 @@ export function GitHubPage() {
             >
               <h2 className="text-xl font-semibold text-zen-charcoal mb-6 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-green-500" />
-                Connection Status: Active
+                Connection Status: Connected
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-1">
-                  <p className="text-sm text-zen-charcoal-light flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    Connected Since
-                  </p>
-                  <p className="text-lg text-zen-charcoal font-medium">
-                    {formatDate(status?.connectedAt)}
-                  </p>
-                </div>
-                
                 {status?.tokenExpiration && (
                   <div className="space-y-1">
                     <p className="text-sm text-zen-charcoal-light flex items-center gap-2">

@@ -420,7 +420,7 @@ export function ProfilePage() {
                         }}
                       >
                         {integration.connected
-                          ? `Connected since ${new Date(integration.details?.connectedAt || "").toLocaleDateString()}`
+                          ? "Connected"
                           : "Not connected"}
                       </p>
                     </div>
