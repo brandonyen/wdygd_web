@@ -1,10 +1,12 @@
 import { motion } from "motion/react";
 import { GitBranch, Clock } from "lucide-react";
 import { useIntegrationStatus } from "../integrationsContext";
+import { useLatestSummary } from "../hooks/useLatestSummary";
 
 export function GitHubPage() {
   const status = useIntegrationStatus("github");
   const isConnected = status?.connected === true;
+  const { latestSummary, isSummaryLoading } = useLatestSummary();
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return "N/A";
@@ -82,10 +84,39 @@ export function GitHubPage() {
               </div>
             </motion.div>
 
-            <div className="text-center py-12 bg-zen-off-white rounded-3xl border border-dashed border-[#E2E8F0]">
-              <h3 className="text-lg font-medium text-zen-charcoal mb-2">No activity data available yet</h3>
-              <p className="text-zen-charcoal-light">We've successfully linked your account, but your contribution data is still being processed.</p>
-            </div>
+            {isSummaryLoading ? (
+              <div className="text-center py-12 bg-zen-off-white rounded-3xl border border-dashed border-[#E2E8F0]">
+                <p className="text-zen-charcoal-light animate-pulse">Loading activity...</p>
+              </div>
+            ) : latestSummary?.github_content_array && latestSummary.github_content_array.length > 0 ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="p-8 rounded-3xl bg-white border border-[#E2E8F0] shadow-sm space-y-4"
+              >
+                <h3 className="text-lg font-medium text-zen-charcoal mb-4">Recent Activity</h3>
+                <div className="space-y-3">
+                  {latestSummary.github_content_array.map((item, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 * i }}
+                      className="flex items-start gap-3"
+                    >
+                      <div className="w-1.5 h-1.5 rounded-full bg-zen-sage mt-2 shrink-0" />
+                      <p className="text-zen-charcoal leading-relaxed">{item}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            ) : (
+              <div className="text-center py-12 bg-zen-off-white rounded-3xl border border-dashed border-[#E2E8F0]">
+                <h3 className="text-lg font-medium text-zen-charcoal mb-2">No activity data available yet</h3>
+                <p className="text-zen-charcoal-light">We've successfully linked your account, but your contribution data is still being processed.</p>
+              </div>
+            )}
           </div>
         )}
       </div>

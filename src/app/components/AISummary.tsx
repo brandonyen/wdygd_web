@@ -12,6 +12,8 @@ export interface Summary {
   end_date: string;
   content: string;
   content_array?: string[];
+  github_content_array?: string[];
+  slack_content_array?: string[];
 }
 
 interface AISummaryProps {
