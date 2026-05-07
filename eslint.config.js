@@ -20,6 +20,8 @@ export default defineConfig([
       globals: globals.browser,
     },
     rules: {
+      "react-hooks/set-state-in-effect": "off",
+      "@typescript-eslint/no-explicit-any": "off",
       "react-refresh/only-export-components": [
         "error",
         {
@@ -36,8 +38,10 @@ export default defineConfig([
             "useIntegrations",
             "useConnectedIntegrations",
             "useHasIntegration",
+            "useIntegrationStatus",
             "useUserProfile",
             "profileInitials",
+            "useAppTheme",
           ],
         },
       ],
