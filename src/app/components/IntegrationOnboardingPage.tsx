@@ -1,35 +1,16 @@
 import { motion } from "motion/react";
-import { Github, Check } from "lucide-react";
-import { useState } from "react";
+import { Github } from "lucide-react";
 import type { IntegrationId } from "../integrationsContext";
 
 interface IntegrationOnboardingPageProps {
   onContinue: (integrations: IntegrationId[]) => void;
+  onConnectIntegration: (integration: IntegrationId) => void;
 }
 
 export function IntegrationOnboardingPage({
   onContinue,
+  onConnectIntegration,
 }: IntegrationOnboardingPageProps) {
-  const [selectedIntegrations, setSelectedIntegrations] = useState<
-    Set<IntegrationId>
-  >(new Set());
-
-  const toggleIntegration = (integration: IntegrationId) => {
-    const newSelected = new Set(selectedIntegrations);
-    if (newSelected.has(integration)) {
-      newSelected.delete(integration);
-    } else {
-      newSelected.add(integration);
-    }
-    setSelectedIntegrations(newSelected);
-  };
-
-  const handleContinue = () => {
-    if (selectedIntegrations.size > 0) {
-      onContinue(Array.from(selectedIntegrations));
-    }
-  };
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-8 py-16">
       <motion.div
@@ -74,49 +55,28 @@ export function IntegrationOnboardingPage({
         >
           <button
             type="button"
-            onClick={() => toggleIntegration("github")}
+            onClick={() => onConnectIntegration("github")}
             className="w-full max-w-md mx-auto flex items-center justify-between gap-3 px-8 py-4 rounded-full transition-all duration-300 hover:shadow-lg relative overflow-hidden"
             style={{
-              backgroundColor: selectedIntegrations.has("github")
-                ? "var(--zen-sage)"
-                : "white",
-              color: selectedIntegrations.has("github")
-                ? "white"
-                : "var(--zen-charcoal)",
-              border: selectedIntegrations.has("github")
-                ? "none"
-                : "2px solid var(--zen-sage)",
+              backgroundColor: "white",
+              color: "var(--zen-charcoal)",
+              border: "2px solid var(--zen-sage)",
             }}
           >
             <div className="flex items-center gap-3">
               <Github className="w-5 h-5" />
               <span>GitHub</span>
             </div>
-            {selectedIntegrations.has("github") && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Check className="w-5 h-5" />
-              </motion.div>
-            )}
           </button>
 
           <button
             type="button"
-            onClick={() => toggleIntegration("slack")}
+            onClick={() => onConnectIntegration("slack")}
             className="w-full max-w-md mx-auto flex items-center justify-between gap-3 px-8 py-4 rounded-full transition-all duration-300 hover:shadow-lg"
             style={{
-              backgroundColor: selectedIntegrations.has("slack")
-                ? "var(--zen-blue)"
-                : "white",
-              color: selectedIntegrations.has("slack")
-                ? "white"
-                : "var(--zen-charcoal)",
-              border: selectedIntegrations.has("slack")
-                ? "none"
-                : "2px solid var(--zen-blue)",
+              backgroundColor: "white",
+              color: "var(--zen-charcoal)",
+              border: "2px solid var(--zen-blue)",
             }}
           >
             <div className="flex items-center gap-3">
@@ -125,31 +85,20 @@ export function IntegrationOnboardingPage({
               </svg>
               <span>Slack</span>
             </div>
-            {selectedIntegrations.has("slack") && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Check className="w-5 h-5" />
-              </motion.div>
-            )}
           </button>
 
           <motion.button
             type="button"
-            onClick={handleContinue}
-            disabled={selectedIntegrations.size === 0}
-            className="w-full max-w-md mx-auto px-8 py-4 rounded-full transition-all duration-300 mt-8 disabled:opacity-30 disabled:cursor-not-allowed"
+            onClick={() => onContinue([])}
+            className="w-full max-w-md mx-auto px-8 py-4 rounded-full transition-all duration-300 mt-8"
             style={{
               backgroundColor: "var(--zen-charcoal)",
               color: "white",
             }}
-            whileHover={selectedIntegrations.size > 0 ? { scale: 1.02 } : {}}
-            whileTap={selectedIntegrations.size > 0 ? { scale: 0.98 } : {}}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            Continue with {selectedIntegrations.size} integration
-            {selectedIntegrations.size !== 1 ? "s" : ""}
+            Continue without integrations
           </motion.button>
         </motion.div>
 

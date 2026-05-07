@@ -2,6 +2,7 @@ import {
   createContext,
   useContext,
   useMemo,
+  useCallback,
   type Dispatch,
   type ReactNode,
   type SetStateAction,
@@ -41,7 +42,7 @@ export function UserProfileProvider({
   signOut: () => void;
   children: ReactNode;
 }) {
-  const changePassword = async (
+  const changePassword = useCallback(async (
     currentPassword: string,
     newPassword: string,
   ): Promise<ChangePasswordResult> => {
@@ -61,7 +62,7 @@ export function UserProfileProvider({
       }
       return { ok: false, error: "Unable to change password right now." };
     }
-  };
+  }, []);
 
   const value = useMemo(
     () => ({ profile, setProfile, changePassword, signOut }),

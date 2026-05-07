@@ -181,3 +181,19 @@ export async function getCurrentIdToken(): Promise<string | null> {
     });
   });
 }
+
+export async function getCurrentCognitoUserEmail(): Promise<string | null> {
+  const currentUser = getUserPool().getCurrentUser();
+  if (!currentUser) return null;
+
+  return new Promise((resolve) => {
+    currentUser.getSession((err: unknown, session: any) => {
+      if (err || !session.isValid()) {
+        resolve(null);
+        return;
+      }
+      // Usually the username is the email in our config
+      resolve(currentUser.getUsername());
+    });
+  });
+}

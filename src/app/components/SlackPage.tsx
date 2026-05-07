@@ -1,10 +1,10 @@
 import { motion } from "motion/react";
-import { MessageSquare } from "lucide-react";
-import { useConnectedIntegrations } from "../integrationsContext";
+import { MessageSquare, Hash } from "lucide-react";
+import { useIntegrationStatus } from "../integrationsContext";
 
 export function SlackPage() {
-  const connectedIds = useConnectedIntegrations();
-  const isConnected = connectedIds.includes("slack");
+  const status = useIntegrationStatus("slack");
+  const isConnected = status?.connected === true;
 
   return (
     <div className="overflow-y-auto px-8 py-8">
@@ -43,9 +43,44 @@ export function SlackPage() {
             <p className="text-zen-charcoal-light">Please connect Slack in Settings to see your activity.</p>
           </div>
         ) : (
-          <div className="text-center py-20 bg-white rounded-3xl border border-[#E2E8F0]">
-            <h2 className="text-2xl font-semibold text-zen-charcoal mb-4">No data available</h2>
-            <p className="text-zen-charcoal-light">Slack is connected, but no activity data is available yet.</p>
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="p-8 rounded-3xl bg-white border border-[#E2E8F0] shadow-sm"
+            >
+              <h2 className="text-xl font-semibold text-zen-charcoal mb-6 flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+                Connection Status: Connected
+              </h2>
+              
+              <div className="space-y-6">
+                {status?.workspaces && status.workspaces.length > 0 && (
+                  <div className="pt-6 border-t border-[#E2E8F0]">
+                    <h3 className="text-sm font-medium text-zen-charcoal-light mb-4 uppercase tracking-wider">Connected Workspaces</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {status.workspaces.map((ws) => (
+                        <div key={ws.workspaceId} className="flex items-center gap-3 p-4 rounded-xl bg-zen-off-white border border-[#E2E8F0]">
+                          <div className="w-8 h-8 rounded-lg bg-zen-blue/10 flex items-center justify-center">
+                            <Hash className="w-4 h-4 text-zen-blue" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-zen-charcoal">{ws.workspaceId}</p>
+                            <p className="text-xs text-zen-charcoal-light">Connected on {new Date(ws.connectedAt).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+
+            <div className="text-center py-12 bg-zen-off-white rounded-3xl border border-dashed border-[#E2E8F0]">
+              <h3 className="text-lg font-medium text-zen-charcoal mb-2">No message data available yet</h3>
+              <p className="text-zen-charcoal-light">Your workspaces are linked, and we're currently indexing your recent activity.</p>
+            </div>
           </div>
         )}
       </div>

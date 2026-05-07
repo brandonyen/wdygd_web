@@ -66,7 +66,16 @@ export function Dashboard() {
       );
       
       alert("Data collection and summary generation started for the past day.");
-      // Optional: Refresh summary after some time or just let the user know
+      // Poll briefly so users see new data appear without manual refresh.
+      window.setTimeout(() => {
+        void fetchLatestSummary();
+      }, 5000);
+      window.setTimeout(() => {
+        void fetchLatestSummary();
+      }, 15000);
+      window.setTimeout(() => {
+        void fetchLatestSummary();
+      }, 30000);
     } catch (err) {
       console.error(err);
       alert("An error occurred while trying to sync data.");
