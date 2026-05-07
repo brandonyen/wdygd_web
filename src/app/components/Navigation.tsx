@@ -6,6 +6,7 @@ import {
   LayoutGrid,
   Settings,
   LogOut,
+  Sparkles,
 } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useUserProfile, profileInitials } from "../userProfileContext";
@@ -56,6 +57,7 @@ export function Navigation() {
 
   const links = [
     { path: "/", label: "Garden", icon: LayoutGrid },
+    { path: "/custom-summaries", label: "Custom", icon: Sparkles },
     ...integrationNav,
   ];
 
