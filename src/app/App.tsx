@@ -11,11 +11,7 @@ import {
   writeStoredAccount,
   type StoredAccount,
 } from "./accountStorage";
-import {
-  signOutCognito,
-  getCurrentCognitoUserEmail,
-  getCurrentIdToken,
-} from "./cognitoAuth";
+import { signOutCognito, getCurrentCognitoUserEmail } from "./cognitoAuth";
 import {
   ConnectedIntegrationsProvider,
   type IntegrationId,
@@ -113,78 +109,52 @@ export default function App() {
     };
   }, [handleCredentialLoginSuccess]);
 
-  const parseConnectedStatus = (raw: unknown): IntegrationStatus => {
-    let data = raw;
-    if (typeof raw === "string") {
-      try {
-        data = JSON.parse(raw);
-      } catch {
-        return { connected: false };
-      }
-    }
-
-    if (data && typeof data === "object") {
-      // Check if data itself has connected, or it is wrapped in data.data or data.body
-      let actualData = data as any;
-      if (actualData.data && typeof actualData.data === "object") {
-        actualData = actualData.data;
-      } else if (actualData.body && typeof actualData.body === "string") {
-        try {
-          actualData = JSON.parse(actualData.body);
-        } catch {
-          /* ignore */
-        }
-      }
-
-      return {
-        connected: actualData.connected === true,
-        connectedAt: actualData.connectedAt,
-        tokenExpiration: actualData.tokenExpiration,
-        workspaces: actualData.workspaces,
-      };
-    }
-    return { connected: false };
-  };
-
   const refreshConnectedIntegrations = useCallback(async () => {
     const userId = userProfile.userId ?? readStoredAccount()?.userId;
     if (!userId) return;
 
-    const token = await getCurrentIdToken();
+    try {
+      const { data } = await axios.get(
+        `${API_BASE_URL}/integration-connection`,
+        {
+          params: { user_id: userId },
+        },
+      );
 
-    const providers: IntegrationId[] = ["github", "slack"];
-    const newStatuses: Record<IntegrationId, IntegrationStatus | null> = {
-      github: null,
-      slack: null,
-    };
+      const connections = Array.isArray(data.data) ? data.data : [];
+      const newStatuses: Record<IntegrationId, IntegrationStatus | null> = {
+        github: { connected: false },
+        slack: { connected: false, workspaces: [] },
+      };
 
-    await Promise.all(
-      providers.map(async (provider) => {
-        try {
-          const { data } = await axios.get(
-            `${API_BASE_URL}/auth/${provider}/status`,
-            {
-              params: { userId },
-            },
-          );
-          console.log(`Raw status data for ${provider}:`, data);
-          const parsed = parseConnectedStatus(data);
-          newStatuses[provider] = parsed;
-        } catch (error) {
-          console.error(`Failed to check ${provider} status:`, error);
-          newStatuses[provider] = { connected: false };
+      connections.forEach((conn: any) => {
+        const provider = conn.provider?.toLowerCase() as IntegrationId;
+        if (provider === "github") {
+          newStatuses.github = {
+            connected: true,
+            connectedAt: conn.created_at,
+            tokenExpiration: conn.token_expiration,
+          };
+        } else if (provider === "slack") {
+          newStatuses.slack!.connected = true;
+          newStatuses.slack!.workspaces = newStatuses.slack!.workspaces || [];
+          newStatuses.slack!.workspaces.push({
+            workspaceId: conn.provider_workspace_id,
+            connectedAt: conn.created_at,
+            tokenExpiration: conn.token_expiration,
+          });
         }
-      }),
-    );
+      });
 
-    setIntegrationStatuses(newStatuses);
-    console.log(
-      `Integration statuses for user ${userId} received from backend:`,
-      newStatuses,
-    );
-    setConnectedIntegrations(
-      providers.filter((id) => newStatuses[id]?.connected),
-    );
+      setIntegrationStatuses(newStatuses);
+      setConnectedIntegrations(
+        (["github", "slack"] as IntegrationId[]).filter(
+          (id) => newStatuses[id]?.connected,
+        ),
+      );
+    } catch (error) {
+      console.error("Failed to fetch integration connections:", error);
+    }
   }, [userProfile.userId]);
 
   const launchIntegrationOAuth = useCallback(
