@@ -1,10 +1,12 @@
 import { motion } from "motion/react";
 import { MessageSquare, Hash } from "lucide-react";
 import { useIntegrationStatus } from "../integrationsContext";
+import { useLatestSummary } from "../hooks/useLatestSummary";
 
 export function SlackPage() {
   const status = useIntegrationStatus("slack");
   const isConnected = status?.connected === true;
+  const { latestSummary, isSummaryLoading } = useLatestSummary();
 
   return (
     <div className="overflow-y-auto px-8 py-8">
@@ -77,10 +79,39 @@ export function SlackPage() {
               </div>
             </motion.div>
 
-            <div className="text-center py-12 bg-zen-off-white rounded-3xl border border-dashed border-[#E2E8F0]">
-              <h3 className="text-lg font-medium text-zen-charcoal mb-2">No message data available yet</h3>
-              <p className="text-zen-charcoal-light">Your workspaces are linked, and we're currently indexing your recent activity.</p>
-            </div>
+            {isSummaryLoading ? (
+              <div className="text-center py-12 bg-zen-off-white rounded-3xl border border-dashed border-[#E2E8F0]">
+                <p className="text-zen-charcoal-light animate-pulse">Loading activity...</p>
+              </div>
+            ) : latestSummary?.slack_content_array && latestSummary.slack_content_array.length > 0 ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="p-8 rounded-3xl bg-white border border-[#E2E8F0] shadow-sm space-y-4"
+              >
+                <h3 className="text-lg font-medium text-zen-charcoal mb-4">Recent Activity</h3>
+                <div className="space-y-3">
+                  {latestSummary.slack_content_array.map((item, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 * i }}
+                      className="flex items-start gap-3"
+                    >
+                      <div className="w-1.5 h-1.5 rounded-full bg-zen-blue mt-2 shrink-0" />
+                      <p className="text-zen-charcoal leading-relaxed">{item}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            ) : (
+              <div className="text-center py-12 bg-zen-off-white rounded-3xl border border-dashed border-[#E2E8F0]">
+                <h3 className="text-lg font-medium text-zen-charcoal mb-2">No message data available yet</h3>
+                <p className="text-zen-charcoal-light">Your workspaces are linked, and we're currently indexing your recent activity.</p>
+              </div>
+            )}
           </div>
         )}
       </div>
