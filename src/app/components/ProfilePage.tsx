@@ -441,7 +441,7 @@ export function ProfilePage() {
                       type="button"
                       onClick={() =>
                         integration.connected
-                          ? disconnectIntegration(integration.id)
+                          ? void disconnectIntegration(integration.id)
                           : connectIntegration(integration.id)
                       }
                       className={`px-4 py-2 rounded-full text-sm ${interactiveButtonClass}`}

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { RouterProvider } from "react-router";
 import axios from "axios";
-import { IntegrationOnboardingPage } from "./components/IntegrationOnboardingPage";
 import { LoginPage } from "./components/LoginPage";
 import { SignupPage } from "./components/SignupPage";
 import { ConfirmSignupPage } from "./components/ConfirmSignupPage";
@@ -20,6 +19,10 @@ import {
 import { applyAppThemeToDocument, parseAppTheme } from "./appTheme";
 import { AppThemeProvider } from "./appThemeContext";
 import { UserProfileProvider, type UserProfile } from "./userProfileContext";
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://28gthv6fu1.execute-api.us-east-1.amazonaws.com/prod";
 
 export default function App() {
   const [authScreen, setAuthScreen] = useState<"signup" | "login" | "confirm">(
@@ -40,21 +43,116 @@ export default function App() {
     IntegrationId[]
   >([]);
 
-  const connectIntegration = useCallback((id: IntegrationId) => {
-    setConnectedIntegrations((prev) =>
-      prev.includes(id) ? prev : [...prev, id],
-    );
-  }, []);
+  const parseConnectedFromStatus = (raw: unknown): boolean => {
+    if (typeof raw === "string") {
+      try {
+        return parseConnectedFromStatus(JSON.parse(raw));
+      } catch {
+        return false;
+      }
+    }
+    if (raw && typeof raw === "object") {
+      const maybeConnected = (raw as { connected?: unknown }).connected;
+      if (typeof maybeConnected === "boolean") return maybeConnected;
 
-  const disconnectIntegration = useCallback((id: IntegrationId) => {
-    setConnectedIntegrations((prev) => prev.filter((x) => x !== id));
-  }, []);
-
-  const handleIntegrationContinue = (integrations: IntegrationId[]) => {
-    setConnectedIntegrations(integrations);
-    patchStoredAccount({ connectedIntegrations: integrations });
-    setIsLoggedIn(true);
+      const maybeBody = (raw as { body?: unknown }).body;
+      if (typeof maybeBody === "string") {
+        try {
+          const parsedBody = JSON.parse(maybeBody) as { connected?: unknown };
+          return parsedBody.connected === true;
+        } catch {
+          return false;
+        }
+      }
+    }
+    return false;
   };
+
+  const refreshConnectedIntegrations = useCallback(async () => {
+    const userId = userProfile.userId ?? readStoredAccount()?.userId;
+    if (!userId) return;
+
+    const providers: IntegrationId[] = ["github", "slack"];
+    const statuses = await Promise.all(
+      providers.map(async (provider) => {
+        try {
+          const { data } = await axios.get(
+            `${API_BASE_URL}/auth/${provider}/status`,
+            {
+              params: { userId },
+            },
+          );
+          return parseConnectedFromStatus(data) ? provider : null;
+        } catch (error) {
+          console.error(`Failed to check ${provider} status:`, error);
+          return null;
+        }
+      }),
+    );
+
+    setConnectedIntegrations(
+      statuses.filter((provider): provider is IntegrationId => provider !== null),
+    );
+  }, [userProfile.userId]);
+
+  const launchIntegrationOAuth = useCallback(
+    (id: IntegrationId) => {
+      const userId = userProfile.userId ?? readStoredAccount()?.userId;
+      if (!userId) {
+        console.warn(`Cannot connect ${id} without a user ID`);
+        return;
+      }
+
+      const authUrl = new URL(`${API_BASE_URL}/auth/${id}`);
+      authUrl.searchParams.set("userId", userId);
+      const redirectUrl = new URL(`${window.location.origin}/oauth-complete.html`);
+      redirectUrl.searchParams.set("provider", id);
+      authUrl.searchParams.set("redirectUrl", redirectUrl.toString());
+      const popupFeatures =
+        "popup=yes,width=600,height=800,menubar=no,toolbar=no,location=yes,resizable=yes,scrollbars=yes,status=no";
+      const popup = window.open(authUrl.toString(), `${id}-oauth`, popupFeatures);
+      if (popup) {
+        const popupMonitor = window.setInterval(() => {
+          if (popup.closed) {
+            window.clearInterval(popupMonitor);
+            void refreshConnectedIntegrations();
+          }
+        }, 1000);
+      }
+      if (!popup) {
+        // Fallback when popups are blocked by the browser.
+        window.location.assign(authUrl.toString());
+      }
+    },
+    [refreshConnectedIntegrations, userProfile.userId],
+  );
+
+  const connectIntegration = useCallback(
+    (id: IntegrationId) => {
+      launchIntegrationOAuth(id);
+    },
+    [launchIntegrationOAuth],
+  );
+
+  const disconnectIntegration = useCallback(
+    async (id: IntegrationId) => {
+      const userId = userProfile.userId ?? readStoredAccount()?.userId;
+      if (!userId) {
+        console.warn(`Cannot disconnect ${id} without a user ID`);
+        return;
+      }
+
+      try {
+        const disconnectUrl = new URL(`${API_BASE_URL}/auth/${id}`);
+        disconnectUrl.searchParams.set("userId", userId);
+        await axios.delete(disconnectUrl.toString());
+        void refreshConnectedIntegrations();
+      } catch (error) {
+        console.error(`Failed to disconnect ${id}:`, error);
+      }
+    },
+    [refreshConnectedIntegrations, userProfile.userId],
+  );
 
   const handleSignupComplete = (account: {
     fullName: string;
@@ -84,6 +182,17 @@ export default function App() {
     patchStoredAccount({ connectedIntegrations });
   }, [connectedIntegrations, isLoggedIn]);
 
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    void refreshConnectedIntegrations();
+
+    const onWindowFocus = () => {
+      void refreshConnectedIntegrations();
+    };
+    window.addEventListener("focus", onWindowFocus);
+    return () => window.removeEventListener("focus", onWindowFocus);
+  }, [isLoggedIn, refreshConnectedIntegrations]);
+
   const handleSignOut = useCallback(() => {
     signOutCognito();
     applyAppThemeToDocument("zen");
@@ -104,7 +213,6 @@ export default function App() {
   const handleCredentialLoginSuccess = async (email: string) => {
     let fetchedUserId: string | undefined;
     try {
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://28gthv6fu1.execute-api.us-east-1.amazonaws.com/prod";
       const { data } = await axios.get(`${API_BASE_URL}/user-config`, { params: { email } });
       fetchedUserId = data.data.user_id;
     } catch (err) {
@@ -136,9 +244,7 @@ export default function App() {
     });
     setConnectedIntegrations(activeAccount.connectedIntegrations);
     setSignupComplete(true);
-    if (activeAccount.connectedIntegrations.length > 0) {
-      setIsLoggedIn(true);
-    }
+    setIsLoggedIn(true);
   };
 
   if (!signupComplete) {
@@ -177,13 +283,7 @@ export default function App() {
     );
   }
 
-  if (!isLoggedIn) {
-    return (
-      <div className="size-full">
-        <IntegrationOnboardingPage onContinue={handleIntegrationContinue} />
-      </div>
-    );
-  }
+  if (!isLoggedIn) return null;
 
   const initialAppTheme = parseAppTheme(readStoredAccount()?.theme);
 
