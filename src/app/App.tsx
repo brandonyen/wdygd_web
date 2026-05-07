@@ -225,7 +225,19 @@ export default function App() {
       authUrl.searchParams.set("redirectUrl", redirectUrl.toString());
       authUrl.searchParams.set("redirect_url", redirectUrl.toString());
       authUrl.searchParams.set("redirect_uri", redirectUrl.toString());
-      // Use same-tab OAuth to work reliably inside Cursor preview/webview flows.
+      if (id === "slack") {
+        const popup = window.open(
+          authUrl.toString(),
+          "slack-oauth",
+          "width=640,height=800,resizable=yes,scrollbars=yes",
+        );
+        if (!popup) {
+          window.location.assign(authUrl.toString());
+        }
+        return;
+      }
+
+      // Keep same-tab behavior for non-Slack integrations.
       window.location.assign(authUrl.toString());
     },
     [userProfile.userId],

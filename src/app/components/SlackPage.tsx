@@ -109,12 +109,10 @@ export function SlackPage() {
               <div className="space-y-6">
                 {workspaces.length > 0 && (
                   <div className="pt-6 border-t border-border">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-wider">Connected Workspaces</h3>
-
                     <div className="mb-4 flex items-center justify-between gap-3">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
                         Connected Workspaces
-                      </p>
+                      </h3>
                       <button
                         type="button"
                         onClick={() => connectIntegration("slack")}
