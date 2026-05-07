@@ -192,8 +192,7 @@ export async function getCurrentCognitoUserEmail(): Promise<string | null> {
         resolve(null);
         return;
       }
-      // Usually the username is the email in our config
-      resolve(currentUser.getUsername());
+      resolve(session.getIdToken().payload.email || currentUser.getUsername());
     });
   });
 }
