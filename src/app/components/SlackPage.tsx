@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { MessageSquare, Hash } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { useIntegrationStatus } from "../integrationsContext";
+import { useIntegrationStatus, useIntegrations } from "../integrationsContext";
 
 function formatConnectedDate(value: string): string {
   if (!value) return "Unknown date";
@@ -30,6 +30,7 @@ function formatConnectedDate(value: string): string {
 
 export function SlackPage() {
   const status = useIntegrationStatus("slack");
+  const { connectIntegration } = useIntegrations();
   const isConnected = status?.connected === true;
   const workspaces = status?.workspaces ?? [];
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(
@@ -110,25 +111,17 @@ export function SlackPage() {
                   <div className="pt-6 border-t border-border">
                     <h3 className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-wider">Connected Workspaces</h3>
 
-                    <div className="mb-4">
-                      <label
-                        htmlFor="workspace-select"
-                        className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2"
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Connected Workspaces
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => connectIntegration("slack")}
+                        className="rounded-lg border border-border bg-card px-3 py-1.5 text-sm text-card-foreground hover:bg-muted transition-colors"
                       >
-                        Select Workspace
-                      </label>
-                      <select
-                        id="workspace-select"
-                        value={selectedWorkspace?.workspaceId ?? ""}
-                        onChange={(event) => setSelectedWorkspaceId(event.target.value)}
-                        className="w-full sm:w-auto min-w-[260px] rounded-lg border border-border bg-card px-3 py-2 text-sm text-card-foreground"
-                      >
-                        {workspaces.map((ws) => (
-                          <option key={ws.workspaceId} value={ws.workspaceId}>
-                            {ws.workspaceName || ws.workspaceId}
-                          </option>
-                        ))}
-                      </select>
+                        + Add Workspace
+                      </button>
                     </div>
 
                     <div className="flex flex-wrap gap-2 mb-4">
