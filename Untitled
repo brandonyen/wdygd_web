@@ -1,0 +1,4 @@
+VITE_SUPABASE_URL=https://txblfdhtqiougbireedf.supabase.co/
+VITE_WDYGD_API_URL=https://28gthv6fu1.execute-api.us-east-1.amazonaws.com/prod
+VITE_COGNITO_USER_POOL_ID=us-east-1_fEVbk6p7V
+VITE_COGNITO_CLIENT_ID=61bse2a2gnb7ngd34vuap8qs44
