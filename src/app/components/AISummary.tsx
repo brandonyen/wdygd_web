@@ -72,22 +72,33 @@ export function AISummary({ summary, isLoading }: AISummaryProps) {
         <div>
           <h3 className="mb-2 text-zen-charcoal">Accomplishments</h3>
           <div className="flex items-center gap-4 text-xs text-zen-charcoal-light">
-            <div className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              <span>
-                {summary 
-                  ? `Last updated ${getTimeAgo(summary.created_at)}` 
-                  : isLoading ? "Updating..." : "Last updated Never"}
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Calendar className="w-3 h-3" />
-              <span>
-                {summary 
-                  ? new Date(summary.created_at).toLocaleDateString()
-                  : "Next update at N/A"}
-              </span>
-            </div>
+            {summary?.summary_type === "USER_GENERATED" ? (
+              <div className="flex items-center gap-1">
+                <Calendar className="w-3 h-3" />
+                <span>
+                  {new Date(summary.start_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })} - {new Date(summary.end_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                </span>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  <span>
+                    {summary 
+                      ? `Last updated ${getTimeAgo(summary.created_at)}` 
+                      : isLoading ? "Updating..." : "Last updated Never"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Calendar className="w-3 h-3" />
+                  <span>
+                    {summary 
+                      ? new Date(summary.created_at).toLocaleDateString()
+                      : "Next update at N/A"}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
         </div>
         

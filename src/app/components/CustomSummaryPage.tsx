@@ -17,6 +17,16 @@ export function CustomSummaryPage() {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Get yesterday's date in YYYY-MM-DD format using local time components
+  const maxDate = (() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  })();
+
   const fetchSummary = useCallback(async (startISO: string, endISO: string) => {
     if (!profile.userId) return false;
 
@@ -165,6 +175,7 @@ export function CustomSummaryPage() {
                 <input
                   type="date"
                   value={startDate}
+                  max={maxDate}
                   onChange={(e) => setStartDate(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-xl border border-zen-sand focus:outline-none focus:ring-2 focus:ring-zen-sage text-zen-charcoal bg-white"
                   required
@@ -178,6 +189,7 @@ export function CustomSummaryPage() {
                 <input
                   type="date"
                   value={endDate}
+                  max={maxDate}
                   onChange={(e) => setEndDate(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-xl border border-zen-sand focus:outline-none focus:ring-2 focus:ring-zen-sage text-zen-charcoal bg-white"
                   required
