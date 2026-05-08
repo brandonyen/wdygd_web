@@ -20,6 +20,10 @@ export function SlackPage() {
   const isConnected = status?.connected === true;
   const { latestSummary, isSummaryLoading, fetchLatestSummary } =
     useLatestSummary();
+  const slackMetrics = latestSummary?.slack_metrics;
+
+  const formatCount = (value?: number) =>
+    typeof value === "number" ? value.toLocaleString() : "N/A";
 
   const handleRemoveWorkspace = async (
     workspaceId: string,
@@ -156,6 +160,29 @@ export function SlackPage() {
                       to connect another Slack team.
                     </p>
                   )}
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="p-8 rounded-3xl bg-card border border-border shadow-sm"
+            >
+              <h3 className="text-lg font-medium text-card-foreground mb-4">Summary Metrics</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="rounded-xl border border-border bg-muted/40 p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Messages Sent</p>
+                  <p className="mt-1 text-2xl font-semibold text-card-foreground">
+                    {formatCount(slackMetrics?.totalMessagesCount)}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-border bg-muted/40 p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Channels Active</p>
+                  <p className="mt-1 text-2xl font-semibold text-card-foreground">
+                    {formatCount(slackMetrics?.totalChannels)}
+                  </p>
                 </div>
               </div>
             </motion.div>

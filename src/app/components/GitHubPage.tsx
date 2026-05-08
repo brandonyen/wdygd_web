@@ -7,6 +7,10 @@ export function GitHubPage() {
   const status = useIntegrationStatus("github");
   const isConnected = status?.connected === true;
   const { latestSummary, isSummaryLoading } = useLatestSummary();
+  const githubMetrics = latestSummary?.github_metrics;
+
+  const formatCount = (value?: number) =>
+    typeof value === "number" ? value.toLocaleString() : "N/A";
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return "N/A";
@@ -81,6 +85,49 @@ export function GitHubPage() {
                     </p>
                   </div>
                 )}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="p-8 rounded-3xl bg-card border border-border shadow-sm"
+            >
+              <h3 className="text-lg font-medium text-card-foreground mb-4">Summary Metrics</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="rounded-xl border border-border bg-muted/40 p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Commits</p>
+                  <p className="mt-1 text-2xl font-semibold text-card-foreground">{formatCount(githubMetrics?.commits)}</p>
+                </div>
+                <div className="rounded-xl border border-border bg-muted/40 p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">PRs Opened</p>
+                  <p className="mt-1 text-2xl font-semibold text-card-foreground">{formatCount(githubMetrics?.prsOpened)}</p>
+                </div>
+                <div className="rounded-xl border border-border bg-muted/40 p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">PRs Merged</p>
+                  <p className="mt-1 text-2xl font-semibold text-card-foreground">{formatCount(githubMetrics?.prsMerged)}</p>
+                </div>
+                <div className="rounded-xl border border-border bg-muted/40 p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">PRs Closed</p>
+                  <p className="mt-1 text-2xl font-semibold text-card-foreground">{formatCount(githubMetrics?.prsClosed)}</p>
+                </div>
+                <div className="rounded-xl border border-border bg-muted/40 p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Reviews</p>
+                  <p className="mt-1 text-2xl font-semibold text-card-foreground">{formatCount(githubMetrics?.totalReviews)}</p>
+                </div>
+                <div className="rounded-xl border border-border bg-muted/40 p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Issues Opened</p>
+                  <p className="mt-1 text-2xl font-semibold text-card-foreground">{formatCount(githubMetrics?.totalIssuesOpened)}</p>
+                </div>
+                <div className="rounded-xl border border-border bg-muted/40 p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Issues Closed</p>
+                  <p className="mt-1 text-2xl font-semibold text-card-foreground">{formatCount(githubMetrics?.totalIssuesClosed)}</p>
+                </div>
+                <div className="rounded-xl border border-border bg-muted/40 p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Tracked Repos</p>
+                  <p className="mt-1 text-2xl font-semibold text-card-foreground">{formatCount(githubMetrics?.repos?.length)}</p>
+                </div>
               </div>
             </motion.div>
 
