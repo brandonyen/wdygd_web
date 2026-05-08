@@ -3,7 +3,9 @@ import {
   User,
   Github,
   MessageSquare,
+  Bell,
   Palette,
+  Download,
   LogOut,
   Check,
   KeyRound,
@@ -56,6 +58,11 @@ export function ProfilePage() {
     null,
   );
   const [passwordChangeSuccess, setPasswordChangeSuccess] = useState(false);
+  const [notifications, setNotifications] = useState({
+    daily: true,
+    weekly: true,
+    achievements: false,
+  });
 
   const { theme: activeAppTheme, setTheme: setAppTheme } = useAppTheme();
 
@@ -457,6 +464,148 @@ export function ProfilePage() {
           </div>
         </motion.div>
 
+        {/* Notification Preferences */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="p-8 rounded-3xl space-y-6"
+          style={{ backgroundColor: "var(--card)" }}
+        >
+          <div className="flex items-center gap-2">
+            <Bell
+              className="w-5 h-5"
+              style={{ color: "var(--zen-charcoal)" }}
+            />
+            <h3 style={{ color: "var(--zen-charcoal)" }}>
+              Notification Preferences
+            </h3>
+          </div>
+          <div className="space-y-4">
+            <div
+              className="flex items-center justify-between p-4 rounded-xl"
+              style={{
+                backgroundColor: "var(--zen-off-white)",
+              }}
+            >
+              <div>
+                <p style={{ color: "var(--zen-charcoal)" }}>Daily Summary</p>
+                <p
+                  className="text-sm"
+                  style={{ color: "var(--zen-charcoal-light)" }}
+                >
+                  Receive a daily recap of your accomplishments
+                </p>
+              </div>
+              <button
+                onClick={() =>
+                  setNotifications({
+                    ...notifications,
+                    daily: !notifications.daily,
+                  })
+                }
+                className={`w-12 h-7 rounded-full relative ${interactiveToggleClass}`}
+                style={{
+                  backgroundColor: notifications.daily
+                    ? "var(--zen-sage)"
+                    : "var(--zen-sand)",
+                }}
+              >
+                <motion.div
+                  className="w-5 h-5 rounded-full absolute top-1"
+                  animate={{
+                    left: notifications.daily ? "24px" : "4px",
+                  }}
+                  transition={{ duration: 0.2 }}
+                  style={{ backgroundColor: "var(--card)" }}
+                />
+              </button>
+            </div>
+
+            <div
+              className="flex items-center justify-between p-4 rounded-xl"
+              style={{
+                backgroundColor: "var(--zen-off-white)",
+              }}
+            >
+              <div>
+                <p style={{ color: "var(--zen-charcoal)" }}>Weekly Report</p>
+                <p
+                  className="text-sm"
+                  style={{ color: "var(--zen-charcoal-light)" }}
+                >
+                  Get a comprehensive weekly productivity report
+                </p>
+              </div>
+              <button
+                onClick={() =>
+                  setNotifications({
+                    ...notifications,
+                    weekly: !notifications.weekly,
+                  })
+                }
+                className={`w-12 h-7 rounded-full relative ${interactiveToggleClass}`}
+                style={{
+                  backgroundColor: notifications.weekly
+                    ? "var(--zen-sage)"
+                    : "var(--zen-sand)",
+                }}
+              >
+                <motion.div
+                  className="w-5 h-5 rounded-full absolute top-1"
+                  animate={{
+                    left: notifications.weekly ? "24px" : "4px",
+                  }}
+                  transition={{ duration: 0.2 }}
+                  style={{ backgroundColor: "var(--card)" }}
+                />
+              </button>
+            </div>
+
+            <div
+              className="flex items-center justify-between p-4 rounded-xl"
+              style={{
+                backgroundColor: "var(--zen-off-white)",
+              }}
+            >
+              <div>
+                <p style={{ color: "var(--zen-charcoal)" }}>
+                  Achievement Notifications
+                </p>
+                <p
+                  className="text-sm"
+                  style={{ color: "var(--zen-charcoal-light)" }}
+                >
+                  Celebrate milestones and productivity streaks
+                </p>
+              </div>
+              <button
+                onClick={() =>
+                  setNotifications({
+                    ...notifications,
+                    achievements: !notifications.achievements,
+                  })
+                }
+                className={`w-12 h-7 rounded-full relative ${interactiveToggleClass}`}
+                style={{
+                  backgroundColor: notifications.achievements
+                    ? "var(--zen-sage)"
+                    : "var(--zen-sand)",
+                }}
+              >
+                <motion.div
+                  className="w-5 h-5 rounded-full absolute top-1"
+                  animate={{
+                    left: notifications.achievements ? "24px" : "4px",
+                  }}
+                  transition={{ duration: 0.2 }}
+                  style={{ backgroundColor: "var(--card)" }}
+                />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Theme & Appearance */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -566,6 +715,36 @@ export function ProfilePage() {
         >
           <h3 style={{ color: "var(--zen-charcoal)" }}>Account Actions</h3>
           <div className="space-y-3">
+            <button
+              className={`w-full flex items-center justify-between p-4 rounded-xl ${interactiveButtonClass}`}
+              style={{
+                backgroundColor: "var(--zen-off-white)",
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <Download
+                  className="w-5 h-5"
+                  style={{ color: "var(--zen-charcoal)" }}
+                />
+                <div className="text-left">
+                  <p style={{ color: "var(--zen-charcoal)" }}>
+                    Export Your Data
+                  </p>
+                  <p
+                    className="text-sm"
+                    style={{
+                      color: "var(--zen-charcoal-light)",
+                    }}
+                  >
+                    Download all your productivity data
+                  </p>
+                </div>
+              </div>
+              <span className="text-sm" style={{ color: "var(--zen-sage)" }}>
+                Download
+              </span>
+            </button>
+
             <button
               type="button"
               onClick={signOut}
