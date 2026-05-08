@@ -69,6 +69,7 @@ export function CustomSummaryPage() {
     try {
       setIsGenerating(true);
       setError(null);
+      setSummary(null);
       const token = await getCurrentIdToken();
 
       if (!profile.userId || !token) {
