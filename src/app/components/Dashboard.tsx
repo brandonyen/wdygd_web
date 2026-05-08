@@ -61,9 +61,9 @@ export function Dashboard() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4"
+        className="max-w-7xl mx-auto mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4 w-full"
       >
-        <div className="max-w-7xl">
+        <div>
           <h1 className="text-4xl mb-2 text-zen-charcoal font-light">
             Your Productivity Garden
           </h1>
