@@ -5,6 +5,7 @@ import { GitHubPage } from "./components/GitHubPage";
 import { SlackPage } from "./components/SlackPage";
 import { ProfilePage } from "./components/ProfilePage";
 import { IntegrationGate } from "./components/IntegrationGate";
+import { CustomSummaryPage } from "./components/CustomSummaryPage";
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +29,7 @@ export const router = createBrowserRouter([
           </IntegrationGate>
         ),
       },
+      { path: "custom-summaries", Component: CustomSummaryPage },
       { path: "profile", Component: ProfilePage },
       { path: "*", element: <Navigate to="/" replace /> },
     ],
