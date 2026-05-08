@@ -21,6 +21,7 @@ export function useLatestSummary() {
         params: {
           user_id: profile.userId,
           latest: true,
+          summary_type: "DAILY",
         },
         headers: {
           Authorization: `Bearer ${token}`,

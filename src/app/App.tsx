@@ -140,6 +140,7 @@ export default function App() {
           newStatuses.slack!.workspaces = newStatuses.slack!.workspaces || [];
           newStatuses.slack!.workspaces.push({
             workspaceId: conn.provider_workspace_id,
+            workspaceName: conn.slack_workspace_name,
             connectedAt: conn.created_at,
             tokenExpiration: conn.token_expiration,
           });

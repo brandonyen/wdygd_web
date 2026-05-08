@@ -11,6 +11,7 @@ export interface IntegrationStatus {
     connectedAt: string;
     tokenExpiration: string;
     workspaceId: string;
+    workspaceName?: string;
   }[];
 }
 

@@ -68,8 +68,7 @@ export function SlackPage() {
                             <Hash className="w-4 h-4 text-zen-blue" />
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-zen-charcoal">{ws.workspaceId}</p>
-                            <p className="text-xs text-zen-charcoal-light">Connected on {new Date(ws.connectedAt).toLocaleDateString()}</p>
+                            <p className="text-sm font-medium text-zen-charcoal">{ws.workspaceName || ws.workspaceId}</p>
                           </div>
                         </div>
                       ))}
