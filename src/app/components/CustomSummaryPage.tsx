@@ -175,8 +175,11 @@ export function CustomSummaryPage() {
                 <input
                   type="date"
                   value={startDate}
-                  max={maxDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  max={endDate || maxDate}
+                  onChange={(e) => {
+                    setStartDate(e.target.value);
+                    if (endDate && e.target.value > endDate) setEndDate("");
+                  }}
                   className="w-full px-4 py-2.5 rounded-xl border border-zen-sand focus:outline-none focus:ring-2 focus:ring-zen-sage text-zen-charcoal bg-white"
                   required
                 />
@@ -189,8 +192,12 @@ export function CustomSummaryPage() {
                 <input
                   type="date"
                   value={endDate}
+                  min={startDate}
                   max={maxDate}
-                  onChange={(e) => setEndDate(e.target.value)}
+                  onChange={(e) => {
+                    setEndDate(e.target.value);
+                    if (startDate && e.target.value < startDate) setStartDate("");
+                  }}
                   className="w-full px-4 py-2.5 rounded-xl border border-zen-sand focus:outline-none focus:ring-2 focus:ring-zen-sage text-zen-charcoal bg-white"
                   required
                 />
