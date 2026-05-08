@@ -42,8 +42,6 @@ const integrationCatalog = [
 export function ProfilePage() {
   const interactiveButtonClass =
     "transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
-  const interactiveToggleClass =
-    "transition-all duration-200 ease-out hover:scale-[1.04] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
 
   const { profile, setProfile, changePassword, signOut } = useUserProfile();
   const [draftProfile, setDraftProfile] = useState<UserProfile>(profile);
