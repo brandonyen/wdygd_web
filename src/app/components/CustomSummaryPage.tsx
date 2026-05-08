@@ -145,15 +145,13 @@ export function CustomSummaryPage() {
               <Sparkles className="w-6 h-6 text-zen-charcoal" />
             </div>
             <h1
-              className="text-4xl"
-              style={{ color: "var(--zen-charcoal)", fontWeight: 300 }}
+              className="text-4xl font-light text-card-foreground"
             >
               Custom Summaries
             </h1>
           </div>
           <p
-            className="text-lg ml-15"
-            style={{ color: "var(--zen-charcoal-light)" }}
+            className="text-lg ml-15 text-muted-foreground"
           >
             Generate a summary for a specific time period
           </p>
@@ -163,12 +161,12 @@ export function CustomSummaryPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="p-8 rounded-3xl bg-white border border-[#E2E8F0] shadow-sm"
+          className="p-8 rounded-3xl bg-card border border-border shadow-sm"
         >
           <form onSubmit={handleGenerate} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zen-charcoal flex items-center gap-2">
+                <label className="text-sm font-medium text-card-foreground flex items-center gap-2">
                   <CalendarIcon className="w-4 h-4" />
                   Start Date
                 </label>
@@ -180,12 +178,12 @@ export function CustomSummaryPage() {
                     setStartDate(e.target.value);
                     if (endDate && e.target.value > endDate) setEndDate("");
                   }}
-                  className="w-full px-4 py-2.5 rounded-xl border border-zen-sand focus:outline-none focus:ring-2 focus:ring-zen-sage text-zen-charcoal bg-white"
+                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-input-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zen-charcoal flex items-center gap-2">
+                <label className="text-sm font-medium text-card-foreground flex items-center gap-2">
                   <CalendarIcon className="w-4 h-4" />
                   End Date
                 </label>
@@ -198,7 +196,7 @@ export function CustomSummaryPage() {
                     setEndDate(e.target.value);
                     if (startDate && e.target.value < startDate) setStartDate("");
                   }}
-                  className="w-full px-4 py-2.5 rounded-xl border border-zen-sand focus:outline-none focus:ring-2 focus:ring-zen-sage text-zen-charcoal bg-white"
+                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-input-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   required
                 />
               </div>
@@ -211,8 +209,7 @@ export function CustomSummaryPage() {
             <button
               type="submit"
               disabled={isGenerating || !startDate || !endDate}
-              className="w-full sm:w-auto px-8 py-3 rounded-full text-sm font-medium transition-all duration-200 hover:shadow-md disabled:opacity-50 flex items-center justify-center gap-2"
-              style={{ backgroundColor: "var(--zen-sage)", color: "white" }}
+              className="w-full sm:w-auto px-8 py-3 rounded-full text-sm font-medium transition-all duration-200 hover:shadow-md disabled:opacity-50 flex items-center justify-center gap-2 bg-primary text-primary-foreground"
             >
               {isGenerating ? (
                 <>
