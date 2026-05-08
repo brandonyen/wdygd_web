@@ -14,6 +14,7 @@ import {
 import { signOutCognito, getCurrentCognitoUserEmail } from "./cognitoAuth";
 import {
   ConnectedIntegrationsProvider,
+  type DisconnectIntegrationOptions,
   type IntegrationId,
   type IntegrationStatus,
 } from "./integrationsContext";
@@ -204,7 +205,7 @@ export default function App() {
   );
 
   const disconnectIntegration = useCallback(
-    async (id: IntegrationId) => {
+    async (id: IntegrationId, options?: DisconnectIntegrationOptions) => {
       const userId = userProfile.userId ?? readStoredAccount()?.userId;
       if (!userId) {
         console.warn(`Cannot disconnect ${id} without a user ID`);
@@ -214,6 +215,12 @@ export default function App() {
       try {
         const disconnectUrl = new URL(`${API_BASE_URL}/auth/${id}`);
         disconnectUrl.searchParams.set("userId", userId);
+        if (id === "slack" && options?.slackWorkspaceId) {
+          disconnectUrl.searchParams.set(
+            "workspaceId",
+            options.slackWorkspaceId,
+          );
+        }
         await axios.delete(disconnectUrl.toString());
         void refreshConnectedIntegrations();
       } catch (error) {

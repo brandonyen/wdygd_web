@@ -15,11 +15,19 @@ export interface IntegrationStatus {
   }[];
 }
 
+/** When disconnecting Slack, pass `slackWorkspaceId` to remove a single workspace; omit to remove all Slack connections. */
+export type DisconnectIntegrationOptions = {
+  slackWorkspaceId?: string;
+};
+
 export type IntegrationsContextValue = {
   connectedIds: IntegrationId[];
   statuses: Record<IntegrationId, IntegrationStatus | null>;
   connectIntegration: (id: IntegrationId) => void;
-  disconnectIntegration: (id: IntegrationId) => void;
+  disconnectIntegration: (
+    id: IntegrationId,
+    options?: DisconnectIntegrationOptions,
+  ) => Promise<void>;
   refreshIntegrations: () => Promise<void>;
 };
 
@@ -38,7 +46,10 @@ export function ConnectedIntegrationsProvider({
   connectedIds: IntegrationId[];
   statuses: Record<IntegrationId, IntegrationStatus | null>;
   connectIntegration: (id: IntegrationId) => void;
-  disconnectIntegration: (id: IntegrationId) => void;
+  disconnectIntegration: (
+    id: IntegrationId,
+    options?: DisconnectIntegrationOptions,
+  ) => Promise<void>;
   refreshIntegrations: () => Promise<void>;
   children: ReactNode;
 }) {

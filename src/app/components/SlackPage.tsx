@@ -1,12 +1,46 @@
+import { useState } from "react";
 import { motion } from "motion/react";
-import { MessageSquare, Hash } from "lucide-react";
-import { useIntegrationStatus } from "../integrationsContext";
+import { MessageSquare, Hash, Plus, Trash2 } from "lucide-react";
+import {
+  useIntegrationStatus,
+  useIntegrations,
+} from "../integrationsContext";
 import { useLatestSummary } from "../hooks/useLatestSummary";
 
 export function SlackPage() {
   const status = useIntegrationStatus("slack");
+  const {
+    connectIntegration,
+    disconnectIntegration,
+    refreshIntegrations,
+  } = useIntegrations();
+  const [removingWorkspaceId, setRemovingWorkspaceId] = useState<string | null>(
+    null,
+  );
   const isConnected = status?.connected === true;
-  const { latestSummary, isSummaryLoading } = useLatestSummary();
+  const { latestSummary, isSummaryLoading, fetchLatestSummary } =
+    useLatestSummary();
+
+  const handleRemoveWorkspace = async (
+    workspaceId: string,
+    displayName: string,
+  ) => {
+    if (
+      !window.confirm(
+        `Remove “${displayName}” from WDYGD? Summaries will no longer include this workspace.`,
+      )
+    ) {
+      return;
+    }
+    setRemovingWorkspaceId(workspaceId);
+    try {
+      await disconnectIntegration("slack", { slackWorkspaceId: workspaceId });
+      await refreshIntegrations();
+      await fetchLatestSummary();
+    } finally {
+      setRemovingWorkspaceId(null);
+    }
+  };
 
   return (
     <div className="overflow-y-auto px-8 py-8">
@@ -58,23 +92,71 @@ export function SlackPage() {
               </h2>
               
               <div className="space-y-6">
-                {status?.workspaces && status.workspaces.length > 0 && (
-                  <div className="pt-6 border-t border-[#E2E8F0]">
-                    <h3 className="text-sm font-medium text-zen-charcoal-light mb-4 uppercase tracking-wider">Connected Workspaces</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {status.workspaces.map((ws) => (
-                        <div key={ws.workspaceId} className="flex items-center gap-3 p-4 rounded-xl bg-zen-off-white border border-[#E2E8F0]">
-                          <div className="w-8 h-8 rounded-lg bg-zen-blue/10 flex items-center justify-center">
-                            <Hash className="w-4 h-4 text-zen-blue" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-zen-charcoal">{ws.workspaceName || ws.workspaceId}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                <div className="pt-6 border-t border-[#E2E8F0]">
+                  <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                    <h3 className="text-sm font-medium text-zen-charcoal-light uppercase tracking-wider">
+                      Workspaces
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => connectIntegration("slack")}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-zen-sage text-white hover:opacity-90 transition-opacity"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add workspace
+                    </button>
                   </div>
-                )}
+                  {(status?.workspaces?.length ?? 0) > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {(status?.workspaces ?? []).map((ws) => {
+                        const label =
+                          ws.workspaceName?.trim() ||
+                          ws.workspaceId ||
+                          "Workspace";
+                        const canRemove = Boolean(ws.workspaceId);
+                        return (
+                          <div
+                            key={ws.workspaceId || label}
+                            className="flex items-center justify-between gap-3 p-4 rounded-xl bg-zen-off-white border border-[#E2E8F0]"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="w-8 h-8 rounded-lg bg-zen-blue/10 flex items-center justify-center shrink-0">
+                                <Hash className="w-4 h-4 text-zen-blue" />
+                              </div>
+                              <p className="text-sm font-medium text-zen-charcoal truncate">
+                                {label}
+                              </p>
+                            </div>
+                            {canRemove && (
+                              <button
+                                type="button"
+                                aria-label={`Remove ${label}`}
+                                disabled={
+                                  removingWorkspaceId === ws.workspaceId
+                                }
+                                onClick={() =>
+                                  void handleRemoveWorkspace(
+                                    ws.workspaceId,
+                                    label,
+                                  )
+                                }
+                                className="shrink-0 p-2 rounded-lg text-zen-charcoal-light hover:text-red-600 hover:bg-red-50 disabled:opacity-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-zen-charcoal-light">
+                      Workspace details will appear here once linked. Use{" "}
+                      <span className="font-medium text-zen-charcoal">Add workspace</span>{" "}
+                      to connect another Slack team.
+                    </p>
+                  )}
+                </div>
               </div>
             </motion.div>
 
