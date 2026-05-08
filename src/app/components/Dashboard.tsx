@@ -55,13 +55,13 @@ export function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen px-8 py-8">
+    <div className="min-h-screen py-8">
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="max-w-7xl mx-auto mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4 w-full"
+        className="max-w-7xl mx-auto px-8 mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4"
       >
         <div>
           <h1 className="text-4xl mb-2 text-zen-charcoal font-light">
@@ -87,7 +87,7 @@ export function Dashboard() {
       </motion.header>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto space-y-12">
+      <div className="max-w-7xl mx-auto px-8 space-y-12">
         {connectedIds.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-3xl border border-[#E2E8F0]">
             <h2 className="text-2xl font-semibold text-zen-charcoal mb-4">No integrations connected</h2>
