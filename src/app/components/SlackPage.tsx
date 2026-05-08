@@ -74,9 +74,9 @@ export function SlackPage() {
         </motion.div>
 
         {!isConnected ? (
-          <div className="text-center py-20 bg-white rounded-3xl border border-[#E2E8F0]">
-            <h2 className="text-2xl font-semibold text-zen-charcoal mb-4">Slack is not connected</h2>
-            <p className="text-zen-charcoal-light">Please connect Slack in Settings to see your activity.</p>
+          <div className="text-center py-20 rounded-3xl border border-border bg-card">
+            <h2 className="text-2xl font-semibold text-card-foreground mb-4">Slack is not connected</h2>
+            <p className="text-muted-foreground">Please connect Slack in Settings to see your activity.</p>
           </div>
         ) : (
           <div className="space-y-6">
@@ -84,9 +84,9 @@ export function SlackPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="p-8 rounded-3xl bg-white border border-[#E2E8F0] shadow-sm"
+              className="p-8 rounded-3xl bg-card border border-border shadow-sm"
             >
-              <h2 className="text-xl font-semibold text-zen-charcoal mb-6 flex items-center gap-2">
+              <h2 className="text-xl font-semibold text-card-foreground mb-6 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-green-500" />
                 Connection Status: Connected
               </h2>
@@ -161,17 +161,17 @@ export function SlackPage() {
             </motion.div>
 
             {isSummaryLoading ? (
-              <div className="text-center py-12 bg-zen-off-white rounded-3xl border border-dashed border-[#E2E8F0]">
-                <p className="text-zen-charcoal-light animate-pulse">Loading activity...</p>
+              <div className="text-center py-12 bg-muted/50 rounded-3xl border border-dashed border-border">
+                <p className="text-muted-foreground animate-pulse">Loading activity...</p>
               </div>
             ) : latestSummary?.slack_content_array && latestSummary.slack_content_array.length > 0 ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="p-8 rounded-3xl bg-white border border-[#E2E8F0] shadow-sm space-y-4"
+                className="p-8 rounded-3xl bg-card border border-border shadow-sm space-y-4"
               >
-                <h3 className="text-lg font-medium text-zen-charcoal mb-4">Recent Activity</h3>
+                <h3 className="text-lg font-medium text-card-foreground mb-4">Recent Activity</h3>
                 <div className="space-y-3">
                   {latestSummary.slack_content_array.map((item, i) => (
                     <motion.div
@@ -182,15 +182,15 @@ export function SlackPage() {
                       className="flex items-start gap-3"
                     >
                       <div className="w-1.5 h-1.5 rounded-full bg-zen-blue mt-2 shrink-0" />
-                      <p className="text-zen-charcoal leading-relaxed">{item}</p>
+                      <p className="text-card-foreground leading-relaxed">{item}</p>
                     </motion.div>
                   ))}
                 </div>
               </motion.div>
             ) : (
-              <div className="text-center py-12 bg-zen-off-white rounded-3xl border border-dashed border-[#E2E8F0]">
-                <h3 className="text-lg font-medium text-zen-charcoal mb-2">No message data available yet</h3>
-                <p className="text-zen-charcoal-light">Your workspaces are linked, and we're currently indexing your recent activity.</p>
+              <div className="text-center py-12 bg-muted/50 rounded-3xl border border-dashed border-border">
+                <h3 className="text-lg font-medium text-card-foreground mb-2">No message data available yet</h3>
+                <p className="text-muted-foreground">Your workspaces are linked, and we're currently indexing your recent activity.</p>
               </div>
             )}
           </div>
